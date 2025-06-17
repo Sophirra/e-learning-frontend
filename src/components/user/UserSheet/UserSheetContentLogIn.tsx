@@ -4,6 +4,7 @@ import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage, Form} from "@/components/ui/form.tsx";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {loginUser} from "@/api/auth.ts";
 
 let loginSchema = z.object({
     email: z.string().email({message: "Invalid email"}),
@@ -18,9 +19,17 @@ export function UserSheetContentLogIn({onRegister}: { onRegister: () => void}){
             password: ""
         }
     })
-    function onSubmit(data: z.infer<typeof loginSchema>){
-        console.log(data)
+    async function onSubmit(userData: z.infer<typeof loginSchema>) {
+        try {
+            let {accessToken, refreshToken} = await loginUser(userData)
+            localStorage.setItem("accessToken", accessToken)
+            localStorage.setItem("refreshToken", refreshToken)
+            window.location.reload()
+        } catch (e: any) {
+            form.setError("root", {message: e.message})
+        }
     }
+
     return (<div className="inline-flex flex-col gap-6 p-8">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className={"flex flex-col gap-4"}>
@@ -44,7 +53,7 @@ export function UserSheetContentLogIn({onRegister}: { onRegister: () => void}){
                     )}/>
                     <div className="flex gap-4 justify-center">
                         <Button variant="outline" type="button" onClick={onRegister}>Register</Button>
-                        <Button variant="default" type="submit">Log in</Button>
+                        <Button variant="default" type="submit" >Log in</Button>
                     </div>
                 </form>
             </Form>

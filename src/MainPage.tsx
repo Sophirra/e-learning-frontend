@@ -1,7 +1,7 @@
-import './App.css'
+import './MainPage.css'
 import {Header} from "@/components/ui/complex/header.tsx";
 
-function App() {
+function MainPage() {
     return (
         <div>
             <Header user={null} />
@@ -9,4 +9,4 @@ function App() {
     )
 }
 
-export default App
+export default MainPage

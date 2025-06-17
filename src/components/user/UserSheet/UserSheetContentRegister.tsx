@@ -5,7 +5,6 @@ import {Divider} from "@/components/ui/divider.tsx";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -15,6 +14,7 @@ import {RadioGroup} from "@/components/ui/radio-group.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {GraduationCap as StudentIcon, BookOpen as TeacherIcon} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
+import {registerUser} from "@/api/auth.ts";
 
 let RegistrationSchema = z.object({
     accountType: z.enum(["student", "teacher"]),
@@ -43,9 +43,13 @@ export function UserSheetContentRegister({onCancel, onRegister}: { onCancel: () 
         }
     })
 
-    function onSubmit(data: z.infer<typeof RegistrationSchema>) {
-        onRegister()
-        //tutaj będzie sprawdzenie czy wartości się zgadzają z back-endem
+    async function onSubmit(data: z.infer<typeof RegistrationSchema>) {
+        try{
+            await registerUser(data);
+            onRegister();
+        } catch (e: any) {
+            form.setError("root", {message: e.message || "Registration failed. Please try again."})
+        }
         console.log(data)
     }
 
@@ -135,24 +139,3 @@ export function UserSheetContentRegister({onCancel, onRegister}: { onCancel: () 
         </Form>
     )
 }
-
-// <RadioGroup onValueChange={field.onChange} defaultValue={field.value}>
-//     <div className="flex gap-2">
-//         <FormItem>
-//             <FormControl>
-//                 <RadioGroupItem value={"student"} id="radio-student"></RadioGroupItem>
-//             </FormControl>
-//         </FormItem>
-//         <FormLabel htmlFor="radio-student">
-//             <Button type={"button"}>
-//                 <StudentIcon/>
-//                 Student
-//             </Button>
-//         </FormLabel>
-//     </div>
-//     <FormItem>
-//         <FormControl>
-//             <RadioGroupItem value={"teacher"}/>
-//         </FormControl>
-//     </FormItem>
-// </RadioGroup>
