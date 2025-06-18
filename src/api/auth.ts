@@ -1,4 +1,4 @@
-let API_URL = 'http://localhost:5000/api/security';
+let API_URL = 'http://localhost:5249/api/security';
 
 export interface RegisterUserDto {
     accountType: "student" | "teacher";

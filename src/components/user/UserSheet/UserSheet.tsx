@@ -7,14 +7,14 @@ import { useState} from "react";
 import {UserSheetContentLogIn} from "@/components/user/UserSheet/UserSheetContentLogIn.tsx";
 import {UserSheetContentLoggedIn} from "@/components/user/UserSheet/UserSheetContentLoggedIn.tsx";
 import {UserSheetContentRegister} from "@/components/user/UserSheet/UserSheetContentRegister.tsx";
-import {UserProvider, useUser} from "@/components/user/UserContext.tsx";
+import {useUser} from "@/components/user/UserContext.tsx";
 
 
 export function UserSheet() {
     let [state, setState] = useState<"login" | "register">("login");
     let {user} = useUser();
     return(
-        <UserProvider>
+        // <UserProvider>
             <Sheet>
                 <SheetTrigger asChild>
                     <Button size="icon" variant="default">
@@ -32,7 +32,7 @@ export function UserSheet() {
                 }
                 </SheetContent>
             </Sheet>
-        </UserProvider>
+        // </UserProvider>
     )
 }
 

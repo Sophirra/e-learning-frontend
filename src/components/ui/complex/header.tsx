@@ -1,11 +1,11 @@
 import {Button} from "../button.tsx";
 import {ArrowBigLeft, Bell, House, Search} from "lucide-react"
-import type {User} from "@/types/user.ts";
 import {Divider} from "@/components/ui/divider.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {UserSheet} from "@/components/user/UserSheet/UserSheet.tsx";
+import {UserProvider} from "@/components/user/UserContext.tsx";
 
-export function Header({user}: { user: User | null }) {
+export function Header() {
     return (
         <header className="fixed top-0 left-0 w-full">
             <div className="z-50 px-26 py-6 flex justify-between items-left">
@@ -14,7 +14,9 @@ export function Header({user}: { user: User | null }) {
                     <Button size="icon" variant="outline">
                         <Bell/>
                     </Button>
-                    <UserSheet user={user} onLogout={() => console.log("Logged out")}/>
+                    <UserProvider>
+                        <UserSheet/>
+                    </UserProvider>
                 </div>
 
             </div>
