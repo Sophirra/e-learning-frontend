@@ -5,11 +5,12 @@ import {Input} from "@/components/ui/input.tsx";
 import {UserSheet} from "@/components/user/UserSheet/UserSheet.tsx";
 import {UserProvider} from "@/components/user/UserContext.tsx";
 
+
 export function Header() {
     return (
         <header className="fixed top-0 left-0 w-full">
-            <div className="z-50 px-26 py-6 flex justify-between items-left">
-                <Button variant="secondary">Logo</Button>
+            <div className="z-50 px-26 py-6 flex justify-between items-left bg-white">
+            <Button variant="secondary">Logo</Button>
                 <div className="flex justify-start items-start gap-4">
                     <Button size="icon" variant="outline">
                         <Bell/>
@@ -18,15 +19,14 @@ export function Header() {
                         <UserSheet/>
                     </UserProvider>
                 </div>
-
             </div>
             <Divider/>
             <div className="flex items-center justify-between py-6 px-26 bg-slate-200">
                 <div className="flex gap-4">
-                    <Button variant="ghost" size="icon">
-                        <House/>
+                    <Button variant="ghost" size="icon" asChild>
+                        <a href="/"><House/></a>
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
                         <ArrowBigLeft/>
                     </Button>
                 </div>

@@ -1,9 +1,32 @@
+/**
+ * These imports provide the necessary dependencies for the Button component:
+ * - React for component creation
+ * - Slot from Radix UI for polymorphic components
+ * - cva for creating variant styles
+ * - cn utility for class name merging
+ */
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Button variant styles using class-variance-authority
+ * Supports multiple variants:
+ * - default: Primary button style
+ * - destructive: For dangerous actions
+ * - outline: Bordered button
+ * - secondary: Alternative button style
+ * - ghost: Transparent background
+ * - link: Text-only button
+ *
+ * Sizes available:
+ * - default: Standard size
+ * - sm: Small button
+ * - lg: Large button
+ * - icon: Square button for icons
+ */
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-neutral-950 focus-visible:ring-neutral-950/50 focus-visible:ring-[3px] aria-invalid:ring-red-500/20 dark:aria-invalid:ring-red-500/40 aria-invalid:border-red-500 dark:focus-visible:border-neutral-300 dark:focus-visible:ring-neutral-300/50 dark:aria-invalid:ring-red-900/20 dark:dark:aria-invalid:ring-red-900/40 dark:aria-invalid:border-red-900",
   {
@@ -35,6 +58,14 @@ const buttonVariants = cva(
   }
 )
 
+/**
+ * Button component that supports multiple variants and sizes
+ * @param className - Additional CSS classes to apply
+ * @param variant - Button style variant
+ * @param size - Button size variant
+ * @param asChild - When true, button will render as its child element
+ * @param props - Additional button props
+ */
 function Button({
   className,
   variant,
@@ -56,4 +87,9 @@ function Button({
   )
 }
 
+/**
+ * Export the Button component and its variants
+ * Button: Main component for user interactions
+ * buttonVariants: Style variations function for custom implementations
+ */
 export { Button, buttonVariants }

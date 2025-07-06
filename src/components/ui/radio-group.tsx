@@ -1,9 +1,37 @@
+/**
+ * Radio Group Component
+ *
+ * A group of radio buttons where only one option can be selected at a time.
+ * Built on top of Radix UI's RadioGroup primitive.
+ *
+ * Features:
+ * - Keyboard navigation
+ * - ARIA-compliant
+ * - Customizable styling
+ * - Dark mode support
+ *
+ * @example
+ * ```tsx
+ * <RadioGroup defaultValue="option1">
+ *   <RadioGroupItem value="option1" />
+ *   <RadioGroupItem value="option2" />
+ * </RadioGroup>
+ * ```
+ */
+
 import * as React from "react"
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
 import { CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * The root RadioGroup component that contains radio items.
+ * Manages the selection state of its child RadioGroupItems.
+ *
+ * @param props - Component props including className and all RadioGroup root props
+ * @param props.className - Additional CSS classes to apply
+ */
 function RadioGroup({
   className,
   ...props
@@ -17,6 +45,13 @@ function RadioGroup({
   )
 }
 
+/**
+ * Individual radio button item within a RadioGroup.
+ * Represents a selectable option with a circular indicator.
+ *
+ * @param props - Component props including className and all RadioGroup item props
+ * @param props.className - Additional CSS classes to apply
+ */
 function RadioGroupItem({
   className,
   ...props

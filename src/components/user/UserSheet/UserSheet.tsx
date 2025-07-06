@@ -15,23 +15,24 @@ export function UserSheet() {
     let {user} = useUser();
     return(
         // <UserProvider>
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button size="icon" variant="default">
-                        <UserIcon/>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="gap-0">
-                    <SheetHeader>
-                        <SheetTitle> {user !== null ? "Logged in as" + user.name :
-                            state === "login" ? "Log in" : "Register"}</SheetTitle>
-                    </SheetHeader>{
-                    user !== null ? <UserSheetContentLoggedIn/>
-                    : state === "register" ? <UserSheetContentRegister onCancel={() => setState("login")} onRegister={() => setState("login")}/>
-                    : <UserSheetContentLogIn onRegister={() => setState("register")}/>
-                }
-                </SheetContent>
-            </Sheet>
+        <Sheet onOpenChange={(open) => !open && setState("login")}>
+            <SheetTrigger asChild>
+                <Button size="icon" variant="default">
+                    <UserIcon/>
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="gap-0 overflow-y-auto">
+                <SheetHeader>
+                    <SheetTitle> {user !== null ? "Logged in as" + user.name :
+                        state === "login" ? "Log in" : "Register"}</SheetTitle>
+                </SheetHeader>{
+                user !== null ? <UserSheetContentLoggedIn/>
+                    : state === "register" ?
+                        <UserSheetContentRegister onCancel={() => setState("login")} onRegister={() => setState("login")}/>
+                        : <UserSheetContentLogIn onRegister={() => setState("register")}/>
+            }
+            </SheetContent>
+        </Sheet>
         // </UserProvider>
     )
 }

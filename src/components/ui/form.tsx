@@ -1,3 +1,9 @@
+/**
+ * Form components built on top of React Hook Form.
+ *
+ * @see https://react-hook-form.com/
+ */
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
@@ -14,6 +20,9 @@ import {
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
+/**
+ * The root form component. A wrapper around React Hook Form's FormProvider.
+ */
 const Form = FormProvider
 
 type FormFieldContextValue<
@@ -27,6 +36,10 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
 
+/**
+ * A component to handle form field state and validation.
+ * Provides context for form field components.
+ */
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -71,6 +84,10 @@ const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
 )
 
+/**
+ * Container for form field components.
+ * Provides context and styling for form items.
+ */
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   const id = React.useId()
 
@@ -85,6 +102,10 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * Form field label component.
+ * Displays validation state with error styling.
+ */
 function FormLabel({
   className,
   ...props
@@ -102,6 +123,10 @@ function FormLabel({
   )
 }
 
+/**
+ * Control component that handles form input state and accessibility.
+ * Provides ARIA attributes for form validation.
+ */
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
@@ -120,6 +145,10 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   )
 }
 
+/**
+ * Component for form field description/help text.
+ * Provides additional context or instructions for form fields.
+ */
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   const { formDescriptionId } = useFormField()
 
@@ -133,6 +162,10 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   )
 }
 
+/**
+ * Component for displaying form validation messages.
+ * Shows error state messages with appropriate styling.
+ */
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField()
   const body = error ? String(error?.message ?? "") : props.children

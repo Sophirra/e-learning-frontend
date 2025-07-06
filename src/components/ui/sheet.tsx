@@ -4,28 +4,48 @@ import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A sheet component that displays content in a panel that slides out from the edge of the screen.
+ * Used for displaying additional information or controls without leaving the current page.
+ */
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
 }
 
+/**
+ * The trigger button that opens the sheet when clicked.
+ * This component should be used as a child of the Sheet component.
+ */
 function SheetTrigger({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
   return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
 }
 
+/**
+ * A button that closes the sheet when clicked.
+ * This can be placed anywhere within the sheet content.
+ */
 function SheetClose({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Close>) {
   return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
 }
 
+/**
+ * The portal component that renders the sheet content in a portal outside the DOM hierarchy.
+ * This ensures proper stacking context for overlays.
+ */
 function SheetPortal({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Portal>) {
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
 }
 
+/**
+ * The overlay that covers the main content when the sheet is open.
+ * Provides a semi-transparent background and handles click-outside behavior.
+ */
 function SheetOverlay({
   className,
   ...props
@@ -42,6 +62,11 @@ function SheetOverlay({
   )
 }
 
+/**
+ * The main content container of the sheet.
+ * Can be configured to slide in from any edge of the screen.
+ * @param side - The edge of the screen from which the sheet appears. Can be "top", "right", "bottom", or "left".
+ */
 function SheetContent({
   className,
   children,
@@ -79,6 +104,10 @@ function SheetContent({
   )
 }
 
+/**
+ * The header section of the sheet.
+ * Usually contains the title and description.
+ */
 function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -89,6 +118,10 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * The footer section of the sheet.
+ * Typically contains action buttons or additional controls.
+ */
 function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -99,6 +132,10 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * The title component for the sheet.
+ * Should be used within SheetHeader for consistent styling.
+ */
 function SheetTitle({
   className,
   ...props
@@ -112,6 +149,10 @@ function SheetTitle({
   )
 }
 
+/**
+ * The description component for the sheet.
+ * Provides additional context about the sheet's content.
+ */
 function SheetDescription({
   className,
   ...props
