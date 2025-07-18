@@ -7,7 +7,7 @@
  * @module UserContext
  */
 
-import type {User} from "@/types/user.ts";
+import type {User} from "@/features/user/user.ts";
 import {createContext, useContext, useState} from "react";
 
 /**

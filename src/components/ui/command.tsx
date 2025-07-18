@@ -1,0 +1,238 @@
+/**
+ * Command component - A command palette interface using cmdk.
+ *
+ * Features:
+ * - Command line interface for keyboard-centric interactions
+ * - Fuzzy search and filtering
+ * - Keyboard navigation
+ * - Custom styling and theming support
+ *
+ * Usage:
+ * ```tsx
+ * <Command>
+ *   <CommandInput placeholder="Type a command..." />
+ *   <CommandList>
+ *     <CommandGroup heading="Suggestions">
+ *       <CommandItem>Item 1</CommandItem>
+ *       <CommandItem>Item 2</CommandItem>
+ *     </CommandGroup>
+ *   </CommandList>
+ * </Command>
+ * ```
+ */
+
+import * as React from "react"
+import { Command as CommandPrimitive } from "cmdk"
+import { SearchIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
+/**
+ * Root command menu component that contains the command line interface.
+ * Wraps all command-related components and provides the main context.
+ */
+function Command({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive>) {
+  return (
+    <CommandPrimitive
+      data-slot="command"
+      className={cn(
+        "bg-white text-neutral-950 flex h-full w-full flex-col overflow-hidden rounded-md dark:bg-neutral-950 dark:text-neutral-50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+/**
+ * Dialog wrapper for the command palette.
+ * Provides a modal interface for the command menu with a title and description.
+ */
+function CommandDialog({
+  title = "Command Palette",
+  description = "Search for a command to run...",
+  children,
+  className,
+  showCloseButton = true,
+  ...props
+}: React.ComponentProps<typeof Dialog> & {
+  title?: string
+  description?: string
+  className?: string
+  showCloseButton?: boolean
+}) {
+  return (
+    <Dialog {...props}>
+      <DialogHeader className="sr-only">
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
+      </DialogHeader>
+      <DialogContent
+        className={cn("overflow-hidden p-0", className)}
+        showCloseButton={showCloseButton}
+      >
+        <Command className="[&_[cmdk-group-heading]]:text-neutral-500 **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5 dark:[&_[cmdk-group-heading]]:text-neutral-400">
+          {children}
+        </Command>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/**
+ * Search input field for the command palette.
+ * Allows users to filter and search through available commands.
+ */
+function CommandInput({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  return (
+    <div
+      data-slot="command-input-wrapper"
+      className="flex h-9 items-center gap-2 border-b px-3"
+    >
+      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <CommandPrimitive.Input
+        data-slot="command-input"
+        className={cn(
+          "placeholder:text-neutral-500 flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-neutral-400",
+          className
+        )}
+        {...props}
+      />
+    </div>
+  )
+}
+
+/**
+ * Container for command items.
+ * Displays a scrollable list of command options.
+ */
+function CommandList({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.List>) {
+  return (
+    <CommandPrimitive.List
+      data-slot="command-list"
+      className={cn(
+        "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+/**
+ * Empty state component.
+ * Displayed when no commands match the current search query.
+ */
+function CommandEmpty({
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Empty>) {
+  return (
+    <CommandPrimitive.Empty
+      data-slot="command-empty"
+      className="py-6 text-center text-sm"
+      {...props}
+    />
+  )
+}
+
+/**
+ * Groups related command items together.
+ * Can include a heading to organize commands into categories.
+ */
+function CommandGroup({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Group>) {
+  return (
+    <CommandPrimitive.Group
+      data-slot="command-group"
+      className={cn(
+        "text-neutral-950 [&_[cmdk-group-heading]]:text-neutral-500 overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium dark:text-neutral-50 dark:[&_[cmdk-group-heading]]:text-neutral-400",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CommandSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Separator>) {
+  return (
+    <CommandPrimitive.Separator
+      data-slot="command-separator"
+      className={cn("bg-neutral-200 -mx-1 h-px dark:bg-neutral-800", className)}
+      {...props}
+    />
+  )
+}
+
+/**
+ * Individual command option.
+ * Represents a selectable item in the command list.
+ * Supports keyboard navigation and selection.
+ */
+function CommandItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Item>) {
+  return (
+    <CommandPrimitive.Item
+      data-slot="command-item"
+      className={cn(
+        "data-[selected=true]:bg-neutral-100 data-[selected=true]:text-neutral-900 [&_svg:not([class*='text-'])]:text-neutral-500 relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 dark:data-[selected=true]:bg-neutral-800 dark:data-[selected=true]:text-neutral-50 dark:[&_svg:not([class*='text-'])]:text-neutral-400",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+/**
+ * Displays keyboard shortcuts.
+ * Used to show available keyboard combinations for commands.
+ */
+function CommandShortcut({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="command-shortcut"
+      className={cn(
+        "text-neutral-500 ml-auto text-xs tracking-widest dark:text-neutral-400",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+  CommandSeparator,
+}

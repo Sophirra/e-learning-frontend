@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button.tsx";
-import type {UserSheetProps} from "@/components/user/UserSheet/UserSheet.tsx";
+import type {UserSheetProps} from "@/features/user/UserSheet/UserSheet.tsx";
 
 export function UserSheetContentLoggedIn({user, onLogout}: UserSheetProps){
     if (!user) return null;

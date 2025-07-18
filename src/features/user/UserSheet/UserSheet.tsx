@@ -1,13 +1,13 @@
 "use client"
 
 import {Button} from "@/components/ui/button.tsx";
-import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "../../ui/sheet.tsx";
+import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "../../../components/ui/sheet.tsx";
 import { UserIcon} from "lucide-react";
 import { useState} from "react";
-import {UserSheetContentLogIn} from "@/components/user/UserSheet/UserSheetContentLogIn.tsx";
-import {UserSheetContentLoggedIn} from "@/components/user/UserSheet/UserSheetContentLoggedIn.tsx";
-import {UserSheetContentRegister} from "@/components/user/UserSheet/UserSheetContentRegister.tsx";
-import {useUser} from "@/components/user/UserContext.tsx";
+import {UserSheetContentLogIn} from "@/features/user/UserSheet/UserSheetContentLogIn.tsx";
+import {UserSheetContentLoggedIn} from "@/features/user/UserSheet/UserSheetContentLoggedIn.tsx";
+import {UserSheetContentRegister} from "@/features/user/UserSheet/UserSheetContentRegister.tsx";
+import {useUser} from "@/features/user/UserContext.tsx";
 
 
 export function UserSheet() {
