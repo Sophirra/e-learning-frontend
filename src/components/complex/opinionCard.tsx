@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 interface OpinionCardProps {
   authorName?: string;
@@ -20,9 +20,9 @@ export default function OpinionCard({
     const stars = [];
     for (let i = 1; i <= maxRating; i++) {
       stars.push(
-        <Star
+        <icons.Star
           key={i}
-          className={`h-4 w-4 ${i <= rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`}
+          className={`${i <= rating ? "fill-yellow-200 text-yellow-300" : "fill-gray-200 text-gray-200"}`}
         />,
       );
     }

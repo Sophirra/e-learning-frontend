@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 export function CourseDetailCard({
   description,
@@ -31,7 +31,7 @@ export function CourseDetailCard({
             variant="ghost"
             onClick={() => window.history.back()}
           >
-            <X className="h-4 w-4" />
+            <icons.X className="h-4 w-4" />
           </Button>
         </div>
         <CardDescription>{description}</CardDescription>

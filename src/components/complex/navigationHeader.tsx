@@ -1,20 +1,9 @@
 import { Button } from "../ui/button.tsx";
-import {
-  Bell,
-  Home,
-  Users,
-  Calendar,
-  ClipboardList,
-  FolderOpen,
-  MessageSquare,
-  Brain,
-  Eye,
-} from "lucide-react";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { Divider } from "@/components/ui/divider.tsx";
 import { UserSheet } from "@/features/user/UserSheet/UserSheet.tsx";
 import { Link, useLocation } from "react-router-dom";
 import { useUser } from "@/features/user/UserContext.tsx";
-import { Label } from "@/components/ui/label.tsx";
 
 export function NavigationHeader() {
   let { user } = useUser();
@@ -24,7 +13,7 @@ export function NavigationHeader() {
         <Button variant="secondary">Logo</Button>
         <div className="flex justify-start items-start gap-4">
           <Button size="icon" variant="outline">
-            {user && <Bell />}
+            {user && <icons.Bell />}
           </Button>
           <UserSheet />
         </div>
@@ -36,14 +25,18 @@ export function NavigationHeader() {
       <div className="flex items-center justify-center py-6 px-26 bg-slate-200">
         <nav className="flex gap-6">
           {[
-            { to: "/", icon: Home, label: "Home" },
-            { to: "/students", icon: Users, label: "Students" },
-            { to: "/calendar", icon: Calendar, label: "Calendar" },
-            { to: "/assignments", icon: ClipboardList, label: "Assignments" },
-            { to: "/files", icon: FolderOpen, label: "Files" },
-            { to: "/chats", icon: MessageSquare, label: "Chats" },
-            { to: "/quizzes", icon: Brain, label: "Quizzes" },
-            { to: "/spectating", icon: Eye, label: "Spectating" },
+            { to: "/", icon: icons.Home, label: "Home" },
+            { to: "/students", icon: icons.Users, label: "Students" },
+            { to: "/calendar", icon: icons.Calendar, label: "Calendar" },
+            {
+              to: "/assignments",
+              icon: icons.ClipboardList,
+              label: "Assignments",
+            },
+            { to: "/files", icon: icons.FolderOpen, label: "Files" },
+            { to: "/chats", icon: icons.MessageSquare, label: "Chats" },
+            { to: "/quizzes", icon: icons.Brain, label: "Quizzes" },
+            { to: "/spectating", icon: icons.Eye, label: "Spectating" },
           ].map(({ to, icon: Icon, label }) => {
             const isActive = useLocation().pathname === to;
             return (
@@ -57,7 +50,7 @@ export function NavigationHeader() {
                 }`}
               >
                 <Icon
-                  className={`h-5 w-5 ${isActive ? "text-primary" : "text-gray-500"}`}
+                  className={`${isActive ? "text-primary" : "text-gray-500"}`}
                 />
                 <span>{label}</span>
               </Link>

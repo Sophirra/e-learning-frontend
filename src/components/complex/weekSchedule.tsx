@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { DaySchedule } from "./daySchedule";
 
 interface TimeSlot {
@@ -138,7 +138,7 @@ export default function WeekScheduleDialog({
               onClick={() => setCurrentWeekOffset(currentWeekOffset - 1)}
               disabled={!canGoBack}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <icons.ChevronLeft className="h-4 w-4" />
             </Button>
 
             <div className="text-lg font-semibold">
@@ -151,7 +151,7 @@ export default function WeekScheduleDialog({
               onClick={() => setCurrentWeekOffset(currentWeekOffset + 1)}
               disabled={!canGoForward}
             >
-              <ChevronRight className="h-4 w-4" />
+              <icons.ChevronRight className="h-4 w-4" />
             </Button>
           </div>
 

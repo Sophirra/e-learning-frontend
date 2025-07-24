@@ -12,7 +12,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command.tsx";
-import { Check, RotateCcw as Reset } from "lucide-react";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
 import { useState } from "react";
 
@@ -85,7 +85,7 @@ export function FilterDropdown({
                 onSelectionChange?.([]);
               }}
             >
-              <Reset className="h-4 w-4" />
+              <icons.Reset className="h-4 w-4" />
             </Button>
           )}
         </div>
@@ -114,7 +114,7 @@ export function FilterDropdown({
             <CommandGroup>
               {items.map((item) => (
                 <CommandItem key={item} onSelect={(item) => handleSelect(item)}>
-                  <Check
+                  <icons.Check
                     className={cn(
                       "mr-2 h-4 w-4",
                       selectedValues.includes(item)

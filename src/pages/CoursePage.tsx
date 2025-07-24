@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button.tsx";
-import { ArrowRight, RotateCcw as Reset } from "lucide-react";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
@@ -60,11 +60,12 @@ export function CoursePage() {
     6: [], // Sunday - no availability
   };
   let handleClassSetup = () => {
-    if (!user) {
-      toast.error("You must be logged in to setup a class.");
-    } else {
-      toast.success("Class setup successful.");
-    }
+    // if (!user) {
+    //   toast.error("You must be logged in to setup a class.");
+    // } else {
+    setClassSetup(true);
+    // toast.success("Class setup successful.");
+    // }
   };
   return (
     <div className="bg-white h-screen">
@@ -72,7 +73,7 @@ export function CoursePage() {
       <Content>
         <div className="flex flex-row gap-8">
           {/*overflow-y-auto">*/}
-          <div className="w-1/3 sticky top-44">
+          <div className="w-1/4 sticky top-0 align-self-flex-start h-fit">
             <TeacherDetailsCard
               id={"1"}
               name={"John Doee"}
@@ -87,7 +88,7 @@ export function CoursePage() {
             />
           </div>
 
-          <div className="w-2/3 space-y-8">
+          <div className="w-3/4 space-y-8">
             <CourseDetailCard
               id={"1"}
               name={sampleCourse.name}

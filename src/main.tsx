@@ -16,6 +16,7 @@ import { SolveQuizPage } from "@/pages/SolveQuizPage.tsx";
 import { QuizPage } from "@/pages/QuizPage.tsx";
 import { UserProvider } from "@/features/user/UserContext.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
+import { StudentsPage } from "@/pages/StudentsPage.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -28,7 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/quizzes" element={<QuizPage />} />
           <Route path="/quizzes/edit" element={<CreateQuizPage />} />
           <Route path="/quiz/:quizId" element={<SolveQuizPage />} />
-          {/*<Route path="/students" element={<StudentsPage/>}/>*/}
+          <Route path="/students" element={<StudentsPage />} />
           {/*<Route path="/calendar" element={<CalendarPage/>}/>*/}
           {/*<Route path="/assignments" element={<AssignmentsPage/>}/>*/}
           <Route path="/files" element={<FilesPage />} />
