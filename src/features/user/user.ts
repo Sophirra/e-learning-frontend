@@ -1,6 +1,6 @@
-export interface User{
-    id: string;
-    name: string;
-    email: string;
-    role: "student" | "teacher"// | "guest" równoważny z null
+export interface User {
+  name: string;
+  surname: string;
+  student: boolean;
+  teacher: boolean;
 }

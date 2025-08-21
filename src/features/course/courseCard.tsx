@@ -5,10 +5,14 @@ interface CourseCardProps {
   title: string;
   imageUrl: string;
   rating: number;
-  level: string;
+  levels: string[];
   language: string;
   price: string;
   description: string;
+  teacher: {
+    name: string;
+    surname: string;
+  };
   onClick?: () => void;
 }
 
@@ -16,10 +20,11 @@ export function CourseCard({
   title,
   imageUrl,
   rating,
-  level,
+  levels,
   language,
   price,
   description,
+  teacher,
   onClick,
 }: CourseCardProps) {
   return (
@@ -53,13 +58,15 @@ export function CourseCard({
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{level}</span>
+          {/*a collection of levels*/}
+          <span>{levels.map((value) => value + " ")}</span>
           <span>•</span>
           <span>{language}</span>
           <span>•</span>
           <span>${price}</span>
         </div>
         <p className="mt-2 text-sm text-muted-foreground text-left">
+          {teacher.name + " " + teacher.surname + "\n"}
           {description}
         </p>
       </CardContent>

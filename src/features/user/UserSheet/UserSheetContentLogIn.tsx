@@ -12,25 +12,35 @@ import {
 } from "@/components/ui/form.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUser } from "@/api/auth.ts";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group.tsx";
+import { Label } from "@/components/ui/label.tsx";
+import { useUser } from "@/features/user/UserContext.tsx";
+import type { User } from "@/features/user/user.ts";
 
 let loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email" }),
-  password: z.string(),
+  Email: z.string().email({ message: "Invalid email" }),
+  Password: z.string(),
 });
 
 export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
+  let { setUser } = useUser();
   let form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      Email: "",
+      Password: "",
     },
   });
   async function onSubmit(userData: z.infer<typeof loginSchema>) {
     try {
-      let { accessToken, refreshToken } = await loginUser(userData);
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      let res = await loginUser(userData);
+      let user: User = {
+        name: res.name,
+        surname: res.surname,
+        teacher: !!res.roles.find((role) => role === "teacher"),
+        student: !!res.roles.find((role) => role === "student"),
+      };
+      setUser(user);
       window.location.reload();
     } catch (e: any) {
       form.setError("root", { message: e.message });
@@ -45,8 +55,29 @@ export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
           className={"flex flex-col gap-4"}
         >
           <FormField
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Log in as:</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    className={"flex flex-row"}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={"student"}
+                  >
+                    <RadioGroupItem value={"student"} id={"student"} />
+                    <Label htmlFor={"student"}>Student</Label>
+                    <RadioGroupItem value={"teacher"} id={"teacher"} />
+                    <Label htmlFor={"teacher"}>Teacher</Label>
+                  </RadioGroup>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
             control={form.control}
-            name="email"
+            name="Email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>E-mail</FormLabel>
@@ -59,7 +90,7 @@ export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
           />
           <FormField
             control={form.control}
-            name="password"
+            name="Password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
@@ -74,7 +105,11 @@ export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
             <Button variant="outline" type="button" onClick={onLogin}>
               Register
             </Button>
-            <Button variant="default" type="submit">
+            <Button
+              variant="default"
+              type="submit"
+              onSubmit={() => onSubmit(form.getValues())}
+            >
               Log in
             </Button>
           </div>

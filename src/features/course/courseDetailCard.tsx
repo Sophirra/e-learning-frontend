@@ -3,18 +3,12 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
-export function CourseDetailCard({
-  description,
-  id,
-  name,
-  thumbnailUrl,
-}: Course) {
+export function CourseDetailCard({ description, name, thumbnailUrl }: Course) {
   return (
     <Card className="mb-8 bg-slate-100 rounded-lg p-4 flex flex-row gap-4 w-full">
       <img

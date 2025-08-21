@@ -7,11 +7,10 @@ import { useUser } from "@/features/user/UserContext.tsx";
 import {
   Menubar,
   MenubarContent,
-  MenubarItem,
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar.tsx";
-import { SpectatorDialog } from "@/components/complex/spectatorDialog.tsx";
+// import { SpectatorDialog } from "@/components/complex/spectatorDialog.tsx";
 
 export function Header() {
   let { user } = useUser();
