@@ -11,7 +11,7 @@ import {
   Form,
 } from "@/components/ui/form.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginUser } from "@/api/auth.ts";
+import { loginUser, aboutMe } from "@/api/auth.ts";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
@@ -33,15 +33,16 @@ export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
   });
   async function onSubmit(userData: z.infer<typeof loginSchema>) {
     try {
-      let res = await loginUser(userData);
+      let resLogin = await loginUser(userData);
+      let resUser = await aboutMe();
       let user: User = {
-        name: res.name,
-        surname: res.surname,
-        teacher: !!res.roles.find((role) => role === "teacher"),
-        student: !!res.roles.find((role) => role === "student"),
+        name: resUser.name,
+        surname: resUser.surname,
+        teacher: resLogin.roles.includes("teacher"),
+        student: resLogin.roles.includes("student"),
       };
+      console.log(user);
       setUser(user);
-      window.location.reload();
     } catch (e: any) {
       form.setError("root", { message: e.message });
     }
@@ -108,7 +109,7 @@ export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
             <Button
               variant="default"
               type="submit"
-              onSubmit={() => onSubmit(form.getValues())}
+              //onSubmit={() => onSubmit(form.getValues())}
             >
               Log in
             </Button>

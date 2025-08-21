@@ -15,7 +15,13 @@ export interface LoginUserDto {
 
 export interface AuthResponse {
   accessToken: string;
+  roles: string[];
+}
+
+export interface aboutUser {
   name: string;
   surname: string;
-  roles: string[];
+  email: string;
+  telephone: string;
+  description: string;
 }

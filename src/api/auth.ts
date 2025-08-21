@@ -2,7 +2,7 @@ import api, { setAccessToken } from "./api";
 import type { RegisterUserDto, LoginUserDto, AuthResponse } from "./types";
 
 export let registerUser = async (userData: RegisterUserDto): Promise<void> => {
-  await api.post<AuthResponse>("/api/security/register", userData);
+  await api.post<void>("/api/security/register", userData);
 };
 
 //get access token - no user data is passed here
@@ -24,5 +24,11 @@ export let logoutUser = async (): Promise<void> => {
 export let refreshToken = async (): Promise<AuthResponse> => {
   let res = await api.post<AuthResponse>("/api/security/refresh");
   setAccessToken(res.data.accessToken);
+  return res.data;
+};
+
+//get info about user
+export let aboutMe = async (): Promise<aboutUser> => {
+  let res = await api.get<aboutUser>("/Users/aboutMe");
   return res.data;
 };
