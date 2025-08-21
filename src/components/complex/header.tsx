@@ -4,6 +4,14 @@ import { Divider } from "@/components/ui/divider.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { UserSheet } from "@/features/user/UserSheet/UserSheet.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@/components/ui/menubar.tsx";
+import { SpectatorDialog } from "@/components/complex/spectatorDialog.tsx";
 
 export function Header() {
   let { user } = useUser();
@@ -17,7 +25,18 @@ export function Header() {
               <icons.Bell />
             </Button>
           )}
-          <UserSheet />
+          <Menubar className="border-0 p-0 bg-transparent">
+            <MenubarMenu>
+              <MenubarTrigger className="p-0">
+                <Button size="icon" variant="default">
+                  <icons.UserIcon />
+                </Button>
+              </MenubarTrigger>
+              <MenubarContent>
+                <UserSheet />
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
         </div>
       </div>
       <Divider />

@@ -32,7 +32,7 @@ interface FilterDropdownProps {
   /** Array of items to be displayed in the dropdown */
   items: string[];
   /** Optional callback when selection changes */
-  onSelectionChange: (selected: string[]) => void;
+  onSelectionChange?: (selected: string[]) => void;
   multiselect?: boolean;
   searchable?: boolean;
   reset?: boolean;

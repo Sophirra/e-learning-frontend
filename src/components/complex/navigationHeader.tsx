@@ -4,6 +4,14 @@ import { Divider } from "@/components/ui/divider.tsx";
 import { UserSheet } from "@/features/user/UserSheet/UserSheet.tsx";
 import { Link, useLocation } from "react-router-dom";
 import { useUser } from "@/features/user/UserContext.tsx";
+import {
+  Menubar,
+  MenubarItem,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarMenu,
+} from "@/components/ui/menubar.tsx";
+import { SpectatorDialog } from "@/components/complex/spectatorDialog.tsx";
 
 export function NavigationHeader() {
   let { user } = useUser();
@@ -12,10 +20,25 @@ export function NavigationHeader() {
       <div className="px-26 py-6 flex justify-between items-left bg-white">
         <Button variant="secondary">Logo</Button>
         <div className="flex justify-start items-start gap-4">
-          <Button size="icon" variant="outline">
-            {user && <icons.Bell />}
-          </Button>
-          <UserSheet />
+          {user && (
+            <Button size="icon" variant="outline">
+              <icons.Bell />
+            </Button>
+          )}
+          <Menubar className="border-0 p-0 bg-transparent">
+            <MenubarMenu>
+              <MenubarTrigger className="p-0">
+                <Button size="icon" variant="default">
+                  <icons.UserIcon />
+                </Button>
+              </MenubarTrigger>
+              <MenubarContent>
+                <UserSheet />
+                <SpectatorDialog />
+                <MenubarItem>Logout</MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
         </div>
       </div>
       <Divider />
@@ -36,7 +59,6 @@ export function NavigationHeader() {
             { to: "/files", icon: icons.FolderOpen, label: "Files" },
             { to: "/chats", icon: icons.MessageSquare, label: "Chats" },
             { to: "/quizzes", icon: icons.Brain, label: "Quizzes" },
-            { to: "/spectating", icon: icons.Eye, label: "Spectating" },
           ].map(({ to, icon: Icon, label }) => {
             const isActive = useLocation().pathname === to;
             return (

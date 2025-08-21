@@ -1,6 +1,4 @@
 "use client";
-
-import { Button } from "@/components/ui/button.tsx";
 import {
   Sheet,
   SheetContent,
@@ -8,12 +6,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../../../components/ui/sheet.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useState } from "react";
 import { UserSheetContentLogIn } from "@/features/user/UserSheet/UserSheetContentLogIn.tsx";
 import { UserSheetContentLoggedIn } from "@/features/user/UserSheet/UserSheetContentLoggedIn.tsx";
 import { UserSheetContentRegister } from "@/features/user/UserSheet/UserSheetContentRegister.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
+import { MenubarItem } from "@/components/ui/menubar.tsx";
 
 export function UserSheet() {
   let [state, setState] = useState<"login" | "register">("login");
@@ -22,9 +20,7 @@ export function UserSheet() {
     // <UserProvider>
     <Sheet onOpenChange={(open) => !open && setState("login")}>
       <SheetTrigger asChild>
-        <Button size="icon" variant="default">
-          <icons.UserIcon />
-        </Button>
+        <MenubarItem onSelect={(e) => e.preventDefault()}>Login</MenubarItem>
       </SheetTrigger>
       <SheetContent side="right" className="gap-0 overflow-y-auto">
         <SheetHeader>

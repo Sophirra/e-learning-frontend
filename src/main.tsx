@@ -17,6 +17,9 @@ import { QuizPage } from "@/pages/QuizPage.tsx";
 import { UserProvider } from "@/features/user/UserContext.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
 import { StudentsPage } from "@/pages/StudentsPage.tsx";
+import { CalendarPage } from "@/pages/CalendarPage.tsx";
+import { ChatsPage } from "@/pages/ChatsPage.tsx";
+import { AssignmentPage } from "@/pages/AssignmentPage.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -30,11 +33,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/quizzes/edit" element={<CreateQuizPage />} />
           <Route path="/quiz/:quizId" element={<SolveQuizPage />} />
           <Route path="/students" element={<StudentsPage />} />
-          {/*<Route path="/calendar" element={<CalendarPage/>}/>*/}
-          {/*<Route path="/assignments" element={<AssignmentsPage/>}/>*/}
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/assignments" element={<AssignmentPage />} />
           <Route path="/files" element={<FilesPage />} />
-          {/*<Route path="/chats" element={<ChatsPage/>}/>*/}
-          {/*<Route path="/spectating" element={<SpectatingPage/>}/>*/}
+          <Route path="/chats" element={<ChatsPage />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>
