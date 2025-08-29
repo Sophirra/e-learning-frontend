@@ -1,5 +1,10 @@
 import api, { setAccessToken } from "./api";
-import type { RegisterUserDto, LoginUserDto, AuthResponse } from "./types";
+import type {
+  RegisterUserDto,
+  LoginUserDto,
+  AuthResponse,
+  aboutUser,
+} from "./types";
 
 export let registerUser = async (userData: RegisterUserDto): Promise<void> => {
   await api.post<void>("/api/security/register", userData);
@@ -29,6 +34,6 @@ export let refreshToken = async (): Promise<AuthResponse> => {
 
 //get info about user
 export let aboutMe = async (): Promise<aboutUser> => {
-  let res = await api.get<aboutUser>("/Users/aboutMe");
+  let res = await api.get<aboutUser>("/api/Users/aboutMe");
   return res.data;
 };

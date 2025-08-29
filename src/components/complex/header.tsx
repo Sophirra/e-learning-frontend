@@ -10,6 +10,7 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar.tsx";
+import { Link } from "react-router-dom";
 // import { SpectatorDialog } from "@/components/complex/spectatorDialog.tsx";
 
 export function Header() {
@@ -17,7 +18,11 @@ export function Header() {
   return (
     <header className="fixed top-0 left-0 w-full z-50 ">
       <div className="px-26 py-6 flex justify-between items-left bg-white">
-        <Button variant="secondary">{user?.surname}</Button>
+        <Link key={"into"} to={"/home"}>
+          <Button variant="secondary">
+            Welcome {user?.name} {user?.surname}
+          </Button>
+        </Link>
         <div className="flex justify-start items-start gap-4">
           {user && (
             <Button size="icon" variant="outline">

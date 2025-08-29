@@ -18,7 +18,11 @@ export function NavigationHeader() {
   return (
     <header className="fixed top-0 left-0 w-full z-50">
       <div className="px-26 py-6 flex justify-between items-left bg-white">
-        <Button variant="secondary">Logo</Button>
+        <Link key={"out"} to={"/"}>
+          <Button variant="secondary">
+            Welcome {user?.name} {user?.surname}
+          </Button>
+        </Link>
         <div className="flex justify-start items-start gap-4">
           {user && (
             <Button size="icon" variant="outline">
@@ -33,7 +37,13 @@ export function NavigationHeader() {
                 </Button>
               </MenubarTrigger>
               <MenubarContent>
-                <UserSheet />
+                {user ? (
+                  <MenubarItem>
+                    Logged in as {user.name} {user.surname}
+                  </MenubarItem>
+                ) : (
+                  <UserSheet />
+                )}
                 <SpectatorDialog />
                 <MenubarItem>Logout</MenubarItem>
               </MenubarContent>
@@ -42,13 +52,10 @@ export function NavigationHeader() {
         </div>
       </div>
       <Divider />
-      {/*{!user ? (*/}
-      {/*  <Label>You are not supposed to see this</Label>*/}
-      {/*) : (*/}
       <div className="flex items-center justify-center py-6 px-26 bg-slate-200">
         <nav className="flex gap-6">
           {[
-            { to: "/", icon: icons.Home, label: "Home" },
+            { to: "/home", icon: icons.Home, label: "Home" },
             { to: "/students", icon: icons.Users, label: "Students" },
             { to: "/calendar", icon: icons.Calendar, label: "Calendar" },
             {

@@ -36,6 +36,7 @@ api.interceptors.response.use(
         original.headers.Authorization = `Bearer ${accessToken}`;
         return api(original);
       } catch (e) {
+        setAccessToken(null);
         console.error(e);
       }
     }

@@ -5,7 +5,7 @@ import { TeacherDetailsCard } from "@/components/complex/teacherDetailsCard.tsx"
 import type { Course } from "@/features/course/course.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationHeader } from "@/components/complex/navigationHeader.tsx";
-import Summary from "@/components/complex/summary.tsx";
+import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentDetailsCard } from "@/components/complex/studentDetailsCard.tsx";
 /**

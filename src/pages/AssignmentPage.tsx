@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationHeader } from "@/components/complex/navigationHeader.tsx";
-import Summary from "@/components/complex/summary.tsx";
+import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 export function AssignmentPage() {

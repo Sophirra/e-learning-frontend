@@ -10,7 +10,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button.tsx";
 import { useNavigate } from "react-router-dom";
 
-interface CourseBrief {
+export interface CourseBrief {
   id: string;
   name: string;
 }
