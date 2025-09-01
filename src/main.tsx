@@ -37,7 +37,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Toaster richColors={true} position={"top-center"} />
         <Routes>
           <Route path="/" element={<MainPage />} />
-          <Route path="/course/:id" element={<CoursePage />} />
+          <Route path="/course/:courseId" element={<CoursePage />} />
           {/*protected by login*/}
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<HomePage />} />
