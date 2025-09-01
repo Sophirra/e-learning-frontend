@@ -111,8 +111,9 @@ function MainPage() {
                             name: course.teacherName,
                             surname: course.teacherSurname,
                           }}
-                          onClick={() => navigate(`/course/${course.id}`)}
+                          onClick={() => navigate(`/course/${course.id}`, { state: { teacherId: course.teacherId } })}
                       />
+
                   ))}
                 </div>
             )}
