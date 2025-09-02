@@ -129,7 +129,7 @@ export function CoursePage() {
                         <TeacherDetailsCard
                             id={teacherId}
                             name={`${teacher?.name ?? ""} ${teacher?.surname ?? ""}`}
-                            image="https://i.imgflip.com/2/8jeie7.jpg"
+                            image={teacher?.profilePicture?.url ?? "https://t4.ftcdn.net/jpg/02/15/84/43/360_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg"}
                             description={teacher?.description ?? ""}
                             courses={teacher?.coursesBrief ?? []}
                             availability={teacherAvailability?.slice(0, 7).map((day) => day.timeslots.length) ?? []}
@@ -143,7 +143,7 @@ export function CoursePage() {
                             description={course?.description}
                             teacherId={teacherId}
                             thumbnailUrl={
-                                "https://us.123rf.com/450wm/luismolinero/luismolinero1901/luismolinero190105681/115486252-indian-with-turban-working-with-his-laptop.jpg"
+                                "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png"
                             }
                             variants={[]} //optional
                         />
