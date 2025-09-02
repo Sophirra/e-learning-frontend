@@ -8,6 +8,7 @@ import { CourseCard } from "@/features/course/courseCard.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { CourseWidget } from "@/api/types.ts";
+import Fuse from "fuse.js";
 
 // === PRZEDZIAŁY CENOWE ===
 const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
@@ -35,6 +36,38 @@ function MainPage() {
   const [selectedLevel, setSelectedLevel] = useState<string[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<string[]>([]); // jedna etykieta
+
+
+  //Stan wyszukiwania
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredCourses, setFilteredCourses] = useState<CourseWidget[]>([]);
+
+  useEffect(() => {
+    if (!courses.length) {
+      setFilteredCourses([]);
+      return;
+    }
+
+    const fuse = new Fuse(courses, {
+      keys: [
+        "name",
+        "description",
+        "levelVariants",
+        "languageVariants",
+        "teacherName",
+        "teacherSurname",
+      ],
+      threshold: 0.3, // dopasowanie fuzzy
+    });
+
+    if (searchQuery.trim() === "") {
+      setFilteredCourses(courses);
+    } else {
+      const results = fuse.search(searchQuery);
+      setFilteredCourses(results.map(r => r.item));
+    }
+  }, [searchQuery, courses]);
+
 
   // Fetch courses (bez filtrów przy starcie)
   useEffect(() => {
@@ -140,7 +173,7 @@ function MainPage() {
 
   return (
       <div>
-        <Header />
+        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <Content>
           <div className="flex flex-col gap-8 p-8">
             <Label className="text-2xl font-bold">Promoted courses</Label>
@@ -189,7 +222,7 @@ function MainPage() {
                 <p>Loading courses...</p>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {courses.map((course) => (
+                  {filteredCourses.map((course) => (
                       <CourseCard
                           key={course.id}
                           title={course.name}
