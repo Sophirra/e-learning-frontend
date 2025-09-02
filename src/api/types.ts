@@ -33,6 +33,13 @@ export interface Teacher {
   surname: string;
   description: string;
   coursesBrief?: CoursesBrief[];
+  profilePicture: ProfilePicture;
+}
+
+export interface ProfilePicture {
+  fileName: string;
+  url: string;
+  uploadedAt: string;
 }
 
 export interface TeacherReview {
