@@ -28,10 +28,11 @@ export interface aboutUser {
 
 // Teacher Section
 export interface Teacher {
+  id: string;
   name: string;
   surname: string;
   description: string;
-  coursesBrief:[];
+  coursesBrief?: CoursesBrief[];
 }
 
 export interface TeacherReview {
@@ -47,6 +48,21 @@ export interface TeacherAvailability {
 }
 
 // Course Section
+export interface CourseWidget {
+  id: string;
+  name: string;
+  image: string;
+  rating: number;
+  description: string;
+  minimumCoursePrice: number;
+  maximumCoursePrice: number;
+  levelVariants: string[];
+  languageVariants: string[];
+  teacherId: string;
+  teacherName : string;
+  teacherSurname : string;
+}
+
 export interface Course {
   id: string;
   name: string;
