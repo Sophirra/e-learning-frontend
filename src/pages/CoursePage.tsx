@@ -1,17 +1,17 @@
-import {Button} from "@/components/ui/button.tsx";
-import {iconLibrary as icons} from "@/components/iconLibrary.tsx";
-import {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
-import {useLocation} from "react-router-dom";
-import {FilterDropdown} from "@/components/complex/filterDropdown.tsx";
-import {Header} from "@/components/complex/header.tsx";
-import {Content} from "@/components/ui/content.tsx";
-import {TeacherDetailsCard} from "@/components/complex/teacherDetailsCard.tsx";
-import type {Course, Teacher, TeacherAvailability, TeacherReview} from "@/api/types.ts";
-import {CourseDetailCard} from "@/features/course/courseDetailCard.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
+import { Header } from "@/components/complex/header.tsx";
+import { Content } from "@/components/ui/content.tsx";
+import { TeacherDetailsCard } from "@/components/complex/teacherDetailsCard.tsx";
+import type { Course, Teacher, TeacherAvailability, TeacherReview } from "@/api/types.ts";
+import { CourseDetailCard } from "@/features/course/courseDetailCard.tsx";
 import WeekScheduleDialog from "@/components/complex/weekSchedule.tsx";
-import {useUser} from "@/features/user/UserContext.tsx";
-import {toast} from "sonner";
+import { useUser } from "@/features/user/UserContext.tsx";
+import { toast } from "sonner";
 import OpinionCard from "@/components/complex/opinionCard";
 
 /**
@@ -23,11 +23,11 @@ import OpinionCard from "@/components/complex/opinionCard";
 
 export function CoursePage() {
     const location = useLocation();
-    const {teacherId} = location.state || {};
+    const { teacherId } = location.state || {};
 
-    let {user} = useUser();
+    let { user } = useUser();
     /** The course.tsx identifier extracted from the URL parameters */
-    const {courseId} = useParams();
+    const { courseId } = useParams();
     /** Current view state, toggles between class setup and course.tsx details views */
     const [classSetup, setClassSetup] = useState<true | false>(false);
     /** To be downloaded from backend*/
@@ -48,14 +48,13 @@ export function CoursePage() {
             .then((res) => res.json())
             .then((teacherdata: Teacher) => {
                 setTeacher(teacherdata);
-                console.log("Fetched Theacher:", teacherdata);
+                console.log("Fetched Teacher:", teacherdata);
             })
             .catch((err) => {
                 console.error("Error fetching Teacher:", err);
                 toast.error("Could not load Teacher data.");
             });
     }, [teacherId]);
-
 
     useEffect(() => {
         if (!teacherId) return;
@@ -95,7 +94,6 @@ export function CoursePage() {
         fetchAvailability();
     }, [teacherId]);
 
-
     useEffect(() => {
         if (!courseId) return;
 
@@ -112,30 +110,29 @@ export function CoursePage() {
     }, [courseId]);
 
     let handleClassSetup = () => {
-        // if (!user) {
-        //   toast.error("You must be logged in to setup a class.");
-        // } else {
         setClassSetup(true);
-        // toast.success("Class setup successful.");
-        // }
     };
+
+    const selectedVariant =
+        course?.variants.find(
+            (v) =>
+                v.languageName === selectedLanguage[0] &&
+                v.levelName === selectedLevel[0]
+        ) ?? null;
+
     return (
         <div className="bg-white h-screen">
-            <Header/>
+            <Header />
             <Content>
                 <div className="flex flex-row gap-8">
-                    {/*overflow-y-auto">*/}
                     <div className="w-1/4 sticky top-0 align-self-flex-start h-fit">
                         <TeacherDetailsCard
-                            id={"1"}
-                            name={teacher?.name + " " + teacher?.surname}
-                            image={
-                                "https://i.imgflip.com/2/8jeie7.jpg"
-                            }
-                            description={teacher?.description}
-                            coursesIds={teacher?.coursesBrief.map(c => c.name) ?? []}
-                            availability={teacherAvailability?.slice(0, 7).map(day => day.timeslots.length) ?? []
-                            }
+                            id={teacherId}
+                            name={`${teacher?.name ?? ""} ${teacher?.surname ?? ""}`}
+                            image="https://i.imgflip.com/2/8jeie7.jpg"
+                            description={teacher?.description ?? ""}
+                            courses={teacher?.coursesBrief ?? []}
+                            availability={teacherAvailability?.slice(0, 7).map((day) => day.timeslots.length) ?? []}
                         />
                     </div>
 
@@ -144,8 +141,10 @@ export function CoursePage() {
                             id={"1"}
                             name={course?.name}
                             description={course?.description}
-                            teacherId={teacherId} // do zmiany
-                            thumbnailUrl={"https://us.123rf.com/450wm/luismolinero/luismolinero1901/luismolinero190105681/115486252-indian-with-turban-working-with-his-laptop.jpg"}
+                            teacherId={teacherId}
+                            thumbnailUrl={
+                                "https://us.123rf.com/450wm/luismolinero/luismolinero1901/luismolinero190105681/115486252-indian-with-turban-working-with-his-laptop.jpg"
+                            }
                             variants={[]} //optional
                         />
                         <div className="flex flex-wrap items-end gap-4 mb-8">
@@ -154,8 +153,7 @@ export function CoursePage() {
                                     key="language"
                                     placeholder="Choose language"
                                     emptyMessage="No language found."
-                                    //do pobrania z dostarczonej kolekcji wariantów
-                                    items={course?.variants.map(c => c.languageName) ?? []}
+                                    items={[...new Set(course?.variants.map((c) => c.languageName) ?? [])]}
                                     multiselect={false}
                                     searchable={false}
                                     reset={false}
@@ -165,8 +163,7 @@ export function CoursePage() {
                                     key="level"
                                     placeholder="Choose level"
                                     emptyMessage="No level found."
-                                    //do pobrania z dostarczonej kolekcji wariantów
-                                    items={course?.variants.map(c => c.levelName) ?? []}
+                                    items={[...new Set(course?.variants.map((c) => c.levelName) ?? [])]}
                                     multiselect={false}
                                     searchable={false}
                                     reset={false}
@@ -178,32 +175,34 @@ export function CoursePage() {
                                     className="w-[180px] justify-between pointer-events-none hover:bg-inherit focus:bg-inherit"
                                     aria-disabled="true"
                                 >
-                                    {/*Tutaj należy pobrać cenę z wariantu*/}
-                                    {selectedLanguage.length == 0 || selectedLevel.length == 0
+                                    {selectedLanguage.length === 0 || selectedLevel.length === 0
                                         ? "Select language and level first."
-                                        : "Price from variant"}
+                                        : selectedVariant
+                                            ? `Price: ${selectedVariant.price} $`
+                                            : "No variant found for selection."}
                                 </Button>
                             </div>
                             <Button
                                 onClick={() => handleClassSetup()}
                                 disabled={
-                                    selectedLanguage.length == 0 || selectedLevel.length == 0
+                                    selectedLanguage.length === 0 ||
+                                    selectedLevel.length === 0 ||
+                                    !selectedVariant
                                 }
                             >
                                 Setup class
                             </Button>
                         </div>
                         <div className="grid grid-cols-2 gap-8 ">
-                            {
-                                teacherReviews?.map((review) => (
-                                    <OpinionCard
-                                        authorName={review.reviewerName + " " + review.reviewerSurname}
-                                        rating={review.starsNumber}
-                                        maxRating={5}
-                                        content={review.content}
-                                    />
-                                ))
-                            }
+                            {teacherReviews?.map((review) => (
+                                <OpinionCard
+                                    key={review.id}
+                                    authorName={review.reviewerName + " " + review.reviewerSurname}
+                                    rating={review.starsNumber}
+                                    maxRating={5}
+                                    content={review.content}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -211,14 +210,12 @@ export function CoursePage() {
             <WeekScheduleDialog
                 open={classSetup}
                 onOpenChange={() => setClassSetup(false)}
-                availability={teacherAvailability ?? []} // <- tutaj przekazujesz dane z API
+                availability={teacherAvailability ?? []}
                 onConfirm={(slot) => {
                     console.log("Wybrany slot:", slot);
-                    // Możesz wysłać slot do backendu lub ustawić w stanie
                 }}
                 classDetails={`${selectedLevel[0] ?? ""} ${course?.name ?? ""} class in ${selectedLanguage[0] ?? ""}`}
             />
-
         </div>
     );
 }
