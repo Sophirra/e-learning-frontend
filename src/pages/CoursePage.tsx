@@ -129,7 +129,7 @@ export function CoursePage() {
                         <TeacherDetailsCard
                             id={teacherId}
                             name={`${teacher?.name ?? ""} ${teacher?.surname ?? ""}`}
-                            image={teacher?.profilePicture?.url ?? "https://t4.ftcdn.net/jpg/02/15/84/43/360_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg"}
+                            image={teacher?.teacherProfilePictureUrl ?? "https://t4.ftcdn.net/jpg/02/15/84/43/360_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg"}
                             description={teacher?.description ?? ""}
                             courses={teacher?.coursesBrief ?? []}
                             availability={teacherAvailability?.slice(0, 7).map((day) => day.timeslots.length) ?? []}
@@ -142,9 +142,7 @@ export function CoursePage() {
                             name={course?.name}
                             description={course?.description}
                             teacherId={teacherId}
-                            thumbnailUrl={
-                                "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png"
-                            }
+                            thumbnailUrl={course?.profilePictureUrl}
                             variants={[]} //optional
                         />
                         <div className="flex flex-wrap items-end gap-4 mb-8">
