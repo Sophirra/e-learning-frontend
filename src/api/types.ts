@@ -33,7 +33,7 @@ export interface Teacher {
   surname: string;
   description: string;
   coursesBrief?: CoursesBrief[];
-  profilePicture: ProfilePicture;
+  teacherProfilePictureUrl: string;
 }
 
 export interface ProfilePicture {
@@ -58,7 +58,7 @@ export interface TeacherAvailability {
 export interface CourseWidget {
   id: string;
   name: string;
-  image: string;
+  profilePictureUrl: string;
   rating: number;
   description: string;
   minimumCoursePrice: number;
@@ -68,6 +68,7 @@ export interface CourseWidget {
   teacherId: string;
   teacherName : string;
   teacherSurname : string;
+
 }
 
 export interface Course {
@@ -75,7 +76,7 @@ export interface Course {
   name: string;
   description: string;
   variants: CourseVariant[];
-  thumbnailUrl: string;
+  profilePictureUrl: string;
   teacher: Teacher;
 }
 
