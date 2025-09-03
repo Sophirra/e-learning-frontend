@@ -227,7 +227,7 @@ function MainPage() {
                           key={course.id}
                           title={course.name}
                           imageUrl={
-                              course.image ??
+                              course.profilePictureUrl ??
                               "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
                           }
                           rating={course.rating}
