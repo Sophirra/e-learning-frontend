@@ -44,7 +44,7 @@ function MainPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredCourses, setFilteredCourses] = useState<CourseWidget[]>([]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (!courses.length) {
       setFilteredCourses([]);
       return;
@@ -68,7 +68,11 @@ function MainPage() {
       const results = fuse.search(searchQuery);
       setFilteredCourses(results.map(r => r.item));
     }
-  }, [searchQuery, courses]);
+  }, [searchQuery, courses]);*/
+
+    useEffect(() => {
+        fetchCourses({ query: searchQuery });
+    }, [searchQuery]);
 
 
   // Fetch courses (bez filtrów przy starcie)
@@ -81,9 +85,9 @@ function MainPage() {
     const fetchFilters = async () => {
       try {
           const [catRes, levelRes, langRes] = await Promise.all([
-              fetch(`${API_URL}/Courses/categories`),
-              fetch(`${API_URL}/Courses/levels`),
-              fetch(`${API_URL}/Courses/languages`),
+              fetch(`${API_URL}/api/courses/categories`),
+              fetch(`${API_URL}/api/courses/levels`),
+              fetch(`${API_URL}/api/courses/languages`),
           ]);
 
         if (!catRes.ok || !levelRes.ok || !langRes.ok) {
@@ -113,6 +117,7 @@ function MainPage() {
     priceFrom?: number;
     priceTo?: number;
     teacherId?: string;
+      query?: string;
   }) => {
     setLoading(true);
     try {
@@ -137,12 +142,17 @@ function MainPage() {
         params.append("teacherId", filters.teacherId);
       }
 
+        if (filters?.query) {
+            params.append("query", filters.query);
+        }
+
       const url = `${API_URL}/api/courses${params.toString() ? `?${params.toString()}` : ""}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch courses");
 
       const data = await res.json();
       setCourses(data);
+      setFilteredCourses(data);
     } catch (err) {
       console.error("Error fetching courses:", err);
     } finally {
@@ -167,6 +177,7 @@ function MainPage() {
       languages: selectedLanguage.length ? selectedLanguage : undefined,
       priceFrom,
       priceTo,
+    query: searchQuery || undefined,
     };
 
     console.log("Applying filters:", filters);
