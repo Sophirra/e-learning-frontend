@@ -137,7 +137,7 @@ function MainPage() {
         params.append("teacherId", filters.teacherId);
       }
 
-      const url = `${API_URL}/api/Courses${params.toString() ? `?${params.toString()}` : ""}`;
+      const url = `${API_URL}/api/courses${params.toString() ? `?${params.toString()}` : ""}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch courses");
 

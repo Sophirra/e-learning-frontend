@@ -45,7 +45,7 @@ export function CoursePage() {
     useEffect(() => {
         if (!teacherId) return;
 
-        fetch(`${API_URL}/api/Teacher/${teacherId}`)
+        fetch(`${API_URL}/api/teacher/${teacherId}`)
             .then((res) => res.json())
             .then((teacherdata: Teacher) => {
                 setTeacher(teacherdata);
@@ -62,7 +62,7 @@ export function CoursePage() {
 
         const fetchTeacherReviews = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/Teacher/${teacherId}/reviews`);
+                const res = await fetch(`${API_URL}/api/teacher/${teacherId}/reviews`);
                 if (!res.ok) throw new Error("Failed to fetch teacher reviews");
                 const data: TeacherReview[] = await res.json();
                 setTeacherReviews(data);
@@ -81,7 +81,7 @@ export function CoursePage() {
 
         const fetchAvailability = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/Teacher/${teacherId}/availability`);
+                const res = await fetch(`${API_URL}/api/teacher/${teacherId}/availability`);
                 if (!res.ok) throw new Error("Failed to fetch teacher availability");
                 const data: TeacherAvailability[] = await res.json();
                 setTeacherAvailability(data);
@@ -98,7 +98,7 @@ export function CoursePage() {
     useEffect(() => {
         if (!courseId) return;
 
-        fetch(`${API_URL}/api/Courses/${courseId}`)
+        fetch(`${API_URL}/api/courses/${courseId}`)
             .then((res) => res.json())
             .then((courseData: Course) => {
                 setCourse(courseData);

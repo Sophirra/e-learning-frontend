@@ -41,6 +41,6 @@ export let refreshToken = async (): Promise<AuthResponse> => {
 
 //get info about user
 export let aboutMe = async (): Promise<aboutUser> => {
-  let res = await api.get<aboutUser>("/api/Users/aboutMe");
+  let res = await api.get<aboutUser>("/api/users/aboutMe");
   return res.data;
 };
