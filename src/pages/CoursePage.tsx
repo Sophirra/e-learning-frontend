@@ -24,6 +24,7 @@ import OpinionCard from "@/components/complex/opinionCard";
 export function CoursePage() {
     const location = useLocation();
     const { teacherId } = location.state || {};
+    const API_URL = import.meta.env.VITE_API_URL;
 
     let { user } = useUser();
     /** The course.tsx identifier extracted from the URL parameters */
@@ -44,7 +45,7 @@ export function CoursePage() {
     useEffect(() => {
         if (!teacherId) return;
 
-        fetch(`http://localhost:5249/api/Teacher/${teacherId}`)
+        fetch(`${API_URL}/api/Teacher/${teacherId}`)
             .then((res) => res.json())
             .then((teacherdata: Teacher) => {
                 setTeacher(teacherdata);
@@ -61,7 +62,7 @@ export function CoursePage() {
 
         const fetchTeacherReviews = async () => {
             try {
-                const res = await fetch(`http://localhost:5249/api/Teacher/${teacherId}/reviews`);
+                const res = await fetch(`${API_URL}/api/Teacher/${teacherId}/reviews`);
                 if (!res.ok) throw new Error("Failed to fetch teacher reviews");
                 const data: TeacherReview[] = await res.json();
                 setTeacherReviews(data);
@@ -80,7 +81,7 @@ export function CoursePage() {
 
         const fetchAvailability = async () => {
             try {
-                const res = await fetch(`http://localhost:5249/api/Teacher/${teacherId}/availability`);
+                const res = await fetch(`${API_URL}/api/Teacher/${teacherId}/availability`);
                 if (!res.ok) throw new Error("Failed to fetch teacher availability");
                 const data: TeacherAvailability[] = await res.json();
                 setTeacherAvailability(data);
@@ -97,7 +98,7 @@ export function CoursePage() {
     useEffect(() => {
         if (!courseId) return;
 
-        fetch(`http://localhost:5249/api/Courses/${courseId}`)
+        fetch(`${API_URL}/api/Courses/${courseId}`)
             .then((res) => res.json())
             .then((courseData: Course) => {
                 setCourse(courseData);

@@ -21,6 +21,8 @@ const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
   { label: "101+ $/h", from: 101 }, // brak górnego limitu
 ];
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function MainPage() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<CourseWidget[]>([]);
@@ -78,11 +80,11 @@ function MainPage() {
   useEffect(() => {
     const fetchFilters = async () => {
       try {
-        const [catRes, levelRes, langRes] = await Promise.all([
-          fetch("http://localhost:5249/api/Courses/categories"),
-          fetch("http://localhost:5249/api/Courses/levels"),
-          fetch("http://localhost:5249/api/Courses/languages"),
-        ]);
+          const [catRes, levelRes, langRes] = await Promise.all([
+              fetch(`${API_URL}/Courses/categories`),
+              fetch(`${API_URL}/Courses/levels`),
+              fetch(`${API_URL}/Courses/languages`),
+          ]);
 
         if (!catRes.ok || !levelRes.ok || !langRes.ok) {
           throw new Error("Failed to fetch filter data");
@@ -135,7 +137,7 @@ function MainPage() {
         params.append("teacherId", filters.teacherId);
       }
 
-      const url = `http://localhost:5249/api/Courses${params.toString() ? `?${params.toString()}` : ""}`;
+      const url = `${API_URL}/api/Courses${params.toString() ? `?${params.toString()}` : ""}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch courses");
 
