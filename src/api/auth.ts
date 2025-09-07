@@ -11,13 +11,20 @@ export let registerUser = async (userData: RegisterUserDto): Promise<void> => {
 };
 
 //get access token - no user data is passed here
+export type LoginUserDto = {
+  email: string;
+  password: string;
+};
+
 export let loginUser = async (
-  userData: LoginUserDto,
+    userData: LoginUserDto,
 ): Promise<AuthResponse> => {
   let res = await api.post<AuthResponse>("/api/security/login", userData);
   setAccessToken(res.data.accessToken);
   return res.data;
 };
+
+
 
 //calling logout so backend will clear refresh token from browser
 export let logoutUser = async (): Promise<void> => {
@@ -34,6 +41,6 @@ export let refreshToken = async (): Promise<AuthResponse> => {
 
 //get info about user
 export let aboutMe = async (): Promise<aboutUser> => {
-  let res = await api.get<aboutUser>("/api/Users/aboutMe");
+  let res = await api.get<aboutUser>("/api/users/aboutMe");
   return res.data;
 };

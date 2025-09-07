@@ -15,13 +15,14 @@ interface TeacherDetailsCardProps {
   name: string;
   image: string;
   description: string;
-  coursesIds: string[];
+  courses: { id: string; name: string }[];
   availability: number[];
 }
 
+
 export function TeacherDetailsCard({
   availability,
-  coursesIds,
+  courses,
   description,
   id,
   image,
@@ -67,18 +68,18 @@ export function TeacherDetailsCard({
         </div>
         <Label className={"text-sm text-left"}>Other courses:</Label>
         <div className="grid gap-2">
-          {coursesIds.map((courseId) => (
-            <Button
-              key={courseId}
-              variant={"outline"}
-              size={"sm"}
-              className="justify-start text-left h-auto py-2 px-3"
-              onClick={() => {
-                navigate(`/course/${courseId}`);
-              }}
-            >
-              Go to course {courseId}
-            </Button>
+          {courses.map((course) => (
+              <Button
+                  key={course.id}
+                  variant={"outline"}
+                  size={"sm"}
+                  className="justify-start text-left h-auto py-2 px-3"
+                  onClick={() => {
+                    navigate(`/course/${course.id}`, { state: { teacherId: id } });
+                  }}
+              >
+                Go to course {course.name}
+              </Button>
           ))}
         </div>
       </CardContent>

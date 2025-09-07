@@ -12,8 +12,11 @@ import {
 } from "@/components/ui/menubar.tsx";
 import { Link } from "react-router-dom";
 // import { SpectatorDialog } from "@/components/complex/spectatorDialog.tsx";
-
-export function Header() {
+interface HeaderProps {
+  searchQuery: string;
+  setSearchQuery: (val: string) => void;
+}
+export function Header({ searchQuery, setSearchQuery }: HeaderProps) {
   let { user } = useUser();
   return (
     <header className="fixed top-0 left-0 w-full z-50 ">
@@ -60,7 +63,11 @@ export function Header() {
           </Button>
         </div>
         <div className="flex gap-4 stick-center">
-          <Input placeholder="Search for courses" />
+          <Input
+              placeholder="Search for courses"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <Button variant="ghost" size="icon">
             <icons.Search />
           </Button>
