@@ -1,4 +1,5 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 let api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -43,5 +44,24 @@ api.interceptors.response.use(
     return Promise.reject(err);
   },
 );
+
+interface JwtPayload {
+  unique_name: string;
+  nameid: string;
+  roles: string[];
+  nbf: number;
+  exp: number;
+  iat: number;
+}
+
+//additional method to get roles from access token
+export function getRoles() {
+  if (!accessToken) return { student: false, teacher: false };
+  let decoded = jwtDecode<JwtPayload>(accessToken);
+  return {
+    student: decoded?.roles.includes("student"),
+    teacher: decoded?.roles.includes("teacher"),
+  };
+}
 
 export default api;

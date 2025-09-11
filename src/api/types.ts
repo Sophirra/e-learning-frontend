@@ -9,8 +9,8 @@ export interface RegisterUserDto {
 }
 
 export interface LoginUserDto {
-  Email: string;
-  Password: string;
+  email: string;
+  password: string;
 }
 
 export interface AuthResponse {
@@ -46,7 +46,7 @@ export interface TeacherReview {
   reviewerName: string;
   reviewerSurname: string;
   starsNumber: number;
-  content: string
+  content: string;
 }
 
 export interface TeacherAvailability {
@@ -66,9 +66,8 @@ export interface CourseWidget {
   levelVariants: string[];
   languageVariants: string[];
   teacherId: string;
-  teacherName : string;
-  teacherSurname : string;
-
+  teacherName: string;
+  teacherSurname: string;
 }
 
 export interface Course {
@@ -81,13 +80,12 @@ export interface Course {
 }
 
 export interface CourseVariant {
-  level: string;
+  levelName: string;
   price: number;
-  language: string;
+  languageName: string;
 }
 
 export interface CoursesBrief {
   id: string;
-  name: string
+  name: string;
 }
-

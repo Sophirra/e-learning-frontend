@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/menubar.tsx";
 import { Link } from "react-router-dom";
 // import { SpectatorDialog } from "@/components/complex/spectatorDialog.tsx";
+
+//TODO: przegadać to: po co search w headerze? Wystarczy tylko setSearch na PRZYCISK
 interface HeaderProps {
-  searchQuery: string;
-  setSearchQuery: (val: string) => void;
+  searchQuery?: string;
+  setSearchQuery?: (val: string) => void;
 }
 export function Header({ searchQuery, setSearchQuery }: HeaderProps) {
   let { user } = useUser();
@@ -64,11 +66,13 @@ export function Header({ searchQuery, setSearchQuery }: HeaderProps) {
         </div>
         <div className="flex gap-4 stick-center">
           <Input
-              placeholder="Search for courses"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search for courses"
+            value={searchQuery}
+            onChange={(e) =>
+              setSearchQuery ? setSearchQuery(e.target.value) : null
+            }
           />
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={() => {}}>
             <icons.Search />
           </Button>
         </div>

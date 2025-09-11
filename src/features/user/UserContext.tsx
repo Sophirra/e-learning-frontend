@@ -9,8 +9,8 @@
 
 import type { User } from "@/features/user/user.ts";
 import { createContext, useContext, useEffect, useState } from "react";
-import { aboutMe, refreshToken } from "@/api/auth.ts";
-import { jwtDecode } from "jwt-decode";
+import { aboutMe } from "@/api/auth.ts";
+import { getRoles } from "@/api/api.ts";
 /**
  * Interface for the user context value
  * @interface UserContextType
@@ -52,6 +52,8 @@ export let UserProvider = ({ children }: { children: React.ReactNode }) => {
   let [user, setUser] = useState<User | null>(null);
   let [loading, setLoading] = useState<boolean>(true);
 
+  //effect for retaining session
+  // - get user info from about me and roles from access token
   useEffect(() => {
     let getUser = async () => {
       try {
@@ -62,12 +64,13 @@ export let UserProvider = ({ children }: { children: React.ReactNode }) => {
         //   return;
         // }
         let resUser = await aboutMe();
-        // let payload = jwtDecode<{ role: string[] }>(resRefresh.accessToken);
+        //roles are gotten from access token - hence the api method
+        let roles = getRoles();
         setUser({
           name: resUser.name,
           surname: resUser.surname,
-          teacher: true, //payload.role.includes("teacher"),
-          student: true, //payload.role.includes("student"),
+          teacher: roles.teacher,
+          student: roles.student,
         });
       } catch {
         setUser(null);

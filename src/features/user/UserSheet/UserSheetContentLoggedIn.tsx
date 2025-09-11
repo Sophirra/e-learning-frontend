@@ -1,15 +1,35 @@
-import {Button} from "@/components/ui/button.tsx";
-import type {UserSheetProps} from "@/features/user/UserSheet/UserSheet.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { useUser } from "@/features/user/UserContext.tsx";
+import { Link } from "react-router-dom";
 
-export function UserSheetContentLoggedIn({user, onLogout}: UserSheetProps){
-    if (!user) return null;
-    return (
-        <div className="mt-4 space-y-4">
-            <div className="text-sm">
-                <p><strong>Imię:</strong> {user.name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-            </div>
-            <Button variant="destructive" onClick={onLogout}>Log out</Button>
-        </div>
-    )
+export function UserSheetContentLoggedIn({
+  onLogout,
+}: {
+  onLogout: () => void;
+}) {
+  let { user } = useUser();
+  if (!user) return null;
+  return (
+    <div className="mt-4 p-8 flex flex-col gap-4">
+      <h3>
+        <strong>Name:</strong> {user?.name}
+      </h3>
+      <h3>
+        <strong>Surname:</strong> {user?.surname}
+      </h3>
+      <h3>
+        <strong>Logged as:</strong>{" "}
+        {user?.student ? "student" : user?.teacher ? "teacher" : "unknown??"}
+      </h3>
+      <Button variant="default">
+        <Link key={"home"} to={"/home"}>
+          To your courses
+        </Link>
+      </Button>
+      <Button variant="secondary">Edit your data</Button>
+      <Button variant="destructive" onClick={onLogout}>
+        Log out
+      </Button>
+    </div>
+  );
 }

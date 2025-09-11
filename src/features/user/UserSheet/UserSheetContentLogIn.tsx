@@ -18,17 +18,21 @@ import { useUser } from "@/features/user/UserContext.tsx";
 import type { User } from "@/features/user/user.ts";
 
 let loginSchema = z.object({
-  Email: z.string().email({ message: "Invalid email" }),
-  Password: z.string(),
+  email: z.string().email({ message: "Invalid email" }),
+  password: z.string(),
 });
 
-export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
+export function UserSheetContentLogIn({
+  switchToRegister,
+}: {
+  switchToRegister: () => void;
+}) {
   let { setUser } = useUser();
   let form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      Email: "",
-      Password: "",
+      email: "",
+      password: "",
     },
   });
   async function onSubmit(userData: z.infer<typeof loginSchema>) {
@@ -78,7 +82,7 @@ export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
           />
           <FormField
             control={form.control}
-            name="Email"
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>E-mail</FormLabel>
@@ -91,7 +95,7 @@ export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
           />
           <FormField
             control={form.control}
-            name="Password"
+            name="password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
@@ -103,7 +107,7 @@ export function UserSheetContentLogIn({ onLogin }: { onLogin: () => void }) {
             )}
           />
           <div className="flex gap-4 justify-center">
-            <Button variant="outline" type="button" onClick={onLogin}>
+            <Button variant="outline" type="button" onClick={switchToRegister}>
               Register
             </Button>
             <Button

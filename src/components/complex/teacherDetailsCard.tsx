@@ -19,7 +19,6 @@ interface TeacherDetailsCardProps {
   availability: number[];
 }
 
-
 export function TeacherDetailsCard({
   availability,
   courses,
@@ -69,17 +68,17 @@ export function TeacherDetailsCard({
         <Label className={"text-sm text-left"}>Other courses:</Label>
         <div className="grid gap-2">
           {courses.map((course) => (
-              <Button
-                  key={course.id}
-                  variant={"outline"}
-                  size={"sm"}
-                  className="justify-start text-left h-auto py-2 px-3"
-                  onClick={() => {
-                    navigate(`/course/${course.id}`, { state: { teacherId: id } });
-                  }}
-              >
-                Go to course {course.name}
-              </Button>
+            <Button
+              key={course.id}
+              variant={"outline"}
+              size={"sm"}
+              className="justify-start text-left h-auto py-2 px-3"
+              onClick={() => {
+                navigate(`/course/${course.id}`, { state: { teacherId: id } });
+              }}
+            >
+              {course.name}
+            </Button>
           ))}
         </div>
       </CardContent>

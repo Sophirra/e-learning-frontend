@@ -3,7 +3,6 @@ import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationHeader } from "@/components/complex/navigationHeader.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { Button } from "@/components/ui/button.tsx";
 import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";

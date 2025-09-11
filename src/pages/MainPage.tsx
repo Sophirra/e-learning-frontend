@@ -39,7 +39,6 @@ function MainPage() {
   const [selectedLanguage, setSelectedLanguage] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<string[]>([]); // jedna etykieta
 
-
   //Stan wyszukiwania
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredCourses, setFilteredCourses] = useState<CourseWidget[]>([]);
@@ -70,10 +69,10 @@ function MainPage() {
     }
   }, [searchQuery, courses]);*/
 
-    useEffect(() => {
-        fetchCourses({ query: searchQuery });
-    }, [searchQuery]);
-
+  //TODO: opisać do czego to służy i dlaczego są dwa
+  useEffect(() => {
+    fetchCourses({ query: searchQuery });
+  }, [searchQuery]);
 
   // Fetch courses (bez filtrów przy starcie)
   useEffect(() => {
@@ -82,13 +81,14 @@ function MainPage() {
 
   // Fetch categories, levels, languages
   useEffect(() => {
+    //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
     const fetchFilters = async () => {
       try {
-          const [catRes, levelRes, langRes] = await Promise.all([
-              fetch(`${API_URL}/api/courses/categories`),
-              fetch(`${API_URL}/api/courses/levels`),
-              fetch(`${API_URL}/api/courses/languages`),
-          ]);
+        const [catRes, levelRes, langRes] = await Promise.all([
+          fetch(`${API_URL}/api/courses/categories`),
+          fetch(`${API_URL}/api/courses/levels`),
+          fetch(`${API_URL}/api/courses/languages`),
+        ]);
 
         if (!catRes.ok || !levelRes.ok || !langRes.ok) {
           throw new Error("Failed to fetch filter data");
@@ -98,9 +98,13 @@ function MainPage() {
         const levelsData = await levelRes.json();
         const languagesData = await langRes.json();
 
-        setCategories(Array.from(new Set(categoriesData.map((c: any) => c.name))));
+        setCategories(
+          Array.from(new Set(categoriesData.map((c: any) => c.name))),
+        );
         setLevels(Array.from(new Set(levelsData.map((l: any) => l.name))));
-        setLanguages(Array.from(new Set(languagesData.map((l: any) => l.name))));
+        setLanguages(
+          Array.from(new Set(languagesData.map((l: any) => l.name))),
+        );
       } catch (err) {
         console.error("Error fetching filter data:", err);
       }
@@ -117,12 +121,12 @@ function MainPage() {
     priceFrom?: number;
     priceTo?: number;
     teacherId?: string;
-      query?: string;
+    query?: string;
   }) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-
+      //TODO: myślę że te wszystkie ify można zrobić jako lambdę..
       if (filters?.categories?.length) {
         filters.categories.forEach((c) => params.append("categories", c));
       }
@@ -141,11 +145,11 @@ function MainPage() {
       if (filters?.teacherId) {
         params.append("teacherId", filters.teacherId);
       }
+      if (filters?.query) {
+        params.append("query", filters.query);
+      }
 
-        if (filters?.query) {
-            params.append("query", filters.query);
-        }
-
+      //TODO: to przenieść do oddzielnego pliku i wykorzystać api.ts (patrz auth.ts)
       const url = `${API_URL}/api/courses${params.toString() ? `?${params.toString()}` : ""}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch courses");
@@ -161,7 +165,9 @@ function MainPage() {
   };
 
   // Mapowanie etykiety zakresu cen na from/to
-  const mapPriceLabelToRange = (label?: string): { from?: number; to?: number } => {
+  const mapPriceLabelToRange = (
+    label?: string,
+  ): { from?: number; to?: number } => {
     if (!label) return {};
     const found = PRICE_OPTIONS.find((opt) => opt.label === label);
     return found ? { from: found.from, to: found.to } : {};
@@ -169,7 +175,9 @@ function MainPage() {
 
   // Apply filters
   const handleApplyFilters = () => {
-    const { from: priceFrom, to: priceTo } = mapPriceLabelToRange(selectedPrice[0]);
+    const { from: priceFrom, to: priceTo } = mapPriceLabelToRange(
+      selectedPrice[0],
+    );
 
     const filters = {
       categories: selectedCategory.length ? selectedCategory : undefined,
@@ -177,7 +185,7 @@ function MainPage() {
       languages: selectedLanguage.length ? selectedLanguage : undefined,
       priceFrom,
       priceTo,
-    query: searchQuery || undefined,
+      query: searchQuery || undefined,
     };
 
     console.log("Applying filters:", filters);
@@ -185,87 +193,87 @@ function MainPage() {
   };
 
   return (
-      <div>
-        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-        <Content>
-          <div className="flex flex-col gap-8 p-8">
-            <Label className="text-2xl font-bold">Promoted courses</Label>
-
-            <div className="flex flex-row gap-4 items-end">
-              <FilterDropdown
-                  label="Category"
-                  placeholder="Select category"
-                  searchPlaceholder="Search category..."
-                  emptyMessage="No category found."
-                  items={categories}
-                  multiselect={false}
-                  onSelectionChange={setSelectedCategory}
-              />
-              <FilterDropdown
-                  label="Level"
-                  placeholder="Select level"
-                  searchPlaceholder="Search level..."
-                  emptyMessage="No level found."
-                  items={levels}
-                  multiselect={false}
-                  onSelectionChange={setSelectedLevel}
-              />
-              <FilterDropdown
-                  label="Price"
-                  placeholder="Select price range"
-                  searchPlaceholder="Search price..."
-                  emptyMessage="No price range found."
-                  items={PRICE_OPTIONS.map((p) => p.label)}
-                  multiselect={false} // pojedynczy zakres -> ładne mapowanie na priceFrom/priceTo
-                  onSelectionChange={setSelectedPrice}
-              />
-              <FilterDropdown
-                  label="Language"
-                  placeholder="Select language"
-                  searchPlaceholder="Search language..."
-                  emptyMessage="No language found."
-                  items={languages}
-                  multiselect={false}
-                  onSelectionChange={setSelectedLanguage}
-              />
-              <Button onClick={handleApplyFilters}>Apply filters</Button>
-            </div>
-
-            {loading ? (
-                <p>Loading courses...</p>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredCourses.map((course) => (
-                      <CourseCard
-                          key={course.id}
-                          title={course.name}
-                          imageUrl={
-                              course.profilePictureUrl ??
-                              "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
-                          }
-                          rating={course.rating}
-                          levels={course.levelVariants ?? []}
-                          language={course.languageVariants ?? []}
-                          price={`${course.minimumCoursePrice ?? 0}-${
-                              course.maximumCoursePrice ?? 0
-                          }$/h`}
-                          description={course.description ?? ""}
-                          teacher={{
-                            name: course.teacherName ?? "Unknown",
-                            surname: course.teacherSurname ?? "",
-                          }}
-                          onClick={() =>
-                              navigate(`/course/${course.id}`, {
-                                state: { teacherId: course.teacherId ?? "" },
-                              })
-                          }
-                      />
-                  ))}
-                </div>
-            )}
+    <div>
+      <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <Content>
+        <div className="p-8 w-full z-1 shadow-lg left-0 flex flex-col gap-4">
+          <Label className="text-2xl font-bold">Our courses</Label>
+          <div className="flex flex-row gap-4 items-end">
+            <FilterDropdown
+              label="Category"
+              placeholder="Select category"
+              searchPlaceholder="Search category..."
+              emptyMessage="No category found."
+              items={categories}
+              multiselect={false}
+              onSelectionChange={setSelectedCategory}
+            />
+            <FilterDropdown
+              label="Level"
+              placeholder="Select level"
+              searchPlaceholder="Search level..."
+              emptyMessage="No level found."
+              items={levels}
+              multiselect={false}
+              onSelectionChange={setSelectedLevel}
+            />
+            <FilterDropdown
+              label="Price"
+              placeholder="Select price range"
+              searchPlaceholder="Search price..."
+              emptyMessage="No price range found."
+              items={PRICE_OPTIONS.map((p) => p.label)}
+              multiselect={false} // pojedynczy zakres -> ładne mapowanie na priceFrom/priceTo
+              onSelectionChange={setSelectedPrice}
+            />
+            <FilterDropdown
+              label="Language"
+              placeholder="Select language"
+              searchPlaceholder="Search language..."
+              emptyMessage="No language found."
+              items={languages}
+              multiselect={false}
+              onSelectionChange={setSelectedLanguage}
+            />
+            <Button onClick={handleApplyFilters}>Apply filters</Button>
           </div>
-        </Content>
-      </div>
+        </div>
+        <div className="flex flex-col gap-8 p-8">
+          {loading ? (
+            <p>Loading courses...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  title={course.name}
+                  imageUrl={
+                    course.profilePictureUrl ??
+                    "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
+                  }
+                  rating={course.rating}
+                  levels={course.levelVariants ?? []}
+                  language={course.languageVariants ?? []}
+                  price={`${course.minimumCoursePrice ?? 0}-${
+                    course.maximumCoursePrice ?? 0
+                  }$/h`}
+                  description={course.description ?? ""}
+                  teacher={{
+                    name: course.teacherName ?? "Unknown",
+                    surname: course.teacherSurname ?? "",
+                  }}
+                  onClick={() =>
+                    navigate(`/course/${course.id}`, {
+                      state: { teacherId: course.teacherId ?? "" },
+                    })
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </Content>
+    </div>
   );
 }
 

@@ -10,21 +10,14 @@ export let registerUser = async (userData: RegisterUserDto): Promise<void> => {
   await api.post<void>("/api/security/register", userData);
 };
 
-//get access token - no user data is passed here
-export type LoginUserDto = {
-  email: string;
-  password: string;
-};
-
+//get access token - roles are passed in access token
 export let loginUser = async (
-    userData: LoginUserDto,
+  userData: LoginUserDto,
 ): Promise<AuthResponse> => {
   let res = await api.post<AuthResponse>("/api/security/login", userData);
   setAccessToken(res.data.accessToken);
   return res.data;
 };
-
-
 
 //calling logout so backend will clear refresh token from browser
 export let logoutUser = async (): Promise<void> => {

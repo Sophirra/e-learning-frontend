@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Content } from "@/components/ui/content.tsx";
-import { TeacherDetailsCard } from "@/components/complex/teacherDetailsCard.tsx";
 import type { Course } from "@/features/course/course.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationHeader } from "@/components/complex/navigationHeader.tsx";

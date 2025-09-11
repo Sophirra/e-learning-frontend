@@ -37,13 +37,7 @@ export function NavigationHeader() {
                 </Button>
               </MenubarTrigger>
               <MenubarContent>
-                {user ? (
-                  <MenubarItem>
-                    Logged in as {user.name} {user.surname}
-                  </MenubarItem>
-                ) : (
-                  <UserSheet />
-                )}
+                <UserSheet />
                 <SpectatorDialog />
                 <MenubarItem>Logout</MenubarItem>
               </MenubarContent>
@@ -56,7 +50,10 @@ export function NavigationHeader() {
         <nav className="flex gap-6">
           {[
             { to: "/home", icon: icons.Home, label: "Home" },
-            { to: "/students", icon: icons.Users, label: "Students" },
+            //students tab only visible to teachers
+            user?.teacher
+              ? { to: "/students", icon: icons.Users, label: "Students" }
+              : null,
             { to: "/calendar", icon: icons.Calendar, label: "Calendar" },
             {
               to: "/assignments",
@@ -66,25 +63,29 @@ export function NavigationHeader() {
             { to: "/files", icon: icons.FolderOpen, label: "Files" },
             { to: "/chats", icon: icons.MessageSquare, label: "Chats" },
             { to: "/quizzes", icon: icons.Brain, label: "Quizzes" },
-          ].map(({ to, icon: Icon, label }) => {
-            const isActive = useLocation().pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`flex items-center gap-2 px-4 py-2 transition-all border-b-2 ${
-                  isActive
-                    ? "border-primary text-primary"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                <Icon
-                  className={`${isActive ? "text-primary" : "text-gray-500"}`}
-                />
-                <span>{label}</span>
-              </Link>
-            );
-          })}
+          ]
+            //filter to remove null from list
+            .filter(Boolean)
+            //ignore warnings - null is filtered out
+            .map(({ to, icon: Icon, label }) => {
+              let isActive = useLocation().pathname === to;
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className={`flex items-center gap-2 px-4 py-2 transition-all border-b-2 ${
+                    isActive
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  <Icon
+                    className={`${isActive ? "text-primary" : "text-gray-500"}`}
+                  />
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
         </nav>
       </div>
       {/*)}*/}
