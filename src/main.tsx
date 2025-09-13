@@ -4,12 +4,7 @@ import { BrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import MainPage from "@/pages/MainPage";
 import { CoursePage } from "@/pages/CoursePage";
-// import {StudentsPage} from './components/pages/StudentsPage'
-// import {CalendarPage} from './components/pages/CalendarPage'
-// import {AssignmentsPage} from './components/pages/AssignmentsPage'
 import { FilesPage } from "@/pages/FilesPage";
-// import {ChatsPage} from './components/pages/ChatsPage'
-// import {SpectatingPage} from './components/pages/SpectatingPage'
 import { CreateQuizPage } from "@/pages/CreateQuizPage";
 import "./index.css";
 import { SolveQuizPage } from "@/pages/SolveQuizPage.tsx";
@@ -21,6 +16,7 @@ import { CalendarPage } from "@/pages/CalendarPage.tsx";
 import { ChatsPage } from "@/pages/ChatsPage.tsx";
 import { AssignmentPage } from "@/pages/AssignmentPage.tsx";
 import { HomePage } from "@/pages/HomePage.tsx";
+import ErrorPage from "@/pages/ErrorPage.tsx";
 
 function ProtectedRoute() {
   let { loading, user } = useUser();
@@ -50,6 +46,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/files" element={<FilesPage />} />
             <Route path="/chats" element={<ChatsPage />} />
           </Route>
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
         ;
       </UserProvider>

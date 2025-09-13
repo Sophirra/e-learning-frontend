@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
-import { NavigationHeader } from "@/components/complex/navigationHeader.tsx";
+import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
@@ -11,7 +11,7 @@ export function ChatsPage() {
 
   return (
     <div className="bg-white h-screen">
-      <NavigationHeader />
+      <NavigationBar />
       <Content>
         <div className="flex flex-row gap-8">
           {/*overflow-y-auto">*/}

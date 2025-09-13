@@ -15,7 +15,7 @@ import { Tooltip } from "@/components/ui/tooltip.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils.ts";
-import { NavigationHeader } from "@/components/complex/navigationHeader.tsx";
+import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import { Content } from "@/components/ui/content.tsx";
 
 /**
@@ -208,7 +208,7 @@ export function CreateQuizPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <NavigationHeader />
+      <NavigationBar />
       <Content>
         {/* Tags Section */}
 

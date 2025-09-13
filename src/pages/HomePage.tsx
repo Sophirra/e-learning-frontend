@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
-import { NavigationHeader } from "@/components/complex/navigationHeader.tsx";
+import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
@@ -22,7 +22,7 @@ export function HomePage() {
 
   return (
     <div className="bg-white h-screen">
-      <NavigationHeader />
+      <NavigationBar />
       <Content>
         <div className="space-y-4">
           {/*<div className="flex flex-row gap-8">*/}

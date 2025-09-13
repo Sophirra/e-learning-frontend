@@ -1,5 +1,4 @@
 import "./MainPage.css";
-import { Header } from "@/components/complex/header.tsx";
 import { Content } from "@/components/ui/content.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { Label } from "@/components/ui/label.tsx";
@@ -9,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { CourseWidget } from "@/api/types.ts";
 import Fuse from "fuse.js";
+import { SearchBar } from "@/components/complex/searchBar.tsx";
 
 // === PRZEDZIAŁY CENOWE ===
 const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
@@ -194,7 +194,7 @@ function MainPage() {
 
   return (
     <div>
-      <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <Content>
         <div className="p-8 w-full z-1 shadow-lg left-0 flex flex-col gap-4">
           <Label className="text-2xl font-bold">Our courses</Label>

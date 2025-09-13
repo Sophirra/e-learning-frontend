@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
-import { Header } from "@/components/complex/header.tsx";
 import { Content } from "@/components/ui/content.tsx";
 import { TeacherDetailsCard } from "@/components/complex/teacherDetailsCard.tsx";
 import type {
@@ -18,6 +17,7 @@ import WeekScheduleDialog from "@/components/complex/weekSchedule.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { toast } from "sonner";
 import OpinionCard from "@/components/complex/opinionCard";
+import { SearchBar } from "@/components/complex/searchBar.tsx";
 
 /**
  * CoursePage component displays detailed information about a specific course.tsx
@@ -133,7 +133,7 @@ export function CoursePage() {
 
   return (
     <div className="bg-white h-screen">
-      <Header />
+      <SearchBar />
       <Content>
         <div className="flex flex-row gap-8">
           <div className="w-1/4 sticky top-0 align-self-flex-start h-fit">

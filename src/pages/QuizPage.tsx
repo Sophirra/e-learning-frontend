@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.tsx";
-import { NavigationHeader } from "@/components/complex/navigationHeader.tsx";
+import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import type { Quiz } from "@/interfaces/QuizInterface.tsx";
 import type { Tag } from "@/interfaces/TagInterface.tsx";
 import { Content } from "@/components/ui/content.tsx";
@@ -68,7 +68,7 @@ export function QuizPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <NavigationHeader />
+      <NavigationBar />
       <Content>
         {/* Filters Bar */}
         <div className="sticky top-[80px] bg-white z-10 border-b pb-4">
