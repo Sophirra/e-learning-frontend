@@ -33,19 +33,19 @@ export default function Summary({
         <Button
           variant={"ghost"}
           onClick={canHide ? () => setOpen(!open) : () => {}}
-          className={"w-1/1"}
+          className={"grow"}
         >
           <LabelIcon />
           {label}
-          <div className="flex-grow w-1/1" />
+          <div className="flex-grow" />
           {canHide && (open ? <icons.ChevronUp /> : <icons.ChevronDown />)}
         </Button>
+        {CustomButton && <CustomButton />}
         {onAddButtonClick && (
           <Button onClick={onAddButtonClick} variant="ghost">
             <icons.Plus /> Add
           </Button>
         )}
-        {CustomButton && <CustomButton />}
       </div>
       <Divider />
       {open && <div className={"flex flex-col gap-2"}>{children}</div>}

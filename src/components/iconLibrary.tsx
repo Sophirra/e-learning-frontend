@@ -37,6 +37,9 @@ import {
   CircleX as tempIcon,
   GraduationCap as StudentIcon,
   BookOpen as TeacherIcon,
+  Clock,
+  FileText as File,
+  Link,
 } from "lucide-react";
 import { cn } from "@/lib/utils.ts";
 
@@ -80,6 +83,9 @@ export let iconLibrary = {
   Tag: wrapIcon(Tag),
   Pen: wrapIcon(Pen),
   ImageIcon: wrapIcon(ImageIcon),
+  Clock: wrapIcon(Clock),
+  File: wrapIcon(File),
+  Link: wrapIcon(Link),
 };
 
 function wrapIcon(Icon: React.ComponentType<any>, defaultClass = "size-4") {

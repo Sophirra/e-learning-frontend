@@ -5,6 +5,7 @@ import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
 import { StudentCalendar } from "@/features/calendar/studentCalendar.tsx";
+import ErrorPage from "@/pages/ErrorPage.tsx";
 
 export function CalendarPage() {
   let { user } = useUser();
