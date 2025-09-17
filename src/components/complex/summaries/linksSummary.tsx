@@ -1,15 +1,16 @@
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
-import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Link } from "react-router-dom";
 
-export interface LinkProps {
+export type LinkProps = {
   id?: string;
   isMeeting?: boolean;
   path: string;
-}
+  courseName: string;
+  className?: string;
+};
 
 export function LinksSummary({ links }: { links: LinkProps[] }) {
   return (
@@ -21,11 +22,13 @@ export function LinksSummary({ links }: { links: LinkProps[] }) {
           key={link.isMeeting ? "0" : link.id}
           style={{ width: "100%" }}
         >
-          {link.isMeeting ? (
-            <Label className={"w-300px"}>Join meeting:</Label>
-          ) : null}
+          <Label>
+            {link.courseName +
+              (link.className ? " " + link.className : "") +
+              (link.isMeeting ? " - join meeting:" : ": ")}
+          </Label>
+          {}
           <Link to={link.path}>
-            {" "}
             <Button variant={"link"}>{link.path}</Button>{" "}
           </Link>
         </div>

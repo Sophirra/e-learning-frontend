@@ -6,6 +6,26 @@ import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
+export type AssignmentBrief = {
+  id?: string;
+  name: string;
+  courseName: string;
+  className?: string;
+  status: string;
+  graded: boolean;
+  grade?: number;
+  comments?: string;
+  instruction?: string;
+  files?: AssignmentFile[];
+};
+
+type AssignmentFile = {
+  id?: string;
+  name: string;
+  path: string;
+  type: "solution" | "content";
+};
+
 export function AssignmentPage() {
   let { user } = useUser();
 

@@ -20,6 +20,15 @@ export function StudentCalendar() {
   let [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   let [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
+  //TODO: when all courses selected do not display meeting links.
+  //   Always only display data from past 30 days (links, assignments
+  //   and files shared). After that a "load more" button that downloads
+  //   older data (30 days).
+
+  // TODO: "setup new class" button should open a popup with course selection.
+  //  If one course was filtered, it should be automatically selected in the
+  //  course selection
+
   //TODO: temp data to be replaced from backend
   let courses: CourseBrief[] = [
     //todo: GET FROM API
@@ -59,11 +68,25 @@ export function StudentCalendar() {
     },
   ];
 
+  //TODO: meeting links should not be retrieved when a class is not in progress
+  //    (or 10 minutes in advance and after).
+
   let links: LinkProps[] = [
-    { isMeeting: true, path: "linkthatleads2meeting.com" },
-    { path: "randomlink.com" },
-    { path: "anotherlink.com" },
+    {
+      isMeeting: true,
+      path: "linkthatleads2meeting.com",
+      courseName: "Course 1",
+      className: "Class 2",
+    },
+    {
+      path: "randomlink.com",
+      courseName: "Course 2",
+      className: "Introduction",
+    },
+    { path: "anotherlink.com", courseName: "Course 1", className: "Basics" },
   ];
+
+  let assignments: AssignmentProps[] = {};
 
   return (
     <Content>

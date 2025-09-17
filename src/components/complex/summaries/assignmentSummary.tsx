@@ -4,6 +4,17 @@ import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 
+export type AssignmentBrief = {
+  id?: string;
+  name: string;
+  courseName: string;
+  className?: string;
+  status: string;
+  graded: boolean;
+  grade?: number;
+  comments?: string;
+};
+
 export function AssignmentSummary({ courses }: { courses: CourseBrief[] }) {
   return (
     <Summary
