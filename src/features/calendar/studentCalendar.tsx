@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
 import { Content } from "@/components/ui/content.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
+// import { useUser } from "@/features/user/UserContext.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
@@ -14,9 +13,13 @@ import {
   type LinkProps,
   LinksSummary,
 } from "@/components/complex/summaries/linksSummary.tsx";
+import {
+  type AnyTask,
+  AssignmentSummary,
+} from "@/components/complex/summaries/assignmentSummary.tsx";
 
 export function StudentCalendar() {
-  let { user } = useUser();
+  // let { user } = useUser();
   let [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   let [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
@@ -86,7 +89,39 @@ export function StudentCalendar() {
     { path: "anotherlink.com", courseName: "Course 1", className: "Basics" },
   ];
 
-  let assignments: AssignmentProps[] = {};
+  let assignments: AnyTask[] = [
+    {
+      id: "1",
+      name: "assignment 1",
+      className: "class 1",
+      courseName: "course 1",
+      completed: false,
+      comments: "some kind of a comment",
+      type: "assignment",
+      status: "behind",
+      graded: false,
+    },
+    {
+      id: "2",
+      name: "quiz 1",
+      className: "class 2",
+      courseName: "course 1",
+      completed: true,
+      type: "quiz",
+    },
+    {
+      id: "3",
+      name: "assignment 2",
+      className: "class 2",
+      courseName: "course 2",
+      completed: true,
+      comments: "some kind of a comment v2",
+      type: "assignment",
+      status: "good",
+      graded: true,
+      grade: 10,
+    },
+  ];
 
   return (
     <Content>
@@ -122,13 +157,7 @@ export function StudentCalendar() {
 
         <div className="w-3/4 space-y-8">
           <LinksSummary links={links} />
-          <Summary
-            label={"Assignments"}
-            labelIcon={icons.ClipboardList}
-            canHide={true}
-          >
-            content
-          </Summary>
+          <AssignmentSummary assignments={assignments} student={true} />
           <Summary label={"Files shared"} labelIcon={icons.File} canHide={true}>
             content
           </Summary>

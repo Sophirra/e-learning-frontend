@@ -1,6 +1,9 @@
 import "./MainPage.css";
 import { Content } from "@/components/ui/content.tsx";
-import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
+import {
+  FilterDropdown,
+  type SelectableItem,
+} from "@/components/complex/filterDropdown.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { CourseCard } from "@/features/course/courseCard.tsx";
@@ -34,10 +37,14 @@ function MainPage() {
   const [languages, setLanguages] = useState<string[]>([]);
 
   // Wybrane wartości filtrów (dropdown zwraca tablice)
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-  const [selectedLevel, setSelectedLevel] = useState<string[]>([]);
-  const [selectedLanguage, setSelectedLanguage] = useState<string[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<string[]>([]); // jedna etykieta
+  const [selectedCategory, setSelectedCategory] = useState<SelectableItem[]>(
+    [],
+  );
+  const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>(
+    [],
+  );
+  const [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
+  const [selectedPrice, setSelectedPrice] = useState<SelectableItem[]>([]); // jedna etykieta
 
   //Stan wyszukiwania
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -176,7 +183,7 @@ function MainPage() {
   // Apply filters
   const handleApplyFilters = () => {
     const { from: priceFrom, to: priceTo } = mapPriceLabelToRange(
-      selectedPrice[0],
+      selectedPrice[0].value,
     );
 
     const filters = {
@@ -204,7 +211,9 @@ function MainPage() {
               placeholder="Select category"
               searchPlaceholder="Search category..."
               emptyMessage="No category found."
-              items={categories}
+              items={categories.map((c) => {
+                return { name: c, value: c };
+              })}
               multiselect={false}
               onSelectionChange={setSelectedCategory}
             />
@@ -213,7 +222,9 @@ function MainPage() {
               placeholder="Select level"
               searchPlaceholder="Search level..."
               emptyMessage="No level found."
-              items={levels}
+              items={levels.map((l) => {
+                return { name: l, value: l };
+              })}
               multiselect={false}
               onSelectionChange={setSelectedLevel}
             />
@@ -222,7 +233,12 @@ function MainPage() {
               placeholder="Select price range"
               searchPlaceholder="Search price..."
               emptyMessage="No price range found."
-              items={PRICE_OPTIONS.map((p) => p.label)}
+              items={PRICE_OPTIONS.map((p) => {
+                return {
+                  name: p.label,
+                  value: p.label,
+                };
+              })}
               multiselect={false} // pojedynczy zakres -> ładne mapowanie na priceFrom/priceTo
               onSelectionChange={setSelectedPrice}
             />
@@ -231,7 +247,9 @@ function MainPage() {
               placeholder="Select language"
               searchPlaceholder="Search language..."
               emptyMessage="No language found."
-              items={languages}
+              items={languages.map((l) => {
+                return { name: l, value: l };
+              })}
               multiselect={false}
               onSelectionChange={setSelectedLanguage}
             />

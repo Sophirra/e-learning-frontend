@@ -30,6 +30,7 @@ export function NavigationBar() {
             //filter to remove null from list
             .filter(Boolean)
             //ignore warnings - null is filtered out
+            // @ts-ignore
             .map(({ to, icon: Icon, label }) => {
               let isActive = useLocation().pathname === to;
               return (
