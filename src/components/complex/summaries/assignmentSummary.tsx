@@ -2,17 +2,9 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-} from "@/components/ui/dialog.tsx";
 import { useState } from "react";
-import {
-  FilterDropdown,
-  type SelectableItem,
-} from "@/components/complex/filterDropdown.tsx";
+import { AddTaskPopup } from "@/components/complex/popups/addTaskPopup.tsx";
+import { UploadFilePopup } from "@/components/complex/popups/UploadFilePopup.tsx";
 
 export type AnyTask = QuizTask | AssignmentTask;
 interface TaskProps {
@@ -70,13 +62,7 @@ export function AssignmentSummary({
         label={"Assignments"}
         labelIcon={icons.ClipboardList}
         canHide={true}
-        onAddButtonClick={
-          !student
-            ? undefined
-            : () => {
-                setNewTaskOpen(true);
-              }
-        }
+        customButton={AddTaskPopup}
       >
         {assignments
           ? assignments.map((task: AnyTask) => (
@@ -94,109 +80,6 @@ export function AssignmentSummary({
             ))
           : null}
       </Summary>
-      <AddTaskPopup open={newTaskOpen} setOpen={setNewTaskOpen} />
     </>
-  );
-}
-
-function AddTaskPopup({
-  open,
-  setOpen,
-}: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}) {
-  let [selectedClass, setSelectedClass] = useState<SelectableItem[]>([]);
-  let [selectedStudent, setSelectedStudent] = useState<SelectableItem[]>([]);
-  let [selectedTaskType, setSelectedTaskType] = useState<SelectableItem[]>([]);
-  //TODO: download data from backend
-  let availableClasses = [
-    { className: "class1", classId: "course1_id" },
-    { className: "class2", classId: "course2_id" },
-  ];
-  let availableStudents = [
-    { studentName: "student1", studentId: "student1_id" },
-    { studentName: "student2", studentId: "student2_id" },
-  ];
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTrigger>Add new task to class</DialogTrigger>
-          <DialogDescription>Choose class and task type</DialogDescription>
-        </DialogHeader>
-        <div className={"flex flex-col gap-4"}>
-          {/*//TODO: naprawić żeby się nie zamykało przy wybieraniu wartości :')*/}
-          <FilterDropdown
-            items={availableClasses.map((c) => {
-              return { name: c.className, value: c.classId };
-            })}
-            placeholder={"Select class"}
-            label={"Class"}
-            emptyMessage={"Select class"}
-            onSelectionChange={setSelectedClass}
-            multiselect={false}
-          />
-          <FilterDropdown
-            disabled={selectedClass.length == 0}
-            label={"For student"}
-            placeholder={"Select student"}
-            emptyMessage={"Select student"}
-            items={availableStudents.map((s) => {
-              return { name: s.studentName, value: s.studentId };
-            })}
-            onSelectionChange={setSelectedStudent}
-            multiselect={false}
-          />
-          <FilterDropdown
-            disabled={selectedStudent.length == 0 || selectedClass.length == 0}
-            items={[
-              { name: "Assignment", value: "0" },
-              { name: "Quiz", value: "1" },
-            ]}
-            placeholder={"Select task type"}
-            label={"Task type"}
-            emptyMessage={"Select task type"}
-            onSelectionChange={setSelectedTaskType}
-            multiselect={false}
-          />
-          <div className={"flex flex-row gap-4"}>
-            <Button
-              disabled={
-                selectedTaskType.length == 0 ||
-                selectedClass.length == 0 ||
-                selectedStudent.length == 0
-              }
-              onSelect={() => {
-                selectedTaskType && selectedClass && selectedStudent
-                  ? selectedTaskType[0].name == "quiz"
-                    ? openQuizLibrary(selectedClass[0].value)
-                    : openAssignmentLibrary(selectedClass[0].value)
-                  : null;
-              }}
-            >
-              Copy existent
-            </Button>
-            <Button
-              disabled={
-                selectedTaskType.length == 0 ||
-                selectedClass.length == 0 ||
-                selectedStudent.length == 0
-              }
-              onSelect={() => {
-                selectedTaskType && selectedClass && selectedStudent
-                  ? selectedTaskType[0].name == "quiz"
-                    ? openNewQuiz(selectedClass[0].value)
-                    : openNewAssignment(selectedClass[0].value)
-                  : null;
-              }}
-            >
-              Create new
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }

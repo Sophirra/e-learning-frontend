@@ -99,7 +99,7 @@ export function FilterDropdown({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-[180px] justify-between"
+              className="min-w-[180px] w-1/1 justify-between"
             >
               {selectedValues.length > 0
                 ? multiselect

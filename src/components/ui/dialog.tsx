@@ -1,187 +1,332 @@
 "use client";
 
-/**
- * Dialog Component
- *
- * A modal dialog that interrupts the user with important content.
- * Built on top of Radix UI Dialog primitive.
- *
- * @see https://www.radix-ui.com/docs/primitives/components/dialog
- */
-
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { iconLibrary as icons } from "@/components/iconLibrary";
-
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/**
- * Root dialog component that manages the dialog's open state
- */
-function Dialog({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
+interface DialogContextValue {
+  innerOpen: boolean;
+  setInnerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-/**
- * Button that opens the dialog
- */
-function DialogTrigger({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
-}
+const DialogContext = React.createContext<DialogContextValue | undefined>(
+  undefined,
+);
 
-/**
- * Portal that renders the dialog content in a different part of the DOM
- */
-function DialogPortal({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Portal>) {
-  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
-}
+function Dialog({ children }: { children: React.ReactNode }) {
+  const [outerOpen, setOuterOpen] = React.useState(false);
+  const [innerOpen, setInnerOpen] = React.useState(false);
 
-/**
- * Button that closes the dialog
- */
-function DialogClose({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Close>) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
-}
-
-/**
- * A layer that covers the inert background content when the dialog is open
- */
-function DialogOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
   return (
-    <DialogPrimitive.Overlay
-      data-slot="dialog-overlay"
-      className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
-        className,
-      )}
-      {...props}
-    />
+    <DialogContext.Provider value={{ innerOpen, setInnerOpen }}>
+      <DialogPrimitive.Root open={outerOpen} onOpenChange={setOuterOpen}>
+        {children}
+      </DialogPrimitive.Root>
+    </DialogContext.Provider>
   );
 }
 
-/**
- * Contains the content to be rendered in the dialog
- *
- * @param showCloseButton - Optional flag to show/hide the close button
- */
-function DialogContent({
-  className,
-  children,
-  showCloseButton = true,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean;
-}) {
+const DialogTrigger = DialogPrimitive.Trigger;
+const DialogPortal = DialogPrimitive.Portal;
+const DialogClose = DialogPrimitive.Close;
+
+const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      "fixed inset-0 z-50 bg-white/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 dark:bg-neutral-950/40",
+      className,
+    )}
+    {...props}
+  />
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
+
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => {
+  const context = React.useContext(DialogContext);
+  if (!context) throw new Error("DialogContent must be used within a Dialog");
+
   return (
-    <DialogPortal data-slot="dialog-portal">
+    <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
-        data-slot="dialog-content"
+        ref={ref}
         className={cn(
-          "bg-white data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border border-neutral-200 p-6 shadow-lg duration-200 sm:max-w-lg dark:bg-neutral-950 dark:border-neutral-800",
+          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg border border-neutral-200 bg-white p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg dark:border-neutral-800 dark:bg-neutral-950",
+          context.innerOpen && "translate-y-[-55%] scale-[0.97]",
           className,
         )}
         {...props}
       >
         {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="ring-offset-white focus:ring-neutral-950 data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400"
-          >
-            <icons.XIcon />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
-        )}
+        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
       </DialogPrimitive.Content>
     </DialogPortal>
   );
-}
+});
+DialogContent.displayName = DialogPrimitive.Content.displayName;
 
-/**
- * Contains the header content of the dialog (title and/or description)
- */
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
+function InnerDialog({ children }: { children: React.ReactNode }) {
+  const context = React.useContext(DialogContext);
+  if (!context) throw new Error("InnerDialog must be used within a Dialog");
+
+  React.useEffect(() => {
+    const handleEscapeKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && context.innerOpen) {
+        context.setInnerOpen(false);
+        event.stopPropagation();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKeyDown);
+    };
+  }, [context.innerOpen, context.setInnerOpen]);
+
   return (
-    <div
-      data-slot="dialog-header"
-      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
-      {...props}
-    />
+    <DialogPrimitive.Root
+      open={context.innerOpen}
+      onOpenChange={context.setInnerOpen}
+    >
+      {children}
+    </DialogPrimitive.Root>
   );
 }
 
-/**
- * Contains the footer content of the dialog (usually action buttons)
- */
-function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="dialog-footer"
-      className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-        className,
-      )}
-      {...props}
-    />
-  );
+const InnerDialogTrigger = DialogPrimitive.Trigger;
+const InnerDialogClose = DialogPrimitive.Close;
+
+interface InnerDialogContentProps
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
+  position?: "default" | "bottom" | "top" | "left" | "right";
+  draggable?: boolean;
 }
 
-/**
- * Title of the dialog - accessible through screen readers
- */
-function DialogTitle({
+const InnerDialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  InnerDialogContentProps
+>(
+  (
+    { className, children, position = "default", draggable = false, ...props },
+    ref,
+  ) => {
+    const context = React.useContext(DialogContext);
+    if (!context)
+      throw new Error("InnerDialogContent must be used within a Dialog");
+
+    const [isDragging, setIsDragging] = React.useState(false);
+    const [startY, setStartY] = React.useState(0);
+    const [currentY, setCurrentY] = React.useState(0);
+    const [isClosingByDrag, setIsClosingByDrag] = React.useState(false);
+    const contentRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+      if (context.innerOpen) {
+        setCurrentY(0);
+        setIsClosingByDrag(false);
+      }
+    }, [context.innerOpen]);
+
+    const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!draggable) return;
+      setIsDragging(true);
+      setStartY(e.clientY - currentY);
+      e.currentTarget.setPointerCapture(e.pointerId);
+    };
+
+    const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDragging || !draggable) return;
+      const newY = e.clientY - startY;
+      setCurrentY(newY > 0 ? newY : 0);
+    };
+
+    const handlePointerUp = () => {
+      if (!draggable) return;
+      setIsDragging(false);
+      if (currentY > (contentRef.current?.offsetHeight || 0) / 2) {
+        setIsClosingByDrag(true);
+        context.setInnerOpen(false);
+      } else {
+        setCurrentY(0);
+      }
+    };
+
+    return (
+      <DialogPortal>
+        <DialogPrimitive.Content
+          ref={ref}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          style={{
+            transform: `translate(-50%, calc(-50% + ${currentY}px))`,
+            transition: isDragging ? "none" : "transform 0.3s ease-out",
+          }}
+          className={cn(
+            "fixed left-[50%] top-[50%] z-[60] grid w-full max-w-lg translate-x-[-50%] translate-y-[-45%] gap-4 rounded-lg border border-neutral-200 bg-white p-6 shadow-lg duration-200 dark:border-neutral-800 dark:bg-neutral-950",
+            isClosingByDrag
+              ? "data-[state=closed]:animate-none data-[state=closed]:fade-out-0"
+              : "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+            position === "default" &&
+              "data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+            position === "bottom" &&
+              "data-[state=closed]:slide-out-to-bottom-[10%] data-[state=open]:slide-in-from-bottom-[10%]",
+            position === "top" &&
+              "data-[state=closed]:slide-out-to-top-full data-[state=open]:slide-in-from-top-full",
+            position === "left" &&
+              "data-[state=closed]:slide-out-to-left-full data-[state=open]:slide-in-from-left-full",
+            position === "right" &&
+              "data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-right-full",
+            draggable && "",
+            className,
+          )}
+          {...props}
+        >
+          <div ref={contentRef}>{children}</div>
+          <InnerDialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400">
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </InnerDialogClose>
+        </DialogPrimitive.Content>
+      </DialogPortal>
+    );
+  },
+);
+InnerDialogContent.displayName = "InnerDialogContent";
+
+const InnerDialogHeader = ({
   className,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Title>) {
-  return (
-    <DialogPrimitive.Title
-      data-slot="dialog-title"
-      className={cn("text-lg leading-none font-semibold", className)}
-      {...props}
-    />
-  );
-}
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col space-y-1.5 text-center sm:text-left",
+      className,
+    )}
+    {...props}
+  />
+);
+InnerDialogHeader.displayName = "InnerDialogHeader";
 
-/**
- * Optional description of the dialog - accessible through screen readers
- */
-function DialogDescription({
+const InnerDialogFooter = ({
   className,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Description>) {
-  return (
-    <DialogPrimitive.Description
-      data-slot="dialog-description"
-      className={cn(
-        "text-neutral-500 text-sm dark:text-neutral-400",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn("flex flex-col-reverse sm:flex-row sm:space-x-2", className)}
+    {...props}
+  />
+);
+InnerDialogFooter.displayName = "InnerDialogFooter";
 
+const InnerDialogTitle = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn(
+      "text-lg font-semibold leading-none tracking-tight",
+      className,
+    )}
+    {...props}
+  />
+));
+InnerDialogTitle.displayName = "InnerDialogTitle";
+
+const InnerDialogDescription = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Description
+    ref={ref}
+    className={cn("text-sm text-neutral-500 dark:text-neutral-400", className)}
+    {...props}
+  />
+));
+InnerDialogDescription.displayName = "InnerDialogDescription";
+
+const DialogHeader = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col space-y-1.5 text-center sm:text-left",
+      className,
+    )}
+    {...props}
+  />
+);
+DialogHeader.displayName = "DialogHeader";
+
+const DialogFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn("flex flex-col-reverse sm:flex-row sm:space-x-2", className)}
+    {...props}
+  />
+);
+DialogFooter.displayName = "DialogFooter";
+
+const DialogTitle = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn(
+      "text-lg font-semibold leading-none tracking-tight",
+      className,
+    )}
+    {...props}
+  />
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
+
+const DialogDescription = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Description
+    ref={ref}
+    className={cn("text-sm text-neutral-500 dark:text-neutral-400", className)}
+    {...props}
+  />
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
+
+export type { InnerDialogContentProps };
 export {
   Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
   DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+  InnerDialog,
+  InnerDialogTrigger,
+  InnerDialogContent,
+  InnerDialogHeader,
+  InnerDialogFooter,
+  InnerDialogTitle,
+  InnerDialogDescription,
+  InnerDialogClose,
+  DialogPortal,
+  DialogOverlay,
 };

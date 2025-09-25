@@ -5,7 +5,6 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
-import { Button } from "@/components/ui/button.tsx";
 import ClassTile, {
   type ClassTileProps,
 } from "@/components/complex/classTile.tsx";
@@ -125,20 +124,11 @@ export function StudentCalendar() {
 
   return (
     <Content>
-      <div className="flex flex-row gap-4">
-        <CourseFilter
-          courses={courses}
-          setSelectedCourseId={setSelectedCourseId}
-          selectedCourseId={selectedCourseId}
-        />
-        <Button variant={"outline"}>
-          Setup new class <icons.Plus />
-          {/*
-        TODO: should open a popup with course selection (already selected
-          if single course is filtered) and class slot picker
-        */}
-        </Button>
-      </div>
+      <CourseFilter
+        courses={courses}
+        setSelectedCourseId={setSelectedCourseId}
+        selectedCourseId={selectedCourseId}
+      />
       <div className="flex flex-row gap-8 p-4">
         {/*overflow-y-auto">*/}
         <div className="w-1/4 sticky top-0 align-self-flex-start h-fit space-y-2">
