@@ -10,7 +10,6 @@ import { CourseCard } from "@/features/course/courseCard.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { CourseWidget } from "@/api/types.ts";
-import Fuse from "fuse.js";
 import { SearchBar } from "@/components/complex/searchBar.tsx";
 
 // === PRZEDZIAŁY CENOWE ===
@@ -187,9 +186,15 @@ function MainPage() {
     );
 
     const filters = {
-      categories: selectedCategory.length ? selectedCategory : undefined,
-      levels: selectedLevel.length ? selectedLevel : undefined,
-      languages: selectedLanguage.length ? selectedLanguage : undefined,
+      categories: selectedCategory.length
+        ? selectedCategory.map((c) => c.value)
+        : undefined,
+      levels: selectedLevel.length
+        ? selectedLevel.map((l) => l.value)
+        : undefined,
+      languages: selectedLanguage.length
+        ? selectedLanguage.map((l) => l.value)
+        : undefined,
       priceFrom,
       priceTo,
       query: searchQuery || undefined,

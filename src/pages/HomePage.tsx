@@ -33,7 +33,10 @@ export function HomePage() {
             selectedCourseId={selectedCourseId}
           />
           <CalendarSummary courses={courses} />
-          <AssignmentSummary courses={courses} />
+          <AssignmentSummary
+            courses={courses}
+            student={user?.student || false}
+          />
           <ChatSummary courses={courses} />
         </div>
       </Content>

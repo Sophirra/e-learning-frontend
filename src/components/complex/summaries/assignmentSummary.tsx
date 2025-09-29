@@ -35,8 +35,6 @@ export function AssignmentSummary({
   assignments: AnyTask[];
   student: boolean;
 }) {
-  let [newTaskOpen, setNewTaskOpen] = useState(false);
-
   function composeTaskDetails(task: AnyTask) {
     let statusLabel = "";
     if (!task.completed) {
@@ -62,7 +60,7 @@ export function AssignmentSummary({
         label={"Assignments"}
         labelIcon={icons.ClipboardList}
         canHide={true}
-        customButton={AddTaskPopup}
+        customButton={student ? AddTaskPopup : undefined}
       >
         {assignments
           ? assignments.map((task: AnyTask) => (

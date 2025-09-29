@@ -18,13 +18,13 @@ export function UploadFilePopup() {
       <InnerDialogTrigger asChild>
         <Button>Upload new file FROM INNER</Button>
       </InnerDialogTrigger>
-      <InnerDialogContent className={"sm:max-w-[425px] z-40"}>
+      <InnerDialogContent className={"sm:max-w-[425px] z-40"} data-inner-dialog>
         <InnerDialogHeader>
           <InnerDialogTitle>Upload new file</InnerDialogTitle>
           <InnerDialogDescription></InnerDialogDescription>
         </InnerDialogHeader>
         <Label>Choose file</Label>
-        <Input type={"file"} />
+        {/*<Input type={"file"} />*/}
         <InnerDialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
           <InnerDialogClose asChild>
             <Button>Cancel</Button>

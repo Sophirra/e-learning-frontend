@@ -18,7 +18,7 @@ export function AddAssignmentPopup() {
   return (
     <InnerDialog>
       <InnerDialogTrigger asChild>
-        <Button onSelect={() => console.log("clicked")}>Create new</Button>
+        <Button>Create new</Button>
       </InnerDialogTrigger>
       <InnerDialogContent className={"sm:max-w-[425px]"}>
         <InnerDialogHeader>
@@ -29,7 +29,7 @@ export function AddAssignmentPopup() {
         </InnerDialogHeader>
         <div className={"flex flex-col gap-4"}>
           <Label>Title</Label>
-          <Input id={"title"} type={"text"} />
+          <Input id={"title"} type={"text"} disabled={false} />
           <Label>Description</Label>
           <Input id={"descr"} type={"text"} />
           <Label>Additional file</Label>

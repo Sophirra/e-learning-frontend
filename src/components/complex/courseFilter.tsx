@@ -6,11 +6,12 @@ export default function CourseFilter({
   courses,
   selectedCourseId,
   setSelectedCourseId,
+  // setupClassButton = false,
 }: {
   courses: CourseBrief[];
   selectedCourseId: string | null;
   setSelectedCourseId: (courseId: string | null) => void;
-  setupClassButton: boolean;
+  // setupClassButton: boolean;
 }) {
   return (
     <div className="flex flex-row gap-4">
@@ -42,10 +43,10 @@ export default function CourseFilter({
   );
 }
 
-function SetupClassPopup({
-  role,
-  selectedCourseId,
-}: {
-  role: "student" | "teacher";
-  selectedCourseId?: string | null;
-}) {}
+// function SetupClassPopup({
+//   role,
+//   selectedCourseId,
+// }: {
+//   role: "student" | "teacher";
+//   selectedCourseId?: string | null;
+// }) {}

@@ -49,7 +49,6 @@ export function AddTaskPopup() {
             <DialogDescription>Choose class and task type</DialogDescription>
           </DialogHeader>
           <div className={"flex flex-col gap-4"}>
-            {/*//TODO: sformatować ładnie*/}
             <FilterDropdown
               items={availableClasses.map((c) => {
                 return { name: c.className, value: c.classId };
@@ -124,7 +123,6 @@ export function AddTaskPopup() {
           </div>
         </DialogContent>
       </Dialog>
-      {/*<AddAssignmentPopup*/}
       {/*  classId={addAssignmentOpen}*/}
       {/*  setOpen={setAddAssignmentOpen}*/}
       {/*/>*/}

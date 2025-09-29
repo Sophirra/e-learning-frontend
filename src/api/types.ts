@@ -43,6 +43,7 @@ export interface ProfilePicture {
 }
 
 export interface TeacherReview {
+  id: string;
   reviewerName: string;
   reviewerSurname: string;
   starsNumber: number;

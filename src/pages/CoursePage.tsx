@@ -3,7 +3,10 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
+import {
+  FilterDropdown,
+  type SelectableItem,
+} from "@/components/complex/filterDropdown.tsx";
 import { Content } from "@/components/ui/content.tsx";
 import { TeacherDetailsCard } from "@/components/complex/teacherDetailsCard.tsx";
 import type {
@@ -34,8 +37,6 @@ export function CoursePage() {
   let { user } = useUser();
   /** The course.tsx identifier extracted from the URL parameters */
   const { courseId } = useParams();
-  /** Current view state, toggles between class setup and course.tsx details views */
-  const [classSetup, setClassSetup] = useState<true | false>(false);
   /** To be downloaded from backend*/
   const [course, setCourse] = useState<Course | null>(null);
   const [teacher, setTeacher] = useState<Teacher | null>(null);
@@ -46,8 +47,8 @@ export function CoursePage() {
     TeacherAvailability[] | null
   >(null);
   /** Using string array because filter dropdown is universal*/
-  let [selectedLanguage, setSelectedLanguage] = useState<string[]>([]);
-  let [selectedLevel, setSelectedLevel] = useState<string[]>([]);
+  let [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>([]);
+  let [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
 
   //TODO: wszystkie calle do oddzielnego pliku i z wykorzystaniem api.ts
   useEffect(() => {
@@ -120,15 +121,11 @@ export function CoursePage() {
       });
   }, [courseId]);
 
-  let handleClassSetup = () => {
-    setClassSetup(true);
-  };
-
   const selectedVariant =
     course?.variants.find(
       (v) =>
-        v.languageName === selectedLanguage[0] &&
-        v.levelName === selectedLevel[0],
+        v.languageName === selectedLanguage[0]?.value &&
+        v.levelName === selectedLevel[0]?.value,
     ) ?? null;
 
   return (
@@ -170,9 +167,15 @@ export function CoursePage() {
                   placeholder="Choose language"
                   emptyMessage="No language found."
                   items={[
-                    ...new Set(
-                      course?.variants.map((c) => c.languageName) ?? [],
-                    ),
+                    ...new Map(
+                      (course?.variants ?? []).map((c) => [
+                        c.languageName,
+                        {
+                          name: c.languageName,
+                          value: c.languageName,
+                        },
+                      ]),
+                    ).values(),
                   ]}
                   multiselect={false}
                   searchable={false}
@@ -184,7 +187,15 @@ export function CoursePage() {
                   placeholder="Choose level"
                   emptyMessage="No level found."
                   items={[
-                    ...new Set(course?.variants.map((c) => c.levelName) ?? []),
+                    ...new Map(
+                      (course?.variants ?? []).map((c) => [
+                        c.levelName,
+                        {
+                          name: c.levelName,
+                          value: c.levelName,
+                        },
+                      ]),
+                    ).values(),
                   ]}
                   multiselect={false}
                   searchable={false}
@@ -204,16 +215,22 @@ export function CoursePage() {
                       : "No variant found for selection."}
                 </Button>
               </div>
-              <Button
-                onClick={() => handleClassSetup()}
+              <WeekScheduleDialog
                 disabled={
                   selectedLanguage.length === 0 ||
                   selectedLevel.length === 0 ||
                   !selectedVariant
                 }
-              >
-                Setup class
-              </Button>
+                availability={teacherAvailability ?? []}
+                onConfirm={(slot) => {
+                  console.log("Wybrany slot:", slot);
+                }}
+                classDetails={
+                  selectedVariant
+                    ? `${selectedLevel[0].value ?? ""} ${course?.name ?? ""} class in ${selectedLanguage[0].value ?? ""}`
+                    : undefined
+                }
+              />
             </div>
             <div className="grid grid-cols-2 gap-8 ">
               {teacherReviews?.map((review) => (
@@ -232,15 +249,6 @@ export function CoursePage() {
           </div>
         </div>
       </Content>
-      <WeekScheduleDialog
-        open={classSetup}
-        onOpenChange={() => setClassSetup(false)}
-        availability={teacherAvailability ?? []}
-        onConfirm={(slot) => {
-          console.log("Wybrany slot:", slot);
-        }}
-        classDetails={`${selectedLevel[0] ?? ""} ${course?.name ?? ""} class in ${selectedLanguage[0] ?? ""}`}
-      />
     </div>
   );
 }

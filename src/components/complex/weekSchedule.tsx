@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -9,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { DaySchedule } from "./daySchedule";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 
 interface TimeSlot {
   start: number;
@@ -23,16 +25,14 @@ interface ApiDayAvailability {
 }
 
 interface WeekScheduleDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  disabled: boolean;
   availability: ApiDayAvailability[]; // tutaj lista z API
   onConfirm: (selectedSlot: TimeSlot) => void;
-  classDetails: string;
+  classDetails?: string;
 }
 
 export default function WeekScheduleDialog({
-  open,
-  onOpenChange,
+  disabled,
   availability,
   onConfirm,
   classDetails,
@@ -72,7 +72,6 @@ export default function WeekScheduleDialog({
     return nextWeekStart <= oneMonthFromToday;
   }, [currentWeekOffset, oneMonthFromToday]);
 
-  //TODO: co tu się dzieje..?
   const generateTimeSlots = (date: Date, dayIndex: number): TimeSlot[] => {
     const dayStr = date.toISOString().slice(0, 10); // "YYYY-MM-DD"
     const dayData = availability.find((d) => d.day === dayStr);
@@ -114,18 +113,19 @@ export default function WeekScheduleDialog({
     if (selectedSlot) {
       onConfirm(selectedSlot);
       setSelectedSlot(null);
-      onOpenChange(false);
     }
   };
 
   const handleCancel = () => {
     setSelectedSlot(null);
-    onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-y-auto sm:max-w-6xl">
+    <Dialog>
+      <DialogTrigger>
+        <Button disabled={disabled}>Setup class</Button>
+      </DialogTrigger>
+      <DialogContent className="overflow-y-auto sm:max-w-6xl gap-4">
         <DialogHeader>
           <DialogTitle>Select a time slot for {classDetails}</DialogTitle>
         </DialogHeader>
@@ -174,10 +174,16 @@ export default function WeekScheduleDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button onClick={handleConfirm} disabled={!selectedSlot}>
+          <DialogClose asChild>
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            type={"submit"}
+            onClick={handleConfirm}
+            disabled={!selectedSlot}
+          >
             Confirm
           </Button>
         </DialogFooter>
