@@ -181,24 +181,18 @@ function MainPage() {
 
   // Apply filters
   const handleApplyFilters = () => {
-    const { from: priceFrom, to: priceTo } = mapPriceLabelToRange(
-      selectedPrice[0].value,
-    );
+      const { from: priceFrom, to: priceTo } = mapPriceLabelToRange(
+          selectedPrice[0]?.value,
+      );
 
-    const filters = {
-      categories: selectedCategory.length
-        ? selectedCategory.map((c) => c.value)
-        : undefined,
-      levels: selectedLevel.length
-        ? selectedLevel.map((l) => l.value)
-        : undefined,
-      languages: selectedLanguage.length
-        ? selectedLanguage.map((l) => l.value)
-        : undefined,
-      priceFrom,
-      priceTo,
-      query: searchQuery || undefined,
-    };
+      const filters = {
+          ...(selectedCategory.length && { categories: selectedCategory.map((c) => c.value) }),
+          ...(selectedLevel.length && { levels: selectedLevel.map((l) => l.value) }),
+          ...(selectedLanguage.length && { languages: selectedLanguage.map((l) => l.value) }),
+          ...(priceFrom !== undefined && { priceFrom }),
+          ...(priceTo !== undefined && { priceTo }),
+          ...(searchQuery && { query: searchQuery }),
+      };
 
     console.log("Applying filters:", filters);
     fetchCourses(filters);
