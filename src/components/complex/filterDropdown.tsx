@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/command.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export type SelectableItem = { name: string; value: string };
 
@@ -38,6 +38,7 @@ interface FilterDropdownProps {
   /** Show reset button */
   reset?: boolean;
   disabled?: boolean;
+  icon?: React.ComponentType<any>;
 }
 
 export function FilterDropdown({
@@ -51,6 +52,7 @@ export function FilterDropdown({
   searchable = true,
   reset = true,
   disabled = false,
+  icon: Icon,
 }: FilterDropdownProps) {
   const [selectedValues, setSelectedValues] = useState<SelectableItem[]>([]);
   const [open, setOpen] = useState(false);
@@ -101,6 +103,7 @@ export function FilterDropdown({
               aria-expanded={open}
               className="min-w-[180px] w-1/1 justify-between"
             >
+              {Icon ? <Icon /> : null}
               {selectedValues.length > 0
                 ? multiselect
                   ? `${selectedValues.length} selected`

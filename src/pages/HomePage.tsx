@@ -28,15 +28,14 @@ export function HomePage() {
           {/*<div className="flex flex-row gap-8">*/}
           {/*overflow-y-auto">*/}
           <CourseFilter
+            student={user?.student || false}
             courses={courses}
             setSelectedCourseId={setSelectedCourseId}
             selectedCourseId={selectedCourseId}
+            setupClassButton={true}
           />
           <CalendarSummary courses={courses} />
-          <AssignmentSummary
-            courses={courses}
-            student={user?.student || false}
-          />
+          <AssignmentSummary student={user?.student || false} />
           <ChatSummary courses={courses} />
         </div>
       </Content>

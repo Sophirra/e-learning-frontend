@@ -125,9 +125,11 @@ export function StudentCalendar() {
   return (
     <Content>
       <CourseFilter
+        student={true}
         courses={courses}
         setSelectedCourseId={setSelectedCourseId}
         selectedCourseId={selectedCourseId}
+        setupClassButton={true}
       />
       <div className="flex flex-row gap-8 p-4">
         {/*overflow-y-auto">*/}

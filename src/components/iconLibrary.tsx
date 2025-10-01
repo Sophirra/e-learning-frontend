@@ -40,6 +40,8 @@ import {
   Clock,
   FileText as File,
   Link,
+  Users as People,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils.ts";
 
@@ -86,6 +88,8 @@ export let iconLibrary = {
   Clock: wrapIcon(Clock),
   File: wrapIcon(File),
   Link: wrapIcon(Link),
+  People: wrapIcon(People),
+  BookOpen: wrapIcon(BookOpen),
 };
 
 function wrapIcon(Icon: React.ComponentType<any>, defaultClass = "size-4") {

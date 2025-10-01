@@ -2,9 +2,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { useState } from "react";
 import { AddTaskPopup } from "@/components/complex/popups/addTaskPopup.tsx";
-import { UploadFilePopup } from "@/components/complex/popups/UploadFilePopup.tsx";
 
 export type AnyTask = QuizTask | AssignmentTask;
 interface TaskProps {

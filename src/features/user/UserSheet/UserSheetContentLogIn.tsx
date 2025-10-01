@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/form.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUser, aboutMe } from "@/api/auth.ts";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group.tsx";
-import { Label } from "@/components/ui/label.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { User } from "@/features/user/user.ts";
 
@@ -59,27 +57,27 @@ export function UserSheetContentLogIn({
           onSubmit={form.handleSubmit(onSubmit)}
           className={"flex flex-col gap-4"}
         >
-          <FormField
-            name="role"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Log in as:</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    className={"flex flex-row"}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={"student"}
-                  >
-                    <RadioGroupItem value={"student"} id={"student"} />
-                    <Label htmlFor={"student"}>Student</Label>
-                    <RadioGroupItem value={"teacher"} id={"teacher"} />
-                    <Label htmlFor={"teacher"}>Teacher</Label>
-                  </RadioGroup>
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          {/*<FormField*/}
+          {/*  name="role"*/}
+          {/*  render={({ field }) => (*/}
+          {/*    <FormItem>*/}
+          {/*      <FormLabel>Log in as:</FormLabel>*/}
+          {/*      <FormControl>*/}
+          {/*        <RadioGroup*/}
+          {/*          className={"flex flex-row"}*/}
+          {/*          onValueChange={field.onChange}*/}
+          {/*          value={field.value}*/}
+          {/*          defaultValue={"student"}*/}
+          {/*        >*/}
+          {/*          <RadioGroupItem value={"student"} id={"student"} />*/}
+          {/*          <Label htmlFor={"student"}>Student</Label>*/}
+          {/*          <RadioGroupItem value={"teacher"} id={"teacher"} />*/}
+          {/*          <Label htmlFor={"teacher"}>Teacher</Label>*/}
+          {/*        </RadioGroup>*/}
+          {/*      </FormControl>*/}
+          {/*    </FormItem>*/}
+          {/*  )}*/}
+          {/*/>*/}
           <FormField
             control={form.control}
             name="email"
