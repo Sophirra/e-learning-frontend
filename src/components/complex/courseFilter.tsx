@@ -14,8 +14,8 @@ export default function CourseFilter({
   // setupClassButton: boolean;
 }) {
   return (
-    <div className="flex flex-row gap-4">
-      <div className="w-1/1 sticky top-0 space-x-4 text-left">
+    <div className="flex flex-row items-start gap-4">
+      <div className="flex flex-wrap gap-2 text-left">
         <Button
           variant={selectedCourseId ? "outline" : "default"}
           onClick={() => setSelectedCourseId(null)}

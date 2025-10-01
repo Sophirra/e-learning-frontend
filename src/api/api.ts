@@ -64,4 +64,10 @@ export function getRoles() {
   };
 }
 
+export function getUserId() {
+  if (!accessToken) return null;
+  let decoded = jwtDecode<JwtPayload>(accessToken);
+  return decoded?.nameid ?? null;
+}
+
 export default api;
