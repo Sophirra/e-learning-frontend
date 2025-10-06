@@ -32,7 +32,7 @@ export interface Teacher {
   name: string;
   surname: string;
   description: string;
-  coursesBrief?: CoursesBrief[];
+  coursesBrief?: CourseBrief[];
   teacherProfilePictureUrl: string;
 }
 
@@ -76,7 +76,7 @@ export interface Course {
   name: string;
   description: string;
   variants: CourseVariant[];
-  profilePictureUrl: string;
+  thumbnailUrl: string;
   teacher: Teacher;
 }
 
@@ -86,7 +86,7 @@ export interface CourseVariant {
   languageName: string;
 }
 
-export interface CoursesBrief {
+export interface CourseBrief {
   id: string;
   name: string;
 }

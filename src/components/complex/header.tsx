@@ -11,7 +11,7 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar.tsx";
 import { Link } from "react-router-dom";
-import { SpectatorDialog } from "@/components/complex/spectatorDialog.tsx";
+import { SpectatorListPopup } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 
 export function Header() {
   let { user } = useUser();
@@ -45,7 +45,7 @@ export function Header() {
                         To your courses
                       </Link>
                     </MenubarItem>
-                    <SpectatorDialog />
+                    <SpectatorListPopup />
                   </>
                 ) : null}
               </MenubarContent>

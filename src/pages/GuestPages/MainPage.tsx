@@ -1,4 +1,4 @@
-import "./MainPage.css";
+import "../MainPage.css";
 import { Content } from "@/components/ui/content.tsx";
 import {
   FilterDropdown,
@@ -181,18 +181,24 @@ function MainPage() {
 
   // Apply filters
   const handleApplyFilters = () => {
-      const { from: priceFrom, to: priceTo } = mapPriceLabelToRange(
-          selectedPrice[0]?.value,
-      );
+    const { from: priceFrom, to: priceTo } = mapPriceLabelToRange(
+      selectedPrice[0]?.value,
+    );
 
-      const filters = {
-          ...(selectedCategory.length && { categories: selectedCategory.map((c) => c.value) }),
-          ...(selectedLevel.length && { levels: selectedLevel.map((l) => l.value) }),
-          ...(selectedLanguage.length && { languages: selectedLanguage.map((l) => l.value) }),
-          ...(priceFrom !== undefined && { priceFrom }),
-          ...(priceTo !== undefined && { priceTo }),
-          ...(searchQuery && { query: searchQuery }),
-      };
+    const filters = {
+      ...(selectedCategory.length && {
+        categories: selectedCategory.map((c) => c.value),
+      }),
+      ...(selectedLevel.length && {
+        levels: selectedLevel.map((l) => l.value),
+      }),
+      ...(selectedLanguage.length && {
+        languages: selectedLanguage.map((l) => l.value),
+      }),
+      ...(priceFrom !== undefined && { priceFrom }),
+      ...(priceTo !== undefined && { priceTo }),
+      ...(searchQuery && { query: searchQuery }),
+    };
 
     console.log("Applying filters:", filters);
     fetchCourses(filters);

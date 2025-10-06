@@ -1,5 +1,5 @@
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
-import { QuizGallery } from "@/components/complex/quizGallery.tsx";
+import { QuizGallery } from "@/features/quiz/quizGallery.tsx";
 
 export function QuizPage() {
   return (

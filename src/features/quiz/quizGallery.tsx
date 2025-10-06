@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import type { Quiz } from "@/interfaces/QuizInterface.tsx";
 import type { Tag } from "@/interfaces/TagInterface.tsx";
-import { QuizCard } from "@/components/complex/quizCard.tsx";
+import { QuizCard } from "@/features/quiz/quizCard.tsx";
 import { Content } from "@/components/ui/content.tsx";
 
 export function QuizGallery() {

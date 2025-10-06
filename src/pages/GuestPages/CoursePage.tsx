@@ -19,7 +19,7 @@ import { CourseDetailCard } from "@/features/course/courseDetailCard.tsx";
 import WeekScheduleDialog from "@/components/complex/weekSchedule.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { toast } from "sonner";
-import OpinionCard from "@/components/complex/opinionCard";
+import OpinionCard from "@/components/complex/opinionCard.tsx";
 import { SearchBar } from "@/components/complex/searchBar.tsx";
 
 /**
@@ -35,7 +35,6 @@ export function CoursePage() {
   const API_URL = import.meta.env.VITE_API_URL;
 
   let { user } = useUser();
-  /** The course.tsx identifier extracted from the URL parameters */
   const { courseId } = useParams();
   /** To be downloaded from backend*/
   const [course, setCourse] = useState<Course | null>(null);
@@ -153,11 +152,13 @@ export function CoursePage() {
 
           <div className="w-3/4 space-y-8">
             <CourseDetailCard
+              //TODO: skąd decyzja aby zrobić większość argumentów jako opcjonalne?
               id={"1"}
               name={course?.name}
               description={course?.description}
               teacherId={teacherId}
-              thumbnailUrl={course?.profilePictureUrl}
+              thumbnailUrl={course?.thumbnailUrl}
+              //TODO: warianty zdecydowanie nie są opcjonalne
               variants={[]} //optional
             />
             <div className="flex flex-wrap items-end gap-4 mb-8">
@@ -230,6 +231,7 @@ export function CoursePage() {
                     ? `${selectedLevel[0].value ?? ""} ${course?.name ?? ""} class in ${selectedLanguage[0].value ?? ""}`
                     : undefined
                 }
+                courseId={courseId}
               />
             </div>
             <div className="grid grid-cols-2 gap-8 ">

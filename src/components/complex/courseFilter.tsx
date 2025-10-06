@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button.tsx";
-import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
+import type { CourseBrief } from "@/api/types.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
+import { SetupNewClassPopup } from "@/components/complex/popups/setupNewClassPopup.tsx";
 
 type StudentBrief = { id: string; name: string; surname: string };
 
@@ -27,7 +28,7 @@ export default function CourseFilter({
 
   return (
     <div className="flex flex-row gap-4">
-      <div className="w-1/1 sticky top-0 space-x-4 text-left flex flex-row gap-4">
+      <div className="w-1/1 sticky top-0 text-left flex flex-row gap-4">
         <Button
           variant={selectedCourseId ? "outline" : "default"}
           onClick={() => setSelectedCourseId(null)}
@@ -82,9 +83,10 @@ export default function CourseFilter({
         )}
       </div>
       {setupClassButton && (
-        <Button variant={"outline"}>
-          Setup new class <icons.Plus />
-        </Button>
+        // <Button variant={"outline"}>
+        //   Setup new class <icons.Plus />
+        // </Button>
+        <SetupNewClassPopup course={selectedCourseId ? selectedCourseId : ""} />
       )}
     </div>
   );

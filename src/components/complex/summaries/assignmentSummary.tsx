@@ -2,7 +2,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { AddTaskPopup } from "@/components/complex/popups/addTaskPopup.tsx";
+import { AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
 
 export type AnyTask = QuizTask | AssignmentTask;
 interface TaskProps {

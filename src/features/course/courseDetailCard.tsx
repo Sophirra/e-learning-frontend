@@ -1,4 +1,4 @@
-import type { Course } from "@/features/course/course.tsx";
+import type { Course } from "@/api/types.ts";
 import {
   Card,
   CardContent,

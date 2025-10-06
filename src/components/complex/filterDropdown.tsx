@@ -39,6 +39,8 @@ interface FilterDropdownProps {
   reset?: boolean;
   disabled?: boolean;
   icon?: React.ComponentType<any>;
+  /** key of the default item */
+  defaultValue?: string;
 }
 
 export function FilterDropdown({
@@ -52,9 +54,17 @@ export function FilterDropdown({
   searchable = true,
   reset = true,
   disabled = false,
+  defaultValue = undefined,
   icon: Icon,
 }: FilterDropdownProps) {
-  const [selectedValues, setSelectedValues] = useState<SelectableItem[]>([]);
+  const [selectedValues, setSelectedValues] = useState<SelectableItem[]>(() => {
+    if (defaultValue) {
+      const defaultItem = items.find((item) => item.value === defaultValue);
+      return defaultItem ? [defaultItem] : [];
+    }
+    return [];
+  });
+
   const [open, setOpen] = useState(false);
 
   const handleSelect = (selected: SelectableItem) => {

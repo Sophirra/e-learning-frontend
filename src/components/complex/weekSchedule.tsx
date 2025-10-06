@@ -12,7 +12,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { DaySchedule } from "./daySchedule";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 
-interface TimeSlot {
+export interface TimeSlot {
   start: number;
   end: number;
   dayIndex: number;
@@ -29,6 +29,7 @@ interface WeekScheduleDialogProps {
   availability: ApiDayAvailability[]; // tutaj lista z API
   onConfirm: (selectedSlot: TimeSlot) => void;
   classDetails?: string;
+  courseId: string;
 }
 
 export default function WeekScheduleDialog({
@@ -36,9 +37,14 @@ export default function WeekScheduleDialog({
   availability,
   onConfirm,
   classDetails,
+  courseId,
 }: WeekScheduleDialogProps) {
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+
+  //TODO: ZMIANA: zamiast availability przekazujemy kurs (wykorzystywane
+  // w dwóch miejscach) Przenieść/wykonać ponownie pobranie dostępności
+  // nauczyciela z przekazanego kursu
 
   const today = new Date();
 

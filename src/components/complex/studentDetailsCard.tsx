@@ -2,18 +2,12 @@ import { Label } from "@/components/ui/label.tsx";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card.tsx";
-import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button.tsx";
 import { useNavigate } from "react-router-dom";
-
-export interface CourseBrief {
-  id: string;
-  name: string;
-}
+import type { CourseBrief } from "@/api/types.ts";
 
 interface StudentDetailsCardProps {
   id: string;

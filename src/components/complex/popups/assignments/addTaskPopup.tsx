@@ -13,11 +13,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { AddAssignmentPopup } from "@/components/complex/popups/addAssignmentPopup.tsx";
+import { AddAssignmentPopup } from "@/components/complex/popups/assignments/addAssignmentPopup.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx";
-import { CopyAssignmentPopup } from "@/components/complex/popups/copyAssignmentPopup.tsx";
-import { CopyQuizPopup } from "@/components/complex/popups/copyQuizPopup.tsx";
+import { CopyAssignmentPopup } from "@/components/complex/popups/assignments/copyAssignmentPopup.tsx";
+import { CopyQuizPopup } from "@/components/complex/popups/assignments/copyQuizPopup.tsx";
 
 export type PopupType =
   | "addTask"
