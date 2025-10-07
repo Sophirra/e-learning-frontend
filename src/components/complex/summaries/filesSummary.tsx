@@ -29,7 +29,7 @@ export function FilesSummary({files, lastCount}: { files: FileProps[], lastCount
                 ) : (
                     displayedFiles.map((file) => (
                         <div
-                            className="flex flex-row gap-2 items-center"
+                            className="flex flex-row gap-0 pl-2"
                             key={file.associatedCourseName.replace(/\s/g, '') + file.associatedClassDate + file.id}
                         >
                             <Label>

@@ -61,7 +61,7 @@ export function AssignmentSummary({
                 canHide={true}
                 customButton={student ? AddTaskPopup : undefined}
             >
-                <div className="flex flex-col gap-2 pl-2">
+                <div className="flex flex-col gap-2">
                     {assignments === null || assignments?.length === 0 ? (
                             <Label className="mt-2">No assignments available for the selected courses/classes</Label>
                         ) :
