@@ -38,7 +38,6 @@ type ClassBriefDto = {
 };
 
 export function StudentCalendar() {
-    const [courses, setCourses] = useState<CourseBrief[]>([]);
     const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 
     // The class selcted in the left column
@@ -54,45 +53,6 @@ export function StudentCalendar() {
     const [links, setLinks] = useState<LinkProps[]>([]);
     const [assignments, setAssignments] = useState<AnyTask[]>([]);
     const [files, setFiles] = useState<FileProps[]>([]);
-
-    // GET PARTICIPATIONS/COURSES
-    useEffect(() => {
-        const studentId = getUserId();
-        if (!studentId) return;
-
-        let canceled = false;
-
-        api
-            .get(`/api/students/${studentId}/participations`)
-            .then((res) => {
-                const data = res.data ?? [];
-                const mapped: CourseBrief[] = data
-                    .map((p: any) => {
-                        const id = p.courseId ?? p.CourseId ?? "";
-                        const name = p.courseName ?? p.CourseName ?? "";
-                        return { id, name };
-                    })
-                    .filter((c) => c.id && c.name);
-
-                if (!canceled) {
-                    setCourses(mapped);
-                    setSelectedCourseId((prev) =>
-                        mapped.some((c) => c.id === prev) ? prev : null
-                    );
-                }
-            })
-            .catch((err) => {
-                if (err?.response?.status === 404) {
-                    if (!canceled) setCourses([]);
-                    return;
-                }
-                console.error("Courses could not be retrieved:", err);
-            });
-
-        return () => {
-            canceled = true;
-        };
-    }, []);
 
     // RETRIEVE TIMELINE
     useEffect(() => {
@@ -237,7 +197,6 @@ export function StudentCalendar() {
     return (
         <Content>
             <CourseFilter
-                courses={courses}
                 setSelectedCourseId={(id) => {
                     setSelectedCourseId(id);
                     setSelectedClassId(null);
