@@ -27,8 +27,8 @@ export default function CourseFilter({
   ];
 
   return (
-    <div className="flex flex-row gap-4">
-      <div className="w-1/1 sticky top-0 text-left flex flex-row gap-4">
+    <div className="flex flex-row items-start gap-4">
+      <div className="flex flex-wrap gap-2 text-left">
         <Button
           variant={selectedCourseId ? "outline" : "default"}
           onClick={() => setSelectedCourseId(null)}
