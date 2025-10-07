@@ -76,7 +76,7 @@ export interface Course {
   name: string;
   description: string;
   variants: CourseVariant[];
-  thumbnailUrl: string;
+  profilePictureUrl: string;
   teacher: Teacher;
 }
 
@@ -87,6 +87,8 @@ export interface CourseVariant {
 }
 
 export interface CourseBrief {
-  id: string;
-  name: string;
+  courseId: string;
+  courseName: string;
+  teacherId: string;
+  startTime: Date;
 }

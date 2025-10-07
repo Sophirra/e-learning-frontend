@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { CourseWidget } from "@/api/types.ts";
 import { SearchBar } from "@/components/complex/searchBar.tsx";
+import {getCourseCategories, getCourseLanguages, getCourseLevels, getCourses} from "@/api/apiCalls.ts";
+import {toast} from "sonner";
 
 // === PRZEDZIAŁY CENOWE ===
 const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
@@ -22,12 +24,9 @@ const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
   { label: "81–100 $/h", from: 81, to: 100 },
   { label: "101+ $/h", from: 101 }, // brak górnego limitu
 ];
-
-const API_URL = import.meta.env.VITE_API_URL;
-
 function MainPage() {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState<CourseWidget[]>([]);
+  const [, setCourses] = useState<CourseWidget[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Dropdown data
@@ -43,7 +42,7 @@ function MainPage() {
     [],
   );
   const [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<SelectableItem[]>([]); // jedna etykieta
+  const [selectedPrice, setSelectedPrice] = useState<SelectableItem[]>([]);
 
   //Stan wyszukiwania
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -85,82 +84,36 @@ function MainPage() {
     fetchCourses();
   }, []);
 
-  // Fetch categories, levels, languages
-  useEffect(() => {
-    //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
-    const fetchFilters = async () => {
+
+
+  //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
+  //odp: przeniesione wszystkie calle do pliku apiCalls.ts
+  {
+    const loadFilters = async () => {
       try {
-        const [catRes, levelRes, langRes] = await Promise.all([
-          fetch(`${API_URL}/api/courses/categories`),
-          fetch(`${API_URL}/api/courses/levels`),
-          fetch(`${API_URL}/api/courses/languages`),
+        const [categories, levels, languages] = await Promise.all([
+          getCourseCategories(),
+          getCourseLevels(),
+          getCourseLanguages(),
         ]);
 
-        if (!catRes.ok || !levelRes.ok || !langRes.ok) {
-          throw new Error("Failed to fetch filter data");
-        }
-
-        const categoriesData = await catRes.json();
-        const levelsData = await levelRes.json();
-        const languagesData = await langRes.json();
-
-        setCategories(
-          Array.from(new Set(categoriesData.map((c: any) => c.name))),
-        );
-        setLevels(Array.from(new Set(levelsData.map((l: any) => l.name))));
-        setLanguages(
-          Array.from(new Set(languagesData.map((l: any) => l.name))),
-        );
+        setCategories([...new Set(categories)]);
+        setLevels([...new Set(levels)]);
+        setLanguages([...new Set(languages)]);
       } catch (err) {
         console.error("Error fetching filter data:", err);
+        toast.error("Could not load filter data.");
       }
     };
 
-    fetchFilters();
+    loadFilters();
   }, []);
 
-  // Pobranie kursów z opcjonalnymi filtrami
-  const fetchCourses = async (filters?: {
-    categories?: string[];
-    levels?: string[];
-    languages?: string[];
-    priceFrom?: number;
-    priceTo?: number;
-    teacherId?: string;
-    query?: string;
-  }) => {
+
+  const fetchCourses = async (filters?: Parameters<typeof getCourses>[0]) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      //TODO: myślę że te wszystkie ify można zrobić jako lambdę..
-      if (filters?.categories?.length) {
-        filters.categories.forEach((c) => params.append("categories", c));
-      }
-      if (filters?.levels?.length) {
-        filters.levels.forEach((l) => params.append("levels", l));
-      }
-      if (filters?.languages?.length) {
-        filters.languages.forEach((lng) => params.append("languages", lng));
-      }
-      if (typeof filters?.priceFrom === "number") {
-        params.append("priceFrom", String(filters.priceFrom));
-      }
-      if (typeof filters?.priceTo === "number") {
-        params.append("priceTo", String(filters.priceTo));
-      }
-      if (filters?.teacherId) {
-        params.append("teacherId", filters.teacherId);
-      }
-      if (filters?.query) {
-        params.append("query", filters.query);
-      }
-
-      //TODO: to przenieść do oddzielnego pliku i wykorzystać api.ts (patrz auth.ts)
-      const url = `${API_URL}/api/courses${params.toString() ? `?${params.toString()}` : ""}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch courses");
-
-      const data = await res.json();
+      const data = await getCourses(filters);
       setCourses(data);
       setFilteredCourses(data);
     } catch (err) {
@@ -200,7 +153,6 @@ function MainPage() {
       ...(searchQuery && { query: searchQuery }),
     };
 
-    console.log("Applying filters:", filters);
     fetchCourses(filters);
   };
 
@@ -244,7 +196,7 @@ function MainPage() {
                   value: p.label,
                 };
               })}
-              multiselect={false} // pojedynczy zakres -> ładne mapowanie na priceFrom/priceTo
+              multiselect={false}
               onSelectionChange={setSelectedPrice}
             />
             <FilterDropdown
