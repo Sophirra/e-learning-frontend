@@ -17,7 +17,7 @@ export function LinksSummary({links}: { links: LinkProps[] }) {
         <Summary label={"Links"} labelIcon={icons.Link} canHide={true}>
             <div className="flex flex-col gap-2 pl-2">
                 {links.length === 0 ? (
-                    <Label className="mt-2">No links available for the selected courses/classes</Label>
+                    <Label className="mt-2 ml-2">No links available for the selected courses/classes</Label>
                 ) : (
                     links.map((link: LinkProps) => (
                         <div

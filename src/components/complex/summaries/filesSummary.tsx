@@ -25,7 +25,7 @@ export function FilesSummary({files, lastCount}: { files: FileProps[], lastCount
         <Summary label={"Files shared"} labelIcon={icons.File} canHide={true}>
             <div className="flex flex-col gap-2 pl-2">
                 {displayedFiles.length === 0 ? (
-                    <Label className="mt-2">No files available for the selected courses/classes</Label>
+                    <Label className="mt-2 ml-2">No files available for the selected courses/classes</Label>
                 ) : (
                     displayedFiles.map((file) => (
                         <div

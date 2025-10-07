@@ -63,7 +63,7 @@ export function AssignmentSummary({
             >
                 <div className="flex flex-col gap-2">
                     {assignments === null || assignments?.length === 0 ? (
-                            <Label className="mt-2">No assignments available for the selected courses/classes</Label>
+                            <Label className="mt-2 ml-4">No assignments available for the selected courses/classes</Label>
                         ) :
                         assignments?.map((task: AnyTask) => (
                             <div
