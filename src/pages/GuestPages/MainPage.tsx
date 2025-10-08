@@ -88,7 +88,7 @@ function MainPage() {
 
   //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
   //odp: przeniesione wszystkie calle do pliku apiCalls.ts
-  {
+  useEffect(() => {
     const loadFilters = async () => {
       try {
         const [categories, levels, languages] = await Promise.all([
