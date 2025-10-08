@@ -3,8 +3,8 @@ import type { CourseBrief } from "@/api/types.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { SetupNewClassPopup } from "@/components/complex/popups/setupNewClassPopup.tsx";
-import {useEffect, useState} from "react";
-import api, {getUserId} from "@/api/api.ts";
+import { useEffect, useState } from "react";
+import api, { getUserId } from "@/api/api.ts";
 
 type StudentBrief = { id: string; name: string; surname: string };
 
@@ -19,7 +19,7 @@ export default function CourseFilter({
   setSelectedCourseId: (courseId: string | null) => void;
   setupClassButton: boolean;
 }) {
-    const [courses, setCourses] = useState<CourseBrief[]>([]);
+  const [courses, setCourses] = useState<CourseBrief[]>([]);
 
   let students: StudentBrief[] = [
     { id: "1", name: "John", surname: "Doe" },
@@ -28,49 +28,49 @@ export default function CourseFilter({
     { id: "4", name: "Alice", surname: "Johnson" },
   ];
 
-    // GET PARTICIPATIONS/COURSES
-    useEffect(() => {
-        const studentId = getUserId();
-        if (!studentId) return;
+  // GET PARTICIPATIONS/COURSES
+  useEffect(() => {
+    const studentId = getUserId();
+    if (!studentId) return;
 
-        let canceled = false;
+    let canceled = false;
 
-        api
-            .get(`/api/students/${studentId}/participations`)
-            .then((res) => {
-                const data = res.data ?? [];
-                const mapped: CourseBrief[] = data
-                    .map((p: any) => {
-                        const id = p.courseId ?? p.CourseId ?? "";
-                        const name = p.courseName ?? p.CourseName ?? "";
-                        return {id, name};
-                    })
-                    .filter((c) => c.id && c.name);
+    api
+      .get(`/api/students/${studentId}/participations`)
+      .then((res) => {
+        const data = res.data ?? [];
+        const mapped: CourseBrief[] = data
+          .map((p: any) => {
+            const id = p.courseId ?? p.CourseId ?? "";
+            const name = p.courseName ?? p.CourseName ?? "";
+            return { id, name };
+          })
+          .filter((c: any) => c.id && c.name);
 
-                if (!canceled) {
-                    setCourses(mapped);
-                    // @ts-ignore
-                    setSelectedCourseId((prev) =>
-                        mapped.some((c) => c.id === prev) ? prev : null
-                    );
-                }
-            })
-            .catch((err) => {
-                if (err?.response?.status === 404) {
-                    if (!canceled) setCourses([]);
-                    return;
-                }
-                console.error("Courses could not be retrieved:", err);
-            });
+        if (!canceled) {
+          setCourses(mapped);
+          // @ts-ignore
+          setSelectedCourseId((prev) =>
+            mapped.some((c) => c.id === prev) ? prev : null,
+          );
+        }
+      })
+      .catch((err) => {
+        if (err?.response?.status === 404) {
+          if (!canceled) setCourses([]);
+          return;
+        }
+        console.error("Courses could not be retrieved:", err);
+      });
 
-        return () => {
-            canceled = true;
-        };
-    }, []);
+    return () => {
+      canceled = true;
+    };
+  }, []);
 
   return (
     <div className="flex flex-row items-start gap-4">
-      <div className="flex flex-wrap gap-2 text-left">
+      <div className="flex gap-2 text-left overflow-x-auto scr">
         <Button
           variant={selectedCourseId ? "outline" : "default"}
           onClick={() => setSelectedCourseId(null)}
