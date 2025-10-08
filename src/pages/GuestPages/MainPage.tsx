@@ -171,7 +171,7 @@ function MainPage() {
               items={categories.map((c) => {
                 return { name: c, value: c };
               })}
-              multiselect={false}
+              multiselect={true}
               onSelectionChange={setSelectedCategory}
             />
             <FilterDropdown

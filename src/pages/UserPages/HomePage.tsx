@@ -40,10 +40,9 @@ export function HomePage() {
           {/*overflow-y-auto">*/}
           <CourseFilter
             student={user?.student || false}
-            courses={courses}
             setSelectedCourseId={setSelectedCourseId}
             selectedCourseId={selectedCourseId}
-            setupClassButton={true}
+            setupClassButton={user?.student || false}
           />
           <CalendarSummary courses={courses} />
           <AssignmentSummary student={user?.student || false} />

@@ -111,7 +111,7 @@ export function FilterDropdown({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="min-w-[180px] w-1/1 justify-between"
+              className="min-w-[180px] w-1/1 justify-start"
             >
               {Icon ? <Icon /> : null}
               {selectedValues.length > 0

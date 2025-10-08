@@ -69,7 +69,7 @@ export default function CourseFilter({
   }, []);
 
   return (
-    <div className="flex flex-row items-start gap-4">
+    <div className="flex flex-row justify-between gap-4">
       <div className="flex gap-2 text-left overflow-x-auto scr">
         <Button
           variant={selectedCourseId ? "outline" : "default"}
@@ -91,6 +91,7 @@ export default function CourseFilter({
               {course.name}
             </Button>
           ))}
+        {/*TODO: dodać obsługę filtrów studentów i kursów*/}
         {!student && (
           <FilterDropdown
             reset={false}
