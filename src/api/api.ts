@@ -64,10 +64,28 @@ export function getRoles() {
   };
 }
 
-export function getUserId() {
-  if (!accessToken) return null;
-  let decoded = jwtDecode<JwtPayload>(accessToken);
-  return decoded?.nameid ?? null;
+/**
+ * Extracts the user ID (GUID) from the stored access token.
+ *
+ * The method safely decodes the JWT, retrieves the `nameid` claim,
+ * and additionally validates whether the extracted value is a valid GUID format.
+ *
+ * @returns {string | null} The user ID if present and valid, otherwise null.
+ */
+
+export function getUserId(): string | null {
+  try {
+    if (!accessToken) return null;
+
+    const decoded = jwtDecode<JwtPayload>(accessToken);
+    if (decoded?.nameid && /^[0-9a-fA-F-]{36}$/.test(decoded.nameid)) {
+      return decoded.nameid;
+    }
+    return null;
+  } catch (err) {
+    console.error("Failed to decode user ID from token:", err);
+    return null;
+  }
 }
 
 export default api;
