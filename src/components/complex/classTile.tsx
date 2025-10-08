@@ -55,9 +55,7 @@ export default function ClassTile({
       </p>
       {title && (
         <p className={"self-end"}>
-          {(title + title).length > 10
-            ? (title + title).slice(0, 10) + "..."
-            : title}
+          {title.length > 10 ? title.slice(0, 10) + "..." : title}
         </p>
       )}
     </div>
