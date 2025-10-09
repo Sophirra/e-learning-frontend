@@ -191,10 +191,10 @@ export const getCourses = async (filters?: {
  * is a **teacher** or **student** based on their JWT roles and returns only the relevant classes.
  *
  * Each item includes:
- * - `courseId` – the unique identifier of the course.
- * - `courseName` – the name of the course.
- * - `startTime` – the class start date and time (converted from ISO string to `Date`).
- * - `teacherId` – the identifier of the teacher assigned to the course.
+ * - `courseId`   the unique identifier of the course.
+ * - `courseName`   the name of the course.
+ * - `startTime`   the class start date and time (converted from ISO string to `Date`).
+ * - `teacherId`   the identifier of the teacher assigned to the course.
  *
  * @returns {Promise<CourseBrief[]>} A promise that resolves to a list of upcoming classes.
  *
@@ -277,4 +277,52 @@ export const removeSpectator = async (spectatorId: string): Promise<void> => {
  */
 export const addSpectator = async (spectatorEmail: string): Promise<void> => {
     await Api.post("/api/spectators", { spectatorEmail });
+};
+
+/**
+ * Sends a request to accept a pending spectator invitation using its unique token.
+ *
+ * The API endpoint `/api/spectators/invites/accept` validates the provided invitation token,
+ * ensures the current user is the invited spectator, and finalizes the spectatorship relationship.
+ *
+ * The request body must contain:
+ * - `token`   the secure invitation token received via email link.
+ *
+ * Possible server responses:
+ * - **204 No Content**   invitation successfully accepted.
+ * - **400 Bad Request**   missing or invalid `token` value.
+ * - **401 Unauthorized**   user is not authenticated or JWT token is invalid.
+ * - **403 Forbidden**   current user is not the invited spectator.
+ * - **404 Not Found**   invitation not found.
+ * - **409 Conflict**   invitation already accepted or expired.
+ * - **500 Internal Server Error**   unexpected server error while accepting the invitation.
+ *
+ * @param {string} token - The secure token associated with the spectator invitation.
+ * @returns {Promise<void>} Resolves when the invitation has been successfully accepted.
+ */
+
+
+/**
+ * Sends a request to accept a pending spectator invitation using its unique token.
+ *
+ * The API endpoint `/api/spectators/invites/accept` validates the provided invitation token,
+ * ensures the current user is the invited spectator, and finalizes the spectatorship relationship.
+ *
+ * The request body must contain:
+ * - `token`   the secure invitation token received via email link.
+ *
+ * Possible server responses:
+ * - **204 No Content**   invitation successfully accepted.
+ * - **400 Bad Request**   missing or invalid `token` value.
+ * - **401 Unauthorized**   user is not authenticated or JWT token is invalid.
+ * - **403 Forbidden**   current user is not the invited spectator.
+ * - **404 Not Found**   invitation not found.
+ * - **409 Conflict**   invitation already accepted or expired.
+ * - **500 Internal Server Error**   unexpected server error while accepting the invitation.
+ *
+ * @param {string} token - The secure token associated with the spectator invitation.
+ * @returns {Promise<void>} Resolves when the invitation has been successfully accepted.
+ */
+export const acceptSpectatorInvite = async (token: string): Promise<void> => {
+    await Api.post("/api/spectators/invites/accept", { token });
 };

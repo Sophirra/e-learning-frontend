@@ -61,8 +61,15 @@ export function SpectatorSendInvitePopup({ onInvited }: { onInvited?: () => void
                     break;
                 case 404:
                     toast.error(
-                        message || "Spectator not found or relation already exists."
-                    );
+                        message || "Spectator not found or relation already exists.");
+                    break;
+                case 409:
+                    toast.error(
+                        message || "Invite already exists.");
+                    break;
+                case 500:
+                    toast.error(
+                        message || "Something went wrong while creating the invite.");
                     break;
                 default:
                     toast.error(message);
