@@ -51,7 +51,7 @@ export default function CourseFilter({
           setCourses(mapped);
           // @ts-ignore
           setSelectedCourseId((prev) =>
-            mapped.some((c) => c.id === prev) ? prev : null,
+            mapped.some((c) => c.courseId === prev) ? prev : null,
           );
         }
       })
@@ -80,15 +80,17 @@ export default function CourseFilter({
         {student &&
           courses.map((course: CourseBrief) => (
             <Button
-              key={course.id}
-              variant={selectedCourseId == course.id ? "default" : "outline"}
+              key={course.courseId}
+              variant={
+                selectedCourseId == course.courseId ? "default" : "outline"
+              }
               size={"sm"}
               className="justify-start text-left h-auto py-2 px-3"
               onClick={() => {
-                setSelectedCourseId(course.id);
+                setSelectedCourseId(course.courseId);
               }}
             >
-              {course.name}
+              {course.courseName}
             </Button>
           ))}
         {/*TODO: dodać obsługę filtrów studentów i kursów*/}
@@ -114,8 +116,8 @@ export default function CourseFilter({
             key={"courses"}
             items={courses.map((c) => {
               return {
-                name: c.name,
-                value: c.id,
+                name: c.courseName,
+                value: c.courseId,
               };
             })}
             icon={icons.BookOpen}

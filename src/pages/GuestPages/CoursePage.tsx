@@ -15,12 +15,17 @@ import type {
   TeacherReview,
 } from "@/api/types.ts";
 import { CourseDetailCard } from "@/features/course/courseDetailCard.tsx";
-import WeekScheduleDialog from "@/components/complex/weekSchedule.tsx";
+import WeekScheduleDialog from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { toast } from "sonner";
 import OpinionCard from "@/components/complex/opinionCard.tsx";
 import { SearchBar } from "@/components/complex/searchBar.tsx";
-import {getCourseById, getTeacherAvailabilityByCourseId, getTeacherById, getTeacherReviews} from "@/api/apiCalls.ts";
+import {
+  getCourseById,
+  getTeacherAvailabilityByCourseId,
+  getTeacherById,
+  getTeacherReviews,
+} from "@/api/apiCalls.ts";
 
 /**
  * CoursePage component displays detailed information about a specific course.tsx
@@ -66,7 +71,6 @@ export function CoursePage() {
 
     loadTeacher();
   }, [teacherId]);
-
 
   useEffect(() => {
     if (!teacherId) return;
@@ -119,14 +123,12 @@ export function CoursePage() {
     loadAvailabilityByCourse();
   }, [courseId]);
 
-
   const selectedVariant =
     course?.variants.find(
       (v) =>
         v.languageName === selectedLanguage[0]?.value &&
         v.levelName === selectedLevel[0]?.value,
     ) ?? null;
-
 
   return (
     <div className="bg-white h-screen">
@@ -152,18 +154,17 @@ export function CoursePage() {
           </div>
 
           <div className="w-3/4 space-y-8">
-
             {course && (
-                <CourseDetailCard
-                    id={course.id}
-                    name={course.name}
-                    description={course.description}
-                    teacher={teacherId}
-                    profilePictureUrl={course.profilePictureUrl}
-                    //TODO: warianty zdecydowanie nie są opcjonalne
-                    // odp: podpięte varianty
-                    variants={course.variants ?? []}
-                />
+              <CourseDetailCard
+                id={course.id}
+                name={course.name}
+                description={course.description}
+                teacher={teacherId}
+                profilePictureUrl={course.profilePictureUrl}
+                //TODO: warianty zdecydowanie nie są opcjonalne
+                // odp: podpięte varianty
+                variants={course.variants ?? []}
+              />
             )}
 
             <div className="flex flex-wrap items-end gap-4 mb-8">
@@ -222,29 +223,29 @@ export function CoursePage() {
                 </Button>
               </div>
               {courseId && (
-                  <WeekScheduleDialog
-                      disabled={
-                          selectedLanguage.length === 0 ||
-                          selectedLevel.length === 0 ||
-                          !selectedVariant
-                      }
-                      onConfirm={(slot) => {
-                        console.log("Wybrany slot:", slot);
-                      }}
-                      classDetails={
-                        selectedVariant
-                            ? `${selectedLevel[0].value ?? ""} ${course?.name ?? ""} class in ${selectedLanguage[0].value ?? ""}`
-                            : undefined
-                      }
-                      courseId={courseId}
-                  />
+                <WeekScheduleDialog
+                  disabled={
+                    selectedLanguage.length === 0 ||
+                    selectedLevel.length === 0 ||
+                    !selectedVariant
+                  }
+                  onConfirm={(slot) => {
+                    console.log("Wybrany slot:", slot);
+                  }}
+                  classDetails={
+                    selectedVariant
+                      ? `${selectedLevel[0].value ?? ""} ${course?.name ?? ""} class in ${selectedLanguage[0].value ?? ""}`
+                      : undefined
+                  }
+                  courseId={courseId}
+                />
               )}
             </div>
             <div className="grid grid-cols-2 gap-8 ">
               {teacherReviews?.map((review) => (
                 <OpinionCard
                   //TODO: dodać id do review - potrzebny bo korzystamy z listy
-                    // odp: dodane
+                  // odp: dodane
                   key={review.id}
                   authorName={
                     review.reviewerName + " " + review.reviewerSurname

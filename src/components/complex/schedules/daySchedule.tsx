@@ -1,37 +1,37 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-
-interface TimeSlot {
-  start: number;
-  end: number;
-  dayIndex: number;
-  date: Date;
-}
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import type { TimeSlot } from "@/components/complex/schedules/schedule.tsx";
 
 interface DayScheduleProps {
   date: Date;
-  dayIndex: number;
   timeSlots: TimeSlot[];
   isActive: boolean;
   isSelected: (slot: TimeSlot) => boolean | null;
   onSelect: (slot: TimeSlot) => void;
-  formatTime: (hour: number) => string;
-  getDayName: (date: Date) => string;
-  formatDate: (date: Date) => string;
+  displayMode: "class" | "time";
 }
 
 export function DaySchedule({
   date,
-  dayIndex,
   timeSlots,
   isActive,
   isSelected,
   onSelect,
-  formatTime,
-  getDayName,
-  formatDate,
+  displayMode,
 }: DayScheduleProps) {
   const hasSlots = timeSlots.length > 0;
+
+  // -- FUNCTIONS USED TO FORMAT DATA FROM API --
+  const formatTime = (hour: number) => `${hour.toString().padStart(2, "0")}:00`;
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const getDayName = (date: Date) =>
+    date.toLocaleDateString("en-US", { weekday: "long" });
 
   return (
     <Card
@@ -60,10 +60,15 @@ export function DaySchedule({
                 key={slotIndex}
                 variant={isSelected(slot) ? "default" : "outline"}
                 size="sm"
-                className="text-xs h-8 w-full"
+                className="text-xs h-fit min-h-8 w-full max-w-60 p-1"
                 onClick={() => onSelect(slot)}
+                disabled={displayMode == "class" ? !slot.courseName : false}
               >
-                {formatTime(slot.start)} - {formatTime(slot.end)}
+                <div className={"flex flex-col"}>
+                  <p>{formatTime(slot.start) + " - " + formatTime(slot.end)}</p>
+                  {displayMode == "class" && <p> {slot.courseName}</p>}
+                  {displayMode == "class" && <p> {slot.studentName}</p>}
+                </div>
               </Button>
             ))}
           </div>

@@ -19,7 +19,7 @@ import {
 } from "@/components/complex/filterDropdown.tsx";
 import WeekScheduleDialog, {
   type TimeSlot,
-} from "@/components/complex/weekSchedule.tsx";
+} from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 
 export function SetupNewClassPopup({ course }: { course: string }) {
   //TODO: add data from backend

@@ -11,10 +11,10 @@ export function CalendarPage() {
   return (
     <div className="bg-white h-screen">
       <NavigationBar />
-      {user?.student ? (
-        <StudentCalendar />
-      ) : user?.teacher ? (
+      {user?.teacher ? (
         <TeacherCalendar />
+      ) : user?.student ? (
+        <StudentCalendar />
       ) : (
         <ErrorPage />
       )}

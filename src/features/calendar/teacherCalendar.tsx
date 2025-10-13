@@ -3,9 +3,7 @@ import { Content } from "@/components/ui/content.tsx";
 /* import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import ClassTile, {
-  type ClassTileProps,
-} from "@/components/complex/classTile.tsx";
+import { type ClassTileProps } from "@/components/complex/classTile.tsx";
 import {
   type LinkProps,
   LinksSummary,
@@ -19,10 +17,11 @@ import {
   type FileProps,
   FilesSummary,
 } from "@/components/complex/summaries/filesSummary.tsx";
-import { DaySchedule } from "@/components/complex/daySchedule.tsx";
-import type { TimeSlot } from "@/components/complex/weekSchedule.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
+import Schedule, {
+  type ApiDayAvailability,
+  type ClassSchedule,
+  type TimeSlot,
+} from "@/components/complex/schedules/schedule.tsx";
 
 type ClassBriefDto = {
   id: string;
@@ -68,73 +67,70 @@ export function TeacherCalendar() {
   const [assignments, setAssignments] = useState<AnyTask[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
+  //TODO: MODIFY TO ACCOMMODATE TO TEACHER
+
   // RETRIEVE TIMELINE
-  useEffect(() => {
-    const studentId = getUserId();
-    if (!studentId) return;
-
-    const from = new Date();
-    from.setDate(from.getDate() - 30);
-    const to = new Date();
-
-    const params: any = {
-      from: from.toISOString(),
-      to: to.toISOString(),
-    };
-
-    if (selectedCourseId) {
-      params.participationIds = selectedCourseId;
-    }
-
-    api
-      .get<ClassBriefDto[]>(`/api/students/${studentId}/timeline`, { params })
-      .then((res) => {
-        const data = (res.data ?? []) as ClassBriefDto[];
-
-        setTimeline(data); // Save raw data
-
-        // Build left column data
-        const now = new Date();
-        const mappedClasses: ClassTileProps[] = data
-          .map((cls) => {
-            const start = new Date(cls.startTime);
-            let state: "upcoming" | "ongoing" | "completed" = "completed";
-
-            if (start > now) state = "upcoming";
-            else if (
-              start <= now &&
-              now.getTime() - start.getTime() < 60 * 60 * 1000
-            )
-              // 60 * 60 * 1000 = 1 hour
-              state = "ongoing";
-
-            return {
-              id: cls.id,
-              state,
-              date: start,
-              title: cls.courseName,
-              duration: 60,
-            };
-          })
-          // Sort by date descending
-          .sort((a, b) => b.date.getTime() - a.date.getTime());
-
-        setClasses(mappedClasses);
-
-        // If the selected class no longer exists (course change) -> clear the filter
-        setSelectedClassId((prev) =>
-          prev && !data.some((c) => c.id === prev) ? null : prev,
-        );
-      })
-      .catch((err) => {
-        console.error("Timeline could not be retrieved:", err);
-      });
-  }, [selectedCourseId]);
-
-  // Handler to toggle the selected class (clicking the same tile again clears the filter)
-  const handleSelectClassId = useCallback((id: string | null) => {
-    setSelectedClassId((prev) => (prev === id ? null : id));
-  }, []);
+  // useEffect(() => {
+  //   const studentId = getUserId();
+  //   if (!studentId) return;
+  //
+  //   const from = new Date();
+  //   from.setDate(from.getDate() - 30);
+  //   const to = new Date();
+  //
+  //   const params: any = {
+  //     from: from.toISOString(),
+  //     to: to.toISOString(),
+  //   };
+  //
+  //   if (selectedCourseId) {
+  //     params.participationIds = selectedCourseId;
+  //   }
+  //
+  //   api
+  //     .get<ClassBriefDto[]>(`/api/students/${studentId}/timeline`, { params })
+  //     .then((res) => {
+  //       const data = (res.data ?? []) as ClassBriefDto[];
+  //
+  //       setTimeline(data); // Save raw data
+  //
+  //       // Build left column data
+  //       const now = new Date();
+  //       const mappedClasses: ClassTileProps[] = data
+  //         .map((cls) => {
+  //           const start = new Date(cls.startTime);
+  //           let state: "upcoming" | "ongoing" | "completed" = "completed";
+  //
+  //           if (start > now) state = "upcoming";
+  //           else if (
+  //             start <= now &&
+  //             now.getTime() - start.getTime() < 60 * 60 * 1000
+  //           )
+  //             // 60 * 60 * 1000 = 1 hour
+  //             state = "ongoing";
+  //
+  //           return {
+  //             id: cls.id,
+  //             state,
+  //             date: start,
+  //             title: cls.courseName,
+  //             duration: 60,
+  //           };
+  //         })
+  //         // Sort by date descending
+  //         .sort((a, b) => b.date.getTime() - a.date.getTime());
+  //
+  //       setClasses(mappedClasses);
+  //
+  //       // If the selected class no longer exists (course change) -> clear the filter
+  //       setSelectedClassId((prev) =>
+  //         prev && !data.some((c) => c.id === prev) ? null : prev,
+  //       );
+  //     })
+  //     .catch((err) => {
+  //       console.error("Timeline could not be retrieved:", err);
+  //     });
+  // }, [selectedCourseId]);
 
   // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
   useEffect(() => {
@@ -213,92 +209,120 @@ export function TeacherCalendar() {
     setFiles(mappedFiles);
   }, [selectedClassId, timeline]);
 
-  //tymczasowe dane
-  // Selected time slots for booking
-  const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
-
-  // Helper functions for DaySchedule
-  const formatTime = (hour: number) => {
-    return `${hour.toString().padStart(2, "0")}:00`;
-  };
-
-  const getDayName = (date: Date) => {
-    const days = [
-      "Niedziela",
-      "Poniedziałek",
-      "Wtorek",
-      "Środa",
-      "Czwartek",
-      "Piątek",
-      "Sobota",
-    ];
-    return days[date.getDay()];
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("pl-PL", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
-
-  const isSelected = (slot: TimeSlot) => {
-    return selectedSlots.some(
-      (s) =>
-        s.start === slot.start &&
-        s.end === slot.end &&
-        s.dayIndex === slot.dayIndex,
-    );
-  };
-
-  const onSelectSlot = (slot: TimeSlot) => {
-    setSelectedSlots((prev) => {
-      const exists = prev.some(
-        (s) =>
-          s.start === slot.start &&
-          s.end === slot.end &&
-          s.dayIndex === slot.dayIndex,
-      );
-      if (exists) {
-        return prev.filter(
-          (s) =>
-            !(
-              s.start === slot.start &&
-              s.end === slot.end &&
-              s.dayIndex === slot.dayIndex
-            ),
-        );
-      }
-      return [...prev, slot];
-    });
-  };
-
-  // Example dates (today, tomorrow, day after tomorrow)
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const dayAfterTomorrow = new Date(today);
-  dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
-
-  // Example time slots
-  const todaySlots: TimeSlot[] = [
-    { start: 9, end: 10, dayIndex: 0, date: today },
-    { start: 10, end: 11, dayIndex: 0, date: today },
-    { start: 14, end: 15, dayIndex: 0, date: today },
-    { start: 15, end: 16, dayIndex: 0, date: today },
+  let tempAvailability: ApiDayAvailability[] = [
+    {
+      day: new Date().toISOString().slice(0, 10), // Dzisiaj
+      timeslots: [
+        { timeFrom: "10:00", timeUntil: "11:00" },
+        { timeFrom: "14:00", timeUntil: "15:00" },
+        { timeFrom: "15:00", timeUntil: "16:00" },
+      ],
+    },
+    {
+      day: new Date(Date.now() + 86400000).toISOString().slice(0, 10), // Jutro
+      timeslots: [
+        { timeFrom: "08:00", timeUntil: "09:00" },
+        { timeFrom: "11:00", timeUntil: "12:00" },
+        { timeFrom: "13:00", timeUntil: "14:00" },
+        { timeFrom: "16:00", timeUntil: "17:00" },
+      ],
+    },
+    {
+      day: new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10), // Pojutrze
+      timeslots: [
+        { timeFrom: "10:00", timeUntil: "11:00" },
+        { timeFrom: "12:00", timeUntil: "13:00" },
+        { timeFrom: "14:00", timeUntil: "15:00" },
+      ],
+    },
+    {
+      day: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10),
+      timeslots: [
+        { timeFrom: "10:00", timeUntil: "11:00" },
+        { timeFrom: "11:00", timeUntil: "12:00" },
+        { timeFrom: "15:00", timeUntil: "16:00" },
+      ],
+    },
+    {
+      day: new Date(Date.now() + 86400000 * 4).toISOString().slice(0, 10),
+      timeslots: [],
+    },
+    {
+      day: new Date(Date.now() + 86400000 * 5).toISOString().slice(0, 10),
+      timeslots: [
+        { timeFrom: "13:00", timeUntil: "14:00" },
+        { timeFrom: "14:00", timeUntil: "15:00" },
+      ],
+    },
+    {
+      day: new Date(Date.now() + 86400000 * 6).toISOString().slice(0, 10),
+      timeslots: [
+        { timeFrom: "09:00", timeUntil: "10:00" },
+        { timeFrom: "10:00", timeUntil: "11:00" },
+        { timeFrom: "12:00", timeUntil: "13:00" },
+        { timeFrom: "13:00", timeUntil: "14:00" },
+        { timeFrom: "14:00", timeUntil: "15:00" },
+      ],
+    },
   ];
 
-  const tomorrowSlots: TimeSlot[] = [
-    { start: 8, end: 9, dayIndex: 1, date: tomorrow },
-    { start: 11, end: 12, dayIndex: 1, date: tomorrow },
-    { start: 13, end: 14, dayIndex: 1, date: tomorrow },
+  const tempClasses: ClassSchedule[] = [
+    {
+      classId: "class-001",
+      studentName: "Jan Kowalski",
+      courseName: "Mathematics",
+      classDate: new Date(),
+      classStartTime: "09:00",
+      classEndTime: "10:00",
+    },
+    {
+      classId: "class-002",
+      studentName: "Anna Nowak",
+      courseName: "Physics",
+      classDate: new Date(),
+      classStartTime: "11:00",
+      classEndTime: "12:00",
+    },
+    {
+      classId: "class-003",
+      studentName: "Piotr Wiśniewski",
+      courseName: "Chemistry",
+      classDate: new Date(Date.now() + 86400000), // Jutro
+      classStartTime: "10:00",
+      classEndTime: "11:00",
+    },
+    {
+      classId: "class-004",
+      studentName: "Maria Lewandowska",
+      courseName: "Biology",
+      classDate: new Date(Date.now() + 86400000), // Jutro
+      classStartTime: "14:00",
+      classEndTime: "15:00",
+    },
+    {
+      classId: "class-005",
+      studentName: "Tomasz Kamiński",
+      courseName: "Mathematics",
+      classDate: new Date(Date.now() + 86400000 * 2), // Pojutrze
+      classStartTime: "09:00",
+      classEndTime: "10:00",
+    },
+    {
+      classId: "class-006",
+      studentName: "Katarzyna Wójcik",
+      courseName: "English",
+      classDate: new Date(Date.now() + 86400000 * 2), // Pojutrze
+      classStartTime: "13:00",
+      classEndTime: "14:00",
+    },
   ];
 
-  const dayAfterSlots: TimeSlot[] = [
-    { start: 10, end: 11, dayIndex: 2, date: dayAfterTomorrow },
-    { start: 12, end: 13, dayIndex: 2, date: dayAfterTomorrow },
-  ];
+  function handleSelect(slot: TimeSlot) {
+    if (slot.classId) {
+      setSelectedClassId(slot.classId);
+      console.log("Selected class:", slot.classId);
+    }
+  }
 
   return (
     <Content>
@@ -313,78 +337,14 @@ export function TeacherCalendar() {
       />
       <div className="flex flex-row gap-8 p-4">
         <div className="w-3/5 sticky top-0 self-start h-fit space-y-2">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setCurrentWeekOffset(currentWeekOffset - 1)}
-              disabled={!canGoBack}
-            >
-              <icons.ChevronLeft className="h-4 w-4" />
-            </Button>
-
-            <div className="text-lg font-semibold">
-              {formatDate(weekDays[0])} - {formatDate(weekDays[6])}
-            </div>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setCurrentWeekOffset(currentWeekOffset + 1)}
-              disabled={!canGoForward}
-            >
-              <icons.ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className={"grid grid-cols-3 gap-4"}>
-            <DaySchedule
-              date={today}
-              dayIndex={0}
-              timeSlots={todaySlots}
-              isActive={true}
-              isSelected={isSelected}
-              onSelect={onSelectSlot}
-              formatTime={formatTime}
-              getDayName={getDayName}
-              formatDate={formatDate}
-            />
-            <DaySchedule
-              date={tomorrow}
-              dayIndex={1}
-              timeSlots={tomorrowSlots}
-              isActive={true}
-              isSelected={isSelected}
-              onSelect={onSelectSlot}
-              formatTime={formatTime}
-              getDayName={getDayName}
-              formatDate={formatDate}
-            />
-            <DaySchedule
-              date={dayAfterTomorrow}
-              dayIndex={2}
-              timeSlots={dayAfterSlots}
-              isActive={true}
-              isSelected={isSelected}
-              onSelect={onSelectSlot}
-              formatTime={formatTime}
-              getDayName={getDayName}
-              formatDate={formatDate}
-            />
-          </div>
-          {/*{classes === null || classes.length === 0 ? (*/}
-          {/*  <div className="gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-base">*/}
-          {/*    No classes available for the selected course*/}
-          {/*  </div>*/}
-          {/*) : (*/}
-          {/*  classes.map((c) => (*/}
-          {/*    <ClassTile*/}
-          {/*      key={c.id}*/}
-          {/*      {...c}*/}
-          {/*      setSelectedClassId={handleSelectClassId}*/}
-          {/*      selectedClassId={selectedClassId}*/}
-          {/*    />*/}
-          {/*  ))*/}
-          {/*)}*/}
+          <Schedule
+            daysCount={3}
+            startDate={new Date()}
+            apiDayAvailability={tempAvailability}
+            displayMode={"class"}
+            classes={tempClasses}
+            onSelect={handleSelect}
+          />
         </div>
         <div className="w-2/5 space-y-8">
           <LinksSummary links={links} />
