@@ -40,12 +40,11 @@ export default function CourseFilter({
       .then((res) => {
         const data = res.data ?? [];
         const mapped: CourseBrief[] = data
-          .map((p: any) => {
-            const id = p.courseId ?? p.CourseId ?? "";
-            const name = p.courseName ?? p.CourseName ?? "";
-            return { id, name };
-          })
-          .filter((c: any) => c.id && c.name);
+          .map((p: any) => ({
+            courseId: p.courseId ?? p.CourseId ?? "",
+            courseName: p.courseName ?? p.CourseName ?? "",
+          }))
+          .filter((c: any) => c.courseId && c.courseName);
 
         if (!canceled) {
           setCourses(mapped);
