@@ -27,7 +27,17 @@ export function CalendarSummary({ courses }: { courses: CourseBrief[] }) {
               >
                 {course.courseName}
               </Button>
-              <Label>{course.startTime.toLocaleString()}</Label>
+                <Label>
+                    {`${course.startTime.toLocaleDateString("pl", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric"
+                    })} at ${course.startTime.toLocaleTimeString("pl", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false
+                    })}`}
+                </Label>
             </div>
         ))}
       </Summary>
