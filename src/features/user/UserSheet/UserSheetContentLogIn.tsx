@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUser, aboutMe } from "@/api/auth.ts";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { User } from "@/features/user/user.ts";
+import { getRoles } from "@/api/api.ts";
 
 let loginSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -37,11 +38,12 @@ export function UserSheetContentLogIn({
     try {
       let resLogin = await loginUser(userData);
       let resUser = await aboutMe();
+      let resRoles = getRoles();
       let user: User = {
         name: resUser.name,
         surname: resUser.surname,
-        teacher: resLogin.roles.includes("teacher"),
-        student: resLogin.roles.includes("student"),
+        roles: resRoles,
+        activeRole: resRoles[0],
       };
       console.log(user);
       setUser(user);

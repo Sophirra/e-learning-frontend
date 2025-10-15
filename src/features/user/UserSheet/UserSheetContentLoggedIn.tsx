@@ -9,6 +9,7 @@ export function UserSheetContentLoggedIn({
 }) {
   let { user, changeRole } = useUser();
   if (!user) return null;
+  console.log(user);
   return (
     <div className="mt-4 p-8 flex flex-col gap-4">
       <h3>
