@@ -43,7 +43,7 @@ export function AssignmentPage() {
       <NavigationBar />
       <Content>
         <CourseFilter
-          student={user?.student || false}
+          student={user.activeRole == "student"}
           courses={courses}
           setSelectedCourseId={setSelectedCourseId}
           selectedCourseId={selectedCourseId}

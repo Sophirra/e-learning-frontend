@@ -43,9 +43,9 @@ export function StudentsPage() {
                 "https://i.pinimg.com/736x/af/f0/1c/aff01cea24b478bec034cf412406dbe5.jpg"
               }
               courses={[
-                { id: "1", name: "one" },
-                { id: "2", name: "two" },
-                { id: "3", name: "three" },
+                { courseId: "1", courseName: "one" },
+                { courseId: "2", courseName: "two" },
+                { courseId: "3", courseName: "three" },
               ]}
             />
           </div>

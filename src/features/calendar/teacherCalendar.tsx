@@ -12,7 +12,6 @@ import {
   type AnyTask,
   AssignmentSummary,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
-import api, { getUserId } from "../../api/api";
 import {
   type FileProps,
   FilesSummary,

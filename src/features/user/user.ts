@@ -1,6 +1,8 @@
 export interface User {
   name: string;
   surname: string;
-  student: boolean;
-  teacher: boolean;
+  roles: Role[];
+  activeRole: Role;
 }
+
+export type Role = "student" | "teacher";

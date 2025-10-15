@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
@@ -8,7 +8,7 @@ import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.
 import { AssignmentSummary } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { getCourseBriefs } from "@/api/apiCalls.ts";
-import {toast} from "sonner";
+import { toast } from "sonner";
 
 export function HomePage() {
   let { user } = useUser();
@@ -39,13 +39,13 @@ export function HomePage() {
           {/*<div className="flex flex-row gap-8">*/}
           {/*overflow-y-auto">*/}
           <CourseFilter
-            student={user?.student || false}
+            student={user?.activeRole == "student" || false}
             setSelectedCourseId={setSelectedCourseId}
             selectedCourseId={selectedCourseId}
-            setupClassButton={user?.student || false}
+            setupClassButton={user?.activeRole == "student" || false}
           />
           <CalendarSummary courses={courses} />
-          <AssignmentSummary student={user?.student || false} />
+          <AssignmentSummary student={user?.activeRole == "student" || false} />
           <ChatSummary courses={courses} />
         </div>
       </Content>

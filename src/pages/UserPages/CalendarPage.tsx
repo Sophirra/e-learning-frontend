@@ -11,9 +11,9 @@ export function CalendarPage() {
   return (
     <div className="bg-white h-screen">
       <NavigationBar />
-      {user?.teacher ? (
+      {user?.activeRole == "teacher" ? (
         <TeacherCalendar />
-      ) : user?.student ? (
+      ) : user?.activeRole == "student" ? (
         <StudentCalendar />
       ) : (
         <ErrorPage />

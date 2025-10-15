@@ -7,7 +7,7 @@
  * @module UserContext
  */
 
-import type { User } from "@/features/user/user.ts";
+import type { Role, User } from "@/features/user/user.ts";
 import { createContext, useContext, useEffect, useState } from "react";
 import { aboutMe } from "@/api/auth.ts";
 import { getRoles } from "@/api/api.ts";
@@ -20,6 +20,7 @@ import { getRoles } from "@/api/api.ts";
 interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
+  changeRole: (role: Role) => void;
   loading: boolean;
 }
 
@@ -65,13 +66,14 @@ export let UserProvider = ({ children }: { children: React.ReactNode }) => {
         // }
         let resUser = await aboutMe();
         //roles are gotten from access token - hence the api method
-        let roles = getRoles();
+        let resRoles = getRoles();
         setUser({
           name: resUser.name,
           surname: resUser.surname,
-          teacher: roles.teacher,
-          student: roles.student,
+          roles: resRoles,
+          activeRole: resRoles[0],
         });
+        console.log(user);
       } catch {
         setUser(null);
       } finally {
@@ -81,8 +83,12 @@ export let UserProvider = ({ children }: { children: React.ReactNode }) => {
     getUser();
   }, []);
 
+  function changeRole(role: Role) {
+    setUser((prev) => (prev ? { ...prev, activeRole: role } : prev));
+  }
+
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider value={{ user, setUser, loading, changeRole }}>
       {children}
     </UserContext.Provider>
   );
