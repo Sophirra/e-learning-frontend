@@ -30,9 +30,11 @@ interface AssignmentTask extends TaskProps {
 export function AssignmentSummary({
   assignments,
   student,
+  classId,
 }: {
   assignments: AnyTask[];
   student: boolean;
+  classId?: string;
 }) {
   function composeTaskDetails(task: AnyTask) {
     let statusLabel = "";
@@ -59,7 +61,7 @@ export function AssignmentSummary({
         label={"Assignments"}
         labelIcon={icons.ClipboardList}
         canHide={true}
-        customButton={student ? undefined : AddTaskPopup}
+        customButton={student ? undefined : () => AddTaskPopup(classId)}
       >
         <div className="flex flex-col gap-2">
           {assignments === null || assignments?.length === 0 ? (

@@ -238,7 +238,7 @@ export function StudentCalendar() {
           )}
         </div>
         <div className="w-3/4 space-y-8">
-          <LinksSummary links={links} />
+          <LinksSummary links={links} student={true} />
           <AssignmentSummary assignments={assignments} student={true} />
           <FilesSummary files={files} lastCount={5} />
         </div>

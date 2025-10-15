@@ -1,20 +1,14 @@
-import { Button, type buttonVariants } from "@/components/ui/button.tsx";
-import type { VariantProps } from "class-variance-authority";
+import { Button } from "@/components/ui/button.tsx";
 import React, { useState } from "react";
 import { Divider } from "@/components/ui/divider.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-
-type ButtonComponentProps = React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  };
 
 interface SummaryProps {
   label: string;
   labelIcon: React.ComponentType<any>;
   canHide?: boolean;
   onAddButtonClick?: () => void;
-  customButton?: React.ComponentType<ButtonComponentProps>;
+  customButton?: React.ComponentType<Record<string, unknown>> | undefined;
   children?: React.ReactNode;
 }
 
@@ -40,7 +34,7 @@ export default function Summary({
           <div className="flex-grow" />
           {canHide && (open ? <icons.ChevronUp /> : <icons.ChevronDown />)}
         </Button>
-        {CustomButton && <CustomButton />}
+        {CustomButton && <CustomButton onClick={onAddButtonClick} />}
         {onAddButtonClick && (
           <Button onClick={onAddButtonClick} variant="ghost">
             <icons.Plus /> Add

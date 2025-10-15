@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Label } from "@/components/ui/label.tsx";
 import type { CourseBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useState } from "react";

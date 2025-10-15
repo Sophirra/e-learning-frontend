@@ -347,9 +347,17 @@ export function TeacherCalendar() {
           />
         </div>
         <div className="w-2/5 space-y-8">
-          <LinksSummary links={links} />
-          <AssignmentSummary assignments={assignments} student={false} />
-          <FilesSummary files={files} lastCount={5} />
+          <LinksSummary
+            links={links}
+            student={false}
+            classId={selectedClassId ? selectedClassId : undefined}
+          />
+          <AssignmentSummary
+            assignments={assignments}
+            student={false}
+            classId={selectedClassId ? selectedClassId : undefined}
+          />
+          <FilesSummary files={files} lastCount={5} student={false} />
         </div>
       </div>
     </Content>

@@ -27,7 +27,7 @@ export type PopupType =
   | "copyAssignment"
   | "copyQuiz";
 
-export function AddTaskPopup() {
+export function AddTaskPopup(classId?: string) {
   let [openedPopup, setOpenedPopup] = useState<PopupType>("addTask");
 
   function AddTaskPopupContent({
@@ -144,6 +144,7 @@ export function AddTaskPopup() {
           onClick={() => {
             setOpenedPopup("addTask");
           }}
+          disabled={!classId}
         >
           <icons.Plus />
           Add
