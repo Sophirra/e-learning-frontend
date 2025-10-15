@@ -29,9 +29,10 @@ export function CalendarSummary({courses}: { courses: CourseBrief[] }) {
                             variant="link"
                             className="w-300px"
                             onClick={() =>
-                                navigate(`/course/${course.courseId}`, {
-                                    state: {teacherId: course.teacherId ?? ""},
+                                navigate('/calendar', {
+                                    state: { selectedCourseId: course.courseId }
                                 })
+
                             }
                         >
                             {course.courseName}

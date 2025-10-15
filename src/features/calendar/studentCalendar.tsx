@@ -1,14 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { Content } from "@/components/ui/content.tsx";
-/* import Summary from "@/components/complex/summaries/summary.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
 import ClassTile, { type ClassTileProps } from "@/components/complex/classTile.tsx";
 import { type LinkProps, LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
 import { type AnyTask, AssignmentSummary } from "@/components/complex/summaries/assignmentSummary.tsx";
 import api, { getUserId } from "../../api/api";
 import { type FileProps, FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
+import {useLocation} from "react-router-dom";
 
 type ClassBriefDto = {
     id: string;
@@ -38,7 +36,11 @@ type ClassBriefDto = {
 };
 
 export function StudentCalendar() {
-    const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+    const location = useLocation();
+
+    const [selectedCourseId, setSelectedCourseId] = useState<string | null>(() => {
+        return (location.state)?.selectedCourseId ?? null;
+    });
 
     // The class selcted in the left column
     const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
@@ -53,6 +55,15 @@ export function StudentCalendar() {
     const [links, setLinks] = useState<LinkProps[]>([]);
     const [assignments, setAssignments] = useState<AnyTask[]>([]);
     const [files, setFiles] = useState<FileProps[]>([]);
+
+    // IF the component was already mounted, and we enter again with a different courseId in state,
+    // synchronize the state (and clear the selected class).
+    useEffect(() => {
+        const incoming = (location.state)?.selectedCourseId ?? null;
+        setSelectedCourseId(prev => (prev !== incoming ? incoming : prev));
+        setSelectedClassId(null);
+    }, [location.state]);
+
 
     // RETRIEVE TIMELINE
     useEffect(() => {
