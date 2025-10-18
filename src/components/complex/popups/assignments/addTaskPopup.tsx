@@ -15,26 +15,14 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { AddAssignmentPopup } from "@/components/complex/popups/assignments/addAssignmentPopup.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx";
 import { CopyAssignmentPopup } from "@/components/complex/popups/assignments/copyAssignmentPopup.tsx";
 import { CopyQuizPopup } from "@/components/complex/popups/assignments/copyQuizPopup.tsx";
-
-export type PopupType =
-  | "addTask"
-  | "addAssignment"
-  | "uploadFile"
-  | "addQuiz"
-  | "copyAssignment"
-  | "copyQuiz";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { useNavigate } from "react-router-dom";
 
 export function AddTaskPopup(classId?: string) {
-  let [openedPopup, setOpenedPopup] = useState<PopupType>("addTask");
-
-  function AddTaskPopupContent({
-    setOpenedPopup,
-  }: {
-    setOpenedPopup: (val: PopupType) => void;
-  }) {
+  function AddTaskPopupContent() {
+    const navigate = useNavigate();
     //TODO: download data from backend
     let availableClasses = [
       { className: "class1", classId: "course1_id" },
@@ -49,124 +37,109 @@ export function AddTaskPopup(classId?: string) {
     let [selectedTaskType, setSelectedTaskType] = useState<SelectableItem[]>(
       [],
     );
-    return (
-      <div className={"sm:max-w-[425px]"}>
-        <DialogHeader>
-          <DialogTitle>Add new task to class</DialogTitle>
-          <DialogDescription>Choose class and task type</DialogDescription>
-        </DialogHeader>
-        <div className={"flex flex-col gap-4"}>
-          <FilterDropdown
-            key={"class"}
-            items={availableClasses.map((c) => {
-              return { name: c.className, value: c.classId };
-            })}
-            placeholder={"Select class"}
-            label={"Class"}
-            emptyMessage={"Select class"}
-            onSelectionChange={setSelectedClass}
-            multiselect={false}
-          />
-          <FilterDropdown
-            key={"student"}
-            disabled={selectedClass.length == 0}
-            label={"For student"}
-            placeholder={"Select student"}
-            emptyMessage={"Select student"}
-            items={availableStudents.map((s) => {
-              return { name: s.studentName, value: s.studentId };
-            })}
-            onSelectionChange={setSelectedStudent}
-            multiselect={false}
-          />
-          <FilterDropdown
-            key={"taskType"}
-            disabled={selectedStudent.length == 0 || selectedClass.length == 0}
-            items={[
-              { name: "Assignment", value: "0" },
-              { name: "Quiz", value: "1" },
-            ]}
-            placeholder={"Select task type"}
-            label={"Task type"}
-            emptyMessage={"Select task type"}
-            onSelectionChange={setSelectedTaskType}
-            multiselect={false}
-          />
 
-          <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
-            <Button
+    return (
+      <Dialog
+        onOpenChange={() => {
+          setSelectedClass([]);
+          setSelectedStudent([]);
+          setSelectedTaskType([]);
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button variant={"ghost"} disabled={!classId}>
+            <icons.Plus />
+            Add
+          </Button>
+        </DialogTrigger>
+        <DialogContent className={"sm:max-w-[425px]"}>
+          <DialogHeader>
+            <DialogTitle>Add new task to class</DialogTitle>
+            <DialogDescription>Choose class and task type</DialogDescription>
+          </DialogHeader>
+          <div className={"flex flex-col gap-4"}>
+            <FilterDropdown
+              key={"class"}
+              items={availableClasses.map((c) => {
+                return { name: c.className, value: c.classId };
+              })}
+              placeholder={"Select class"}
+              label={"Class"}
+              emptyMessage={"Select class"}
+              onSelectionChange={setSelectedClass}
+              multiselect={false}
+            />
+            <FilterDropdown
+              key={"student"}
+              disabled={selectedClass.length == 0}
+              label={"For student"}
+              placeholder={"Select student"}
+              emptyMessage={"Select student"}
+              items={availableStudents.map((s) => {
+                return { name: s.studentName, value: s.studentId };
+              })}
+              onSelectionChange={setSelectedStudent}
+              multiselect={false}
+            />
+            <FilterDropdown
+              key={"taskType"}
               disabled={
-                selectedTaskType.length == 0 ||
-                selectedClass.length == 0 ||
-                selectedStudent.length == 0
+                selectedStudent.length == 0 || selectedClass.length == 0
               }
-              onClick={() => {
-                selectedTaskType && selectedClass && selectedStudent
-                  ? selectedTaskType[0].name == "Quiz"
-                    ? setOpenedPopup("copyQuiz")
-                    : setOpenedPopup("copyAssignment")
-                  : null;
-              }}
-            >
-              Copy existent
-            </Button>
-            <Button
-              variant={"outline"}
-              disabled={
-                selectedTaskType.length == 0 ||
-                selectedClass.length == 0 ||
-                selectedStudent.length == 0
-              }
-              onClick={() => {
-                console.log(selectedTaskType, selectedClass, selectedStudent);
-                selectedTaskType && selectedClass && selectedStudent
-                  ? selectedTaskType[0].name == "Quiz"
-                    ? setOpenedPopup("addQuiz")
-                    : setOpenedPopup("addAssignment")
-                  : // : setAddAssignmentOpen(selectedClass[0].value)
-                    null;
-                console.log("changed to", openedPopup);
-              }}
-            >
-              Create new
-            </Button>
-          </DialogFooter>
-        </div>
-      </div>
+              items={[
+                { name: "Assignment", value: "0" },
+                { name: "Quiz", value: "1" },
+              ]}
+              placeholder={"Select task type"}
+              label={"Task type"}
+              emptyMessage={"Select task type"}
+              onSelectionChange={setSelectedTaskType}
+              multiselect={false}
+            />
+
+            <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
+              {selectedTaskType.length > 0 &&
+              selectedClass.length > 0 &&
+              selectedStudent.length > 0 ? (
+                selectedTaskType[0].name == "Quiz" ? (
+                  <CopyQuizPopup />
+                ) : (
+                  <CopyAssignmentPopup />
+                )
+              ) : (
+                <Button variant={"outline"} disabled={true}>
+                  Copy
+                </Button>
+              )}
+              {selectedTaskType.length > 0 &&
+              selectedClass.length > 0 &&
+              selectedStudent.length > 0 ? (
+                selectedTaskType[0].name == "Quiz" ? (
+                  <DialogClose asChild>
+                    <Button
+                      onClick={() =>
+                        navigate(`/quizzes/create`, {
+                          state: { classId: "selectedClassId" },
+                        })
+                      }
+                    >
+                      Add new quiz
+                    </Button>
+                  </DialogClose>
+                ) : (
+                  <AddAssignmentPopup />
+                )
+              ) : (
+                <Button variant={"outline"} disabled={true}>
+                  Add
+                </Button>
+              )}
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          variant={"ghost"}
-          onClick={() => {
-            setOpenedPopup("addTask");
-          }}
-          disabled={!classId}
-        >
-          <icons.Plus />
-          Add
-        </Button>
-      </DialogTrigger>
-      <DialogContent className={"sm:max-w-[425px]"}>
-        {openedPopup === "addTask" && (
-          <AddTaskPopupContent setOpenedPopup={setOpenedPopup} />
-        )}
-        {openedPopup === "addAssignment" && (
-          <AddAssignmentPopup setOpenedPopup={setOpenedPopup} />
-        )}
-        {openedPopup === "uploadFile" && (
-          <UploadFilePopup setOpenedPopup={setOpenedPopup} />
-        )}
-        {openedPopup === "copyAssignment" && (
-          <CopyAssignmentPopup setOpenedPopup={setOpenedPopup} />
-        )}
-        {openedPopup === "copyQuiz" && (
-          <CopyQuizPopup setOpenedPopup={setOpenedPopup} />
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+  return <AddTaskPopupContent />;
 }

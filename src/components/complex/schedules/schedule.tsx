@@ -207,7 +207,7 @@ export default function Schedule({
         </Button>
       </div>
 
-      <div className={"grid grid-cols-" + daysCount + " gap-4"}>
+      <div className={"grid grid-cols-" + daysCount.toString() + " gap-4"}>
         {weekDays.map((date, dayIndex) => (
           <DaySchedule
             key={dayIndex}
