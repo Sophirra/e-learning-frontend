@@ -21,9 +21,11 @@ export type FileProps = {
 export function FilesSummary({
   files,
   lastCount,
+  student,
 }: {
   files: FileProps[];
   lastCount: number;
+  student: boolean;
 }) {
   const displayedFiles = files.slice(-lastCount);
 

@@ -14,7 +14,7 @@ export function NavigationBar() {
           {[
             { to: "/home", icon: icons.Home, label: "Home" },
             //students tab only visible to teachers
-            user?.teacher
+            user?.activeRole === "teacher"
               ? { to: "/students", icon: icons.Users, label: "Students" }
               : null,
             { to: "/calendar", icon: icons.Calendar, label: "Calendar" },
