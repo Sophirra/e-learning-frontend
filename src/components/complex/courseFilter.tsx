@@ -12,11 +12,15 @@ export default function CourseFilter({
   student,
   selectedCourseId,
   setSelectedCourseId,
+  selectedStudentId,
+  setSelectedStudentId,
   setupClassButton = false,
 }: {
   student: boolean;
   selectedCourseId: string | null;
   setSelectedCourseId: (courseId: string | null) => void;
+  selectedStudentId?: string | null;
+  setSelectedStudentId?: (studentId: string | null) => void;
   setupClassButton: boolean;
 }) {
   const [courses, setCourses] = useState<CourseBrief[]>([]);
@@ -93,7 +97,9 @@ export default function CourseFilter({
             </Button>
           ))}
         {/*TODO: dodać obsługę filtrów studentów i kursów*/}
-        {!student && (
+        {!student && setSelectedStudentId && (
+          //   TODO: students and courses should be filtered related to the other dropdown: display student's courses
+          //    when they're selected or show students attending a selected course in opposite scenario
           <FilterDropdown
             reset={false}
             key={"students"}
@@ -107,9 +113,13 @@ export default function CourseFilter({
             searchable={true}
             placeholder={"Students list"}
             emptyMessage={"No students found"}
+            onSelectionChange={(v) =>
+              setSelectedStudentId(v[0] ? v[0].value : null)
+            }
+            multiselect={false}
           ></FilterDropdown>
         )}
-        {!student && (
+        {!student && setSelectedCourseId && (
           <FilterDropdown
             reset={false}
             key={"courses"}
@@ -123,23 +133,26 @@ export default function CourseFilter({
             searchable={true}
             placeholder={"Courses list"}
             emptyMessage={"No courses found"}
+            multiselect={false}
+            onSelectionChange={(v) =>
+              setSelectedCourseId(v[0] ? v[0].value : null)
+            }
           ></FilterDropdown>
         )}
+        <Button
+          variant={"outline"}
+          size={"icon"}
+          onClick={() => {
+            setSelectedCourseId(null);
+            setSelectedStudentId ? setSelectedStudentId(null) : null;
+          }}
+        >
+          <icons.Reset />
+        </Button>
       </div>
       {setupClassButton && (
-        // <Button variant={"outline"}>
-        //   Setup new class <icons.Plus />
-        // </Button>
         <SetupNewClassPopup course={selectedCourseId ? selectedCourseId : ""} />
       )}
     </div>
   );
 }
-
-// function SetupClassPopup({
-//   role,
-//   selectedCourseId,
-// }: {
-//   role: "student" | "teacher";
-//   selectedCourseId?: string | null;
-// }) {}
