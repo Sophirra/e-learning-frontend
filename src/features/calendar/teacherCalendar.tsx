@@ -21,6 +21,7 @@ import Schedule, {
   type ClassSchedule,
   type TimeSlot,
 } from "@/components/complex/schedules/schedule.tsx";
+import api, { getUserId } from "@/api/api.ts";
 
 type ClassBriefDto = {
   id: string;
@@ -51,7 +52,9 @@ type ClassBriefDto = {
 
 export function TeacherCalendar() {
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
   // The class selcted in the left column
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
@@ -69,67 +72,67 @@ export function TeacherCalendar() {
   //TODO: MODIFY TO ACCOMMODATE TO TEACHER
 
   // RETRIEVE TIMELINE
-  // useEffect(() => {
-  //   const studentId = getUserId();
-  //   if (!studentId) return;
-  //
-  //   const from = new Date();
-  //   from.setDate(from.getDate() - 30);
-  //   const to = new Date();
-  //
-  //   const params: any = {
-  //     from: from.toISOString(),
-  //     to: to.toISOString(),
-  //   };
-  //
-  //   if (selectedCourseId) {
-  //     params.participationIds = selectedCourseId;
-  //   }
-  //
-  //   api
-  //     .get<ClassBriefDto[]>(`/api/students/${studentId}/timeline`, { params })
-  //     .then((res) => {
-  //       const data = (res.data ?? []) as ClassBriefDto[];
-  //
-  //       setTimeline(data); // Save raw data
-  //
-  //       // Build left column data
-  //       const now = new Date();
-  //       const mappedClasses: ClassTileProps[] = data
-  //         .map((cls) => {
-  //           const start = new Date(cls.startTime);
-  //           let state: "upcoming" | "ongoing" | "completed" = "completed";
-  //
-  //           if (start > now) state = "upcoming";
-  //           else if (
-  //             start <= now &&
-  //             now.getTime() - start.getTime() < 60 * 60 * 1000
-  //           )
-  //             // 60 * 60 * 1000 = 1 hour
-  //             state = "ongoing";
-  //
-  //           return {
-  //             id: cls.id,
-  //             state,
-  //             date: start,
-  //             title: cls.courseName,
-  //             duration: 60,
-  //           };
-  //         })
-  //         // Sort by date descending
-  //         .sort((a, b) => b.date.getTime() - a.date.getTime());
-  //
-  //       setClasses(mappedClasses);
-  //
-  //       // If the selected class no longer exists (course change) -> clear the filter
-  //       setSelectedClassId((prev) =>
-  //         prev && !data.some((c) => c.id === prev) ? null : prev,
-  //       );
-  //     })
-  //     .catch((err) => {
-  //       console.error("Timeline could not be retrieved:", err);
-  //     });
-  // }, [selectedCourseId]);
+  useEffect(() => {
+    const studentId = getUserId();
+    if (!studentId) return;
+
+    const from = new Date();
+    from.setDate(from.getDate() - 30);
+    const to = new Date();
+
+    const params: any = {
+      from: from.toISOString(),
+      to: to.toISOString(),
+    };
+
+    if (selectedCourseId) {
+      params.participationIds = selectedCourseId;
+    }
+
+    api
+      .get<ClassBriefDto[]>(`/api/students/${studentId}/timeline`, { params })
+      .then((res) => {
+        const data = (res.data ?? []) as ClassBriefDto[];
+
+        setTimeline(data); // Save raw data
+
+        // Build left column data
+        const now = new Date();
+        const mappedClasses: ClassTileProps[] = data
+          .map((cls) => {
+            const start = new Date(cls.startTime);
+            let state: "upcoming" | "ongoing" | "completed" = "completed";
+
+            if (start > now) state = "upcoming";
+            else if (
+              start <= now &&
+              now.getTime() - start.getTime() < 60 * 60 * 1000
+            )
+              // 60 * 60 * 1000 = 1 hour
+              state = "ongoing";
+
+            return {
+              id: cls.id,
+              state,
+              date: start,
+              title: cls.courseName,
+              duration: 60,
+            };
+          })
+          // Sort by date descending
+          .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+        setClasses(mappedClasses);
+
+        // If the selected class no longer exists (course change) -> clear the filter
+        setSelectedClassId((prev) =>
+          prev && !data.some((c) => c.id === prev) ? null : prev,
+        );
+      })
+      .catch((err) => {
+        console.error("Timeline could not be retrieved:", err);
+      });
+  }, [selectedCourseId]);
 
   // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
   useEffect(() => {
@@ -323,13 +326,16 @@ export function TeacherCalendar() {
     }
   }
 
-  function handleStudentSelect(studentId: string) {}
+  function handleStudentSelect(studentId: string | null) {
+    //TODO: filter downloaded classes by student
+    setSelectedStudentId(studentId);
+  }
 
   return (
     <Content>
       <CourseFilter
         student={false}
-        selectedStudentId={se}
+        setSelectedStudentId={(s) => handleStudentSelect(s)}
         setSelectedCourseId={(id) => {
           setSelectedCourseId(id);
           setSelectedClassId(null);

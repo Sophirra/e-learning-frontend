@@ -47,7 +47,7 @@ export function AddTaskPopup(classId?: string) {
         }}
       >
         <DialogTrigger asChild>
-          <Button variant={"ghost"} disabled={!classId}>
+          <Button variant={"ghost"}>
             <icons.Plus />
             Add
           </Button>
