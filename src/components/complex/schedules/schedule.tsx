@@ -174,6 +174,17 @@ export default function Schedule({
   const formatDate = (date: Date) =>
     date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
+  const gridCols =
+    {
+      1: "grid-cols-1",
+      2: "grid-cols-2",
+      3: "grid-cols-3",
+      4: "grid-cols-4",
+      5: "grid-cols-5",
+      6: "grid-cols-6",
+      7: "grid-cols-7",
+    }[daysCount] || "grid-cols-1";
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -207,7 +218,7 @@ export default function Schedule({
         </Button>
       </div>
 
-      <div className={"grid grid-cols-" + daysCount.toString() + " gap-4"}>
+      <div className={"grid " + gridCols + " gap-4"}>
         {weekDays.map((date, dayIndex) => (
           <DaySchedule
             key={dayIndex}

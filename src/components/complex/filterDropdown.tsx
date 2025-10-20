@@ -136,9 +136,9 @@ export function FilterDropdown({
                   <icons.Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      selectedValues.includes(item)
+                      selectedValues.some((v) => v.value === item.value)
                         ? "opacity-100"
-                        : "opacity-00",
+                        : "opacity-0",
                     )}
                   />
                   {item.name}
