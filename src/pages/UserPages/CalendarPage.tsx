@@ -1,6 +1,5 @@
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentCalendar } from "@/features/calendar/studentCalendar.tsx";
 import { TeacherCalendar } from "@/features/calendar/teacherCalendar.tsx";
 import ErrorPage from "@/pages/ErrorPage.tsx";
