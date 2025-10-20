@@ -323,10 +323,13 @@ export function TeacherCalendar() {
     }
   }
 
+  function handleStudentSelect(studentId: string) {}
+
   return (
     <Content>
       <CourseFilter
         student={false}
+        selectedStudentId={se}
         setSelectedCourseId={(id) => {
           setSelectedCourseId(id);
           setSelectedClassId(null);

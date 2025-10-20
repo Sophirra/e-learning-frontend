@@ -78,18 +78,20 @@ export function StudentDetailsCard({
             //ignore warnings - null is filtered out
             // @ts-ignore
             .map(({ to, icon: Icon, label }) => {
-              let isActive = useLocation().pathname === to;
               return (
-                <Link
-                  key={to}
-                  to={to}
-                  className={
-                    "flex items-center gap-1 transition-all text-gray-500 hover:text-gray-700"
+                <Button
+                  onClick={() =>
+                    navigate(to, {
+                      state: { selectedStudentId: id },
+                    })
                   }
+                  variant={"link"}
+                  size={"icon"}
+                  className={"text-gray-500 hover:text-gray-700 !shrink"}
                 >
-                  <Icon className={"text-gray-500 hover:text-gray-700"} />
+                  <Icon />
                   {/*<span className={"text-sm"}>{label}</span>*/}
-                </Link>
+                </Button>
               );
             })}
         </nav>
