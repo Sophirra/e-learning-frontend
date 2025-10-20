@@ -10,8 +10,12 @@ import { StudentDetailsCard } from "@/components/complex/studentDetailsCard.tsx"
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import type { CourseBrief } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
-import { AssignmentSummary } from "@/components/complex/summaries/assignmentSummary.tsx";
+import {
+  type AnyTask,
+  AssignmentSummary,
+} from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
+import { Label } from "@/components/ui/label.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -36,6 +40,17 @@ export function StudentsPage() {
       "https://i.pinimg.com/736x/ee/2a/71/ee2a7149341c2b23ae2e9c7358ec247d.jpg",
     teacherId: "1",
   };
+
+  const sampleAssignment: AnyTask = {
+    id: "1",
+    name: "task 1",
+    completed: true,
+    courseName: "Course A",
+    className: "Class 1",
+    type: "assignment",
+    status: "to be graded",
+    graded: false,
+  };
   /** The course.tsx identifier extracted from the URL parameters */
   let { courseId } = useParams();
   /** To be downloaded from backend*/
@@ -57,33 +72,40 @@ export function StudentsPage() {
             setSelectedStudentId={setSelectedStudentId}
             setupClassButton={false}
           />
-          <div className="flex flex-row gap-8">
-            <div className="w-1/4 sticky top-0 align-self-flex-start h-fit">
-              {selectedStudentId && (
-                <StudentDetailsCard
-                  id={selectedStudentId}
-                  name={"Alice Green"}
-                  image={
-                    "https://i.pinimg.com/736x/af/f0/1c/aff01cea24b478bec034cf412406dbe5.jpg"
-                  }
-                  courses={[
-                    { courseId: "1", courseName: "one" },
-                    { courseId: "2", courseName: "two" },
-                    { courseId: "3", courseName: "three" },
-                  ]}
-                  selectedCourseId={selectedCourseId}
-                  setSelectedCourseId={setSelectedCourseId}
-                />
-              )}
-            </div>
+          {selectedStudentId ? (
+            <div className="flex flex-row gap-8">
+              <div className="w-1/4 sticky top-0 align-self-flex-start h-fit">
+                {selectedStudentId && (
+                  <StudentDetailsCard
+                    id={selectedStudentId}
+                    name={"Alice Green"}
+                    image={
+                      "https://i.pinimg.com/736x/af/f0/1c/aff01cea24b478bec034cf412406dbe5.jpg"
+                    }
+                    courses={[
+                      { courseId: "1", courseName: "one" },
+                      { courseId: "2", courseName: "two" },
+                      { courseId: "3", courseName: "three" },
+                    ]}
+                    selectedCourseId={selectedCourseId}
+                    setSelectedCourseId={setSelectedCourseId}
+                  />
+                )}
+              </div>
 
-            <div className="w-3/4 space-y-8">
-              <CalendarSummary courses={courses} />
-              {/*<AssignmentSummary student={false} />*/}
-              <ChatSummary />
-              {/*<FilesSharedSummary />*/}
+              <div className="w-3/4 space-y-8">
+                <CalendarSummary courses={courses} />
+                <AssignmentSummary
+                  student={false}
+                  assignments={[sampleAssignment]}
+                />
+                <ChatSummary />
+                {/*<FilesSharedSummary student={false} />*/}
+              </div>
             </div>
-          </div>
+          ) : (
+            <Label className={"text-xl"}>Please select student</Label>
+          )}
         </div>
       </Content>
     </div>
