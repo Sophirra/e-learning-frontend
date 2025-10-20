@@ -14,6 +14,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUser, aboutMe } from "@/api/auth.ts";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { User } from "@/features/user/user.ts";
+import Cookies from "js-cookie";
+import {acceptSpectatorInvite} from "@/api/apiCalls.ts";
+import {toast} from "sonner";
+
+
 import { getRoles } from "@/api/api.ts";
 
 let loginSchema = z.object({
@@ -46,6 +51,17 @@ export function UserSheetContentLogIn({
         activeRole: resRoles[0],
       };
       setUser(user);
+      const t = Cookies.get("spectatorInviteToken");
+      if (!t) return;
+
+      try {
+        await acceptSpectatorInvite(t);
+        toast.success("Invitation accepted.");
+      } catch {
+        toast.error("Could not accept invitation.");
+      } finally {
+        Cookies.remove("spectatorInviteToken");
+      }
     } catch (e: any) {
       form.setError("root", { message: e.message });
     }
