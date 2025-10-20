@@ -138,7 +138,7 @@ export function FilterDropdown({
                       "mr-2 h-4 w-4",
                       selectedValues.includes(item)
                         ? "opacity-100"
-                        : "opacity-0",
+                        : "opacity-00",
                     )}
                   />
                   {item.name}

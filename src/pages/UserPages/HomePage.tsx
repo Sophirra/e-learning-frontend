@@ -26,7 +26,9 @@ export function HomePage() {
   const { user } = useUser();
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [courses, setCourses] = useState<CourseBrief[]>([]);
-
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
   const [assignmentsRaw, setAssignmentsRaw] = useState<ExerciseBrief[]>([]);
 
   useEffect(() => {
@@ -87,6 +89,12 @@ export function HomePage() {
             student={user?.activeRole == "student" || false}
             setSelectedCourseId={setSelectedCourseId}
             selectedCourseId={selectedCourseId}
+            setSelectedStudentId={
+              user?.activeRole == "teacher" ? setSelectedStudentId : undefined
+            }
+            selectedStudentId={
+              user?.activeRole == "teacher" ? selectedStudentId : undefined
+            }
             setupClassButton={user?.activeRole == "student" || false}
           />
           <CalendarSummary courses={courses} />

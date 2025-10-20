@@ -19,7 +19,7 @@ import {
   type FileProps,
   FilesSummary,
 } from "@/components/complex/summaries/filesSummary.tsx";
-import {useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 type ClassBriefDto = {
   id: string;
@@ -51,9 +51,11 @@ type ClassBriefDto = {
 export function StudentCalendar() {
   const location = useLocation();
 
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(() => {
-      return (location.state)?.selectedCourseId ?? null;
-  });
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(
+    () => {
+      return location.state?.selectedCourseId ?? null;
+    },
+  );
 
   // The class selcted in the left column
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
@@ -69,19 +71,18 @@ export function StudentCalendar() {
   const [assignments, setAssignments] = useState<AnyTask[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
-    // IF the component was already mounted, and we enter again with a different courseId in state,
-    // synchronize the state (and clear the selected class).
-    useEffect(() => {
-        const incoming = (location.state)?.selectedCourseId ?? null;
-        setSelectedCourseId(prev => (prev !== incoming ? incoming : prev));
-        setSelectedClassId(null);
-    }, [location.state]);
+  // IF the component was already mounted, and we enter again with a different courseId in state,
+  // synchronize the state (and clear the selected class).
+  useEffect(() => {
+    const incoming = location.state?.selectedCourseId ?? null;
+    setSelectedCourseId((prev) => (prev !== incoming ? incoming : prev));
+    setSelectedClassId(null);
+  }, [location.state]);
 
-
-    // RETRIEVE TIMELINE
-    useEffect(() => {
-        const studentId = getUserId();
-        if (!studentId) return;
+  // RETRIEVE TIMELINE
+  useEffect(() => {
+    const studentId = getUserId();
+    if (!studentId) return;
 
     const from = new Date();
     from.setDate(from.getDate() - 30);
@@ -96,111 +97,116 @@ export function StudentCalendar() {
       params.participationIds = selectedCourseId;
     }
 
-        api
-            .get<ClassBriefDto[]>(`/api/students/${studentId}/timeline`, { params })
-            .then((res) => {
-                const data = (res.data ?? []) as ClassBriefDto[];
+    api
+      .get<ClassBriefDto[]>(`/api/students/${studentId}/timeline`, { params })
+      .then((res) => {
+        const data = (res.data ?? []) as ClassBriefDto[];
 
-                setTimeline(data); // Save raw data
+        setTimeline(data); // Save raw data
 
-                // Build left column data
-                const now = new Date();
-                const mappedClasses: ClassTileProps[] = data
-                    .map((cls) => {
-                        const start = new Date(cls.startTime);
-                        let state: "upcoming" | "ongoing" | "completed" = "completed";
-
-                        if (start > now) state = "upcoming";
-                        else if (start <= now && now.getTime() - start.getTime() < 60 * 60 * 1000) // 60 * 60 * 1000 = 1 hour
-                            state = "ongoing";
-
-                        return {
-                            id: cls.id,
-                            state,
-                            date: start,
-                            title: cls.courseName,
-                            duration: 60
-                        };
-                    })
-                    // Sort by date descending
-                    .sort((a, b) => b.date.getTime() - a.date.getTime());
-
-                setClasses(mappedClasses);
-
-                // If the selected class no longer exists (course change) -> clear the filter
-                setSelectedClassId((prev) =>
-                    prev && !data.some((c) => c.id === prev) ? null : prev
-                );
-            })
-            .catch((err) => {
-                console.error("Timeline could not be retrieved:", err);
-            });
-    }, [selectedCourseId]);
-
-    // Handler to toggle the selected class (clicking the same tile again clears the filter)
-    const handleSelectClassId = useCallback((id: string | null) => {
-        setSelectedClassId((prev) => (prev === id ? null : id));
-    }, []);
-
-    // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
-    useEffect(() => {
-        // A source data for aggregation: either a single class or the entire timeline
-        const source = selectedClassId
-            ? timeline.filter((c) => c.id === selectedClassId)
-            : timeline;
-
-        // Links
+        // Build left column data
         const now = new Date();
-        const mappedLinks: LinkProps[] = source.flatMap((cls) => {
+        const mappedClasses: ClassTileProps[] = data
+          .map((cls) => {
             const start = new Date(cls.startTime);
-            const isMeetingActive =
-                !!cls.linkToMeeting && Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
+            let state: "upcoming" | "ongoing" | "completed" = "completed";
 
-            const allLinks = [...(cls.links ?? [])];
-            if (isMeetingActive && cls.linkToMeeting) {
-                // If the meeting is "active", put it at the beginning
-                allLinks.unshift(cls.linkToMeeting);
-            }
+            if (start > now) state = "upcoming";
+            else if (
+              start <= now &&
+              now.getTime() - start.getTime() < 60 * 60 * 1000
+            )
+              // 60 * 60 * 1000 = 1 hour
+              state = "ongoing";
 
-            return allLinks.map((link) => ({
-                path: link,
-                isMeeting: link === cls.linkToMeeting,
-                courseName: cls.courseName,
-                className: `[${cls.startTime.slice(0, 10)}]`,
-            }));
-        });
+            return {
+              id: cls.id,
+              state,
+              date: start,
+              title: cls.courseName,
+              duration: 60,
+            };
+          })
+          // Sort by date descending
+          .sort((a, b) => b.date.getTime() - a.date.getTime());
 
-        // Assignments (exercises + quizzes)
-        const mappedAssignments: AnyTask[] = source.flatMap((cls) => {
-            const courseName = cls.courseName;
-            const className = `Class ${cls.id.slice(0, 4)}`;
-            const classDate = cls.startTime.slice(0, 10);
+        setClasses(mappedClasses);
 
-            const exercises = (cls.exercises ?? []).map((ex) => ({
-                id: ex.id,
-                name: `Exercise ${courseName} [${classDate}]`,
-                className,
-                courseName,
-                completed: !!ex.grade,
-                type: "assignment" as const,
-                status: ex.exerciseStatus === "completed" ? "good" : "behind",
-                graded: ex.grade !== undefined,
-                grade: ex.grade,
-            }));
+        // If the selected class no longer exists (course change) -> clear the filter
+        setSelectedClassId((prev) =>
+          prev && !data.some((c) => c.id === prev) ? null : prev,
+        );
+      })
+      .catch((err) => {
+        console.error("Timeline could not be retrieved:", err);
+      });
+  }, [selectedCourseId]);
 
-            const quizzes = (cls.quizzes ?? []).map((qz) => ({
-                id: qz.id,
-                name: `Quiz ${courseName} [${classDate}]`,
-                className,
-                courseName,
-                completed: !!qz.score,
-                type: "quiz" as const,
-                graded: qz.score !== undefined,
-                grade: qz.score,
-            }));
+  // Handler to toggle the selected class (clicking the same tile again clears the filter)
+  const handleSelectClassId = useCallback((id: string | null) => {
+    setSelectedClassId((prev) => (prev === id ? null : id));
+  }, []);
 
-            return [...exercises, ...quizzes];
-        });
+  // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
+  useEffect(() => {
+    // A source data for aggregation: either a single class or the entire timeline
+    const source = selectedClassId
+      ? timeline.filter((c) => c.id === selectedClassId)
+      : timeline;
+
+    // Links
+    const now = new Date();
+    const mappedLinks: LinkProps[] = source.flatMap((cls) => {
+      const start = new Date(cls.startTime);
+      const isMeetingActive =
+        !!cls.linkToMeeting &&
+        Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
+
+      const allLinks = [...(cls.links ?? [])];
+      if (isMeetingActive && cls.linkToMeeting) {
+        // If the meeting is "active", put it at the beginning
+        allLinks.unshift(cls.linkToMeeting);
+      }
+
+      return allLinks.map((link) => ({
+        path: link,
+        isMeeting: link === cls.linkToMeeting,
+        courseName: cls.courseName,
+        className: `[${cls.startTime.slice(0, 10)}]`,
+      }));
+    });
+
+    // Assignments (exercises + quizzes)
+    const mappedAssignments: AnyTask[] = source.flatMap((cls) => {
+      const courseName = cls.courseName;
+      const className = `Class ${cls.id.slice(0, 4)}`;
+      const classDate = cls.startTime.slice(0, 10);
+
+      const exercises = (cls.exercises ?? []).map((ex) => ({
+        id: ex.id,
+        name: `Exercise ${courseName} [${classDate}]`,
+        className,
+        courseName,
+        completed: !!ex.grade,
+        type: "assignment" as const,
+        status: ex.exerciseStatus === "completed" ? "good" : "behind",
+        graded: ex.grade !== undefined,
+        grade: ex.grade,
+      }));
+
+      const quizzes = (cls.quizzes ?? []).map((qz) => ({
+        id: qz.id,
+        name: `Quiz ${courseName} [${classDate}]`,
+        className,
+        courseName,
+        completed: !!qz.score,
+        type: "quiz" as const,
+        graded: qz.score !== undefined,
+        grade: qz.score,
+      }));
+
+      return [...exercises, ...quizzes];
+    });
 
     // Files
     const mappedFiles: FileProps[] = source.flatMap((cls) =>
@@ -249,7 +255,7 @@ export function StudentCalendar() {
         <div className="w-3/4 space-y-8">
           <LinksSummary links={links} student={true} />
           <AssignmentSummary assignments={assignments} student={true} />
-          <FilesSummary files={files} lastCount={5} />
+          <FilesSummary files={files} lastCount={5} student={true} />
         </div>
       </div>
     </Content>
