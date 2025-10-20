@@ -300,29 +300,33 @@ export const addSpectator = async (spectatorEmail: string): Promise<void> => {
  * @param {string} token - The secure token associated with the spectator invitation.
  * @returns {Promise<void>} Resolves when the invitation has been successfully accepted.
  */
-
-
-/**
- * Sends a request to accept a pending spectator invitation using its unique token.
- *
- * The API endpoint `/api/spectators/invites/accept` validates the provided invitation token,
- * ensures the current user is the invited spectator, and finalizes the spectatorship relationship.
- *
- * The request body must contain:
- * - `token`   the secure invitation token received via email link.
- *
- * Possible server responses:
- * - **204 No Content**   invitation successfully accepted.
- * - **400 Bad Request**   missing or invalid `token` value.
- * - **401 Unauthorized**   user is not authenticated or JWT token is invalid.
- * - **403 Forbidden**   current user is not the invited spectator.
- * - **404 Not Found**   invitation not found.
- * - **409 Conflict**   invitation already accepted or expired.
- * - **500 Internal Server Error**   unexpected server error while accepting the invitation.
- *
- * @param {string} token - The secure token associated with the spectator invitation.
- * @returns {Promise<void>} Resolves when the invitation has been successfully accepted.
- */
 export const acceptSpectatorInvite = async (token: string): Promise<void> => {
     await Api.post("/api/spectators/invites/accept", { token });
 };
+
+
+/**
+ * Uploads a file for the currently authenticated user.
+ *
+ * The API endpoint `/api/user/files` accepts a multipart/form-data POST request
+ * containing the file to be uploaded. The backend associates the file with the
+ * authenticated user (based on their JWT identity) and stores it under `/uploads/users/{userId}/files/`.
+ *
+ * Request body (multipart/form-data):
+ * - `file`   the file to upload.
+
+
+ * @param {File} file - The file object selected by the user (from an `<input type="file">`).
+ * @returns {Promise<any>} Resolves with the uploaded file metadata returned by the backend.
+ */
+export const uploadUserFile = async (file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await Api.post("/api/user/files", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return response.data;
+};
+
