@@ -7,6 +7,7 @@ import {useEffect, useRef, useState} from "react";
 import api, {getUserId} from "@/api/api.ts";
 import {useUser} from "@/features/user/UserContext.tsx";
 import {mapParticipationToCourseBrief, mapApiCourseToCourseBrief} from "@/mappers/courseMappers.ts";
+import {AddTaskPopup} from "@/components/complex/popups/assignments/addTaskPopup.tsx";
 
 type StudentBrief = { id: string; name: string; surname: string };
 
@@ -17,6 +18,7 @@ export default function CourseFilter({
                                          selectedStudentId,
                                          setSelectedStudentId,
                                          setupClassButton = false,
+                                         addAssignmentButton = false
                                      }: {
     student: boolean;
     selectedCourseId: string | null;
@@ -24,6 +26,7 @@ export default function CourseFilter({
     selectedStudentId?: string | null;
     setSelectedStudentId?: (studentId: string | null) => void;
     setupClassButton: boolean;
+    addAssignmentButton: boolean;
 }) {
 
     const [courses, setCourses] = useState<CourseBrief[]>([]);
@@ -287,9 +290,11 @@ export default function CourseFilter({
                     <icons.Reset/>
                 </Button>
             </div>
-            {setupClassButton && (
-                <SetupNewClassPopup course={selectedCourseId ? selectedCourseId : ""}/>
-            )}
+            {setupClassButton ? (
+                <SetupNewClassPopup course={selectedCourseId ?? ""}/>
+            ) : addAssignmentButton ? (
+                AddTaskPopup("", true, true, true)
+            ) : null}
         </div>
     );
 }
