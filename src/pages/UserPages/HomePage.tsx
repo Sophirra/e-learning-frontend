@@ -56,6 +56,11 @@ export function HomePage() {
       );
   }, []);
 
+  const filteredCourses = useMemo(() => {
+    if (!selectedCourseId) return courses;
+    return courses.filter((c) => c.courseId === selectedCourseId);
+  }, [courses, selectedCourseId]);
+
   const filteredRaw = useMemo(() => {
     if (!selectedCourseId) return assignmentsRaw;
     return assignmentsRaw.filter((ex) => ex.courseId === selectedCourseId);
@@ -97,7 +102,7 @@ export function HomePage() {
             }
             setupClassButton={user?.activeRole == "student" || false}
           />
-          <CalendarSummary courses={courses} />
+          <CalendarSummary key={selectedCourseId ?? 'all'} courses={filteredCourses} />
           <AssignmentSummary
             assignments={visibleAssignments}
             student={user?.activeRole == "student" || false}
