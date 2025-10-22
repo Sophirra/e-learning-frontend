@@ -4,13 +4,6 @@
 
 This project is currently under development.
 
-## ⚙️ Current state
-### Phase 1: login and registration
-- Header for courses view
-- Side sheet for user details
-- Login sheet
-- Registration sheet
-
 ## 📖 About the Project
 
 The main goal of this engineering thesis is to develop an educational platform that enables individual tutoring in a convenient, transparent, and efficient manner. The system aims to provide multiple essential features in one place, ensuring a seamless experience for both tutors and students.
