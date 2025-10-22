@@ -3,7 +3,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import type {CourseBrief} from "@/api/types.ts";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 export function CalendarSummary({courses}: { courses: CourseBrief[] }) {
     const navigate = useNavigate();
@@ -25,17 +25,10 @@ export function CalendarSummary({courses}: { courses: CourseBrief[] }) {
                         className="flex flex-row gap-0"
                         style={{width: "100%"}}
                     >
-                        <Button
-                            variant="link"
-                            className="w-300px"
-                            onClick={() =>
-                                navigate('/calendar', {
-                                    state: { selectedCourseId: course.courseId }
-                                })
-
-                            }
-                        >
-                            {course.courseName}
+                        <Button variant="link" className="w-300px" asChild>
+                            <Link to={`/calendar?courseId=${encodeURIComponent(course.courseId)}`}>
+                                {course.courseName}
+                            </Link>
                         </Button>
                         <Label>
                             {`${course.startTime.toLocaleDateString("pl", {

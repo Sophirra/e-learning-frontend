@@ -1,6 +1,7 @@
 import Api from "@/api/api.ts";
 import type { ApiDayAvailability } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import type {
+  ClassWithStudentsDTO,
   Course,
   CourseBrief,
   CourseWidget,
@@ -327,4 +328,24 @@ export const uploadUserFile = async (file: File): Promise<any> => {
 
     return response.data;
 };
+
+
+/**
+ * Fetches all classes taught by the currently authenticated teacher (taken from JWT),
+ * along with students enrolled to those classes/courses.
+ *
+ * Server endpoint:
+ *   GET /api/teachers/classes-with-students
+ *
+ * Auth:
+ *   Requires a valid JWT with the "Teacher" role. The teacher ID is resolved
+ *   from the token (ClaimTypes.NameIdentifier) on the backend.
+ *
+ * @returns {Promise<ClassWithStudentsDTO[]>} List of classes with students.
+ * @throws  Will rethrow any network or server error from Axios.
+ */
+export async function getTeacherClassesWithStudents(): Promise<ClassWithStudentsDTO[]> {
+  const { data } = await Api.get<ClassWithStudentsDTO[]>("/api/teacher/classes-with-students");
+  return data ?? [];
+}
 

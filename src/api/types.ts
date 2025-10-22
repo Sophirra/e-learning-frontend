@@ -92,3 +92,23 @@ export interface CourseBrief {
   teacherId: string;
   startTime: Date;
 }
+
+
+/**
+ * Represents a brief student view used in selection lists.
+ */
+export type StudentBriefDTO = {
+  id: string;
+  name: string;
+  surname: string;
+};
+
+/**
+ * A single class with its course name and students enrolled in the course/class.
+ * This is returned by the backend: GET /api/teachers/classes-with-students
+ */
+export type ClassWithStudentsDTO = {
+  classId: string;
+  courseName: string;
+  students: StudentBriefDTO[];
+};
