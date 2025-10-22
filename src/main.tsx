@@ -44,6 +44,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/quiz/:quizId" element={<SolveQuizPage />} />
             <Route path="/students" element={<StudentsPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/calendar/course/:courseId" element={<CalendarPage />} />
             <Route path="/assignments" element={<AssignmentPage />} />
             <Route path="/files" element={<FilesPage />} />
             <Route path="/chats" element={<ChatsPage />} />

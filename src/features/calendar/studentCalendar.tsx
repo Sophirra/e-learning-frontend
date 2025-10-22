@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Content } from "@/components/ui/content.tsx";
 /* import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
-import CourseFilter from "@/components/complex/courseFilter.tsx";
+import         CourseFilter from "@/components/complex/courseFilter.tsx";
 import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
 import ClassTile, { type ClassTileProps } from "@/components/complex/classTile.tsx";
 import { type LinkProps, LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
