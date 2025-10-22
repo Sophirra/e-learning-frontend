@@ -50,9 +50,10 @@ export default function CourseFilter({
 
                     if (!canceled) {
                         setCourses(mapped);
-                        setSelectedCourseId((prev) =>
-                            mapped.some((c) => c.courseId === prev) ? prev : null
-                        );
+
+                        if (!mapped.some((c) => c.courseId === selectedCourseId)) {
+                            setSelectedCourseId(null);
+                        }
                     }
                 } else if (user.activeRole === "teacher") {
                     const [sRes, cRes] = await Promise.all([
