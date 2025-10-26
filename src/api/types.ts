@@ -87,10 +87,10 @@ export interface CourseVariant {
 }
 
 export interface CourseBrief {
+  startTime: Date;
   courseId: string;
   courseName: string;
   teacherId: string;
-  startTime: Date;
 }
 
 

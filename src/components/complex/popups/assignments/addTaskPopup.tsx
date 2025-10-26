@@ -36,12 +36,15 @@ export function AddTaskPopup(_classId?: string) {
         const [selectedStudent, setSelectedStudent] = useState<SelectableItem[]>([]);
         const [selectedTaskType, setSelectedTaskType] = useState<SelectableItem[]>([]);
 
-        // Derived dropdown items
+        // Klucz wymuszający remount dropdownu studenta
+        const [studentKey, setStudentKey] = useState(0);
+
+        // Derived dropdown items (tolerujemy classId albo courseId)
         const availableClasses: SelectableItem[] = useMemo(
             () =>
-                classesWithStudents.map((c) => ({
-                    name: c.courseName,
-                    value: c.classId,
+                classesWithStudents.map((c: any) => ({
+                    name: c.courseName ?? c.className ?? "Unnamed",
+                    value: c.classId ?? c.courseId, // wspiera oba pola ID
                 })),
             [classesWithStudents],
         );
@@ -49,9 +52,9 @@ export function AddTaskPopup(_classId?: string) {
         const availableStudents: SelectableItem[] = useMemo(() => {
             if (selectedClass.length === 0) return [];
             const classId = selectedClass[0].value;
-            const entry = classesWithStudents.find((c) => c.classId === classId);
+            const entry = classesWithStudents.find((c: any) => (c.classId ?? c.courseId) === classId);
             if (!entry) return [];
-            return (entry.students ?? []).map((s) => ({
+            return (entry.students ?? []).map((s: any) => ({
                 name: `${s.name} ${s.surname}`,
                 value: s.id,
             }));
@@ -65,7 +68,7 @@ export function AddTaskPopup(_classId?: string) {
                     setLoading(true);
                     const data = await getTeacherClassesWithStudents();
                     if (!alive) return;
-                    setClassesWithStudents(data);
+                    setClassesWithStudents(Array.isArray(data) ? data : []);
                 } catch (e) {
                     toast.error("Failed to load classes/students. Please try again.");
                     console.error(e);
@@ -78,10 +81,22 @@ export function AddTaskPopup(_classId?: string) {
             };
         }, []);
 
+        // Gdy lista dostępnych studentów się zmieni i obecny wybór już nie pasuje, wyczyść wybór
+        useEffect(() => {
+            if (selectedStudent.length === 0) return;
+            const current = selectedStudent[0]?.value;
+            const stillExists = availableStudents.some((s) => s.value === current);
+            if (!stillExists) {
+                setSelectedStudent([]);
+                // Nie remountujemy tu, bo to efekt pasywny   UI i tak zostanie wyczyszczony poprzez brak selekcji
+            }
+        }, [availableStudents, selectedStudent]);
+
         const resetForm = () => {
             setSelectedClass([]);
             setSelectedStudent([]);
             setSelectedTaskType([]);
+            setStudentKey((k) => k + 1); // też wyczyść UI dropdownu studenta
         };
 
         const canProceed =
@@ -111,18 +126,21 @@ export function AddTaskPopup(_classId?: string) {
                             emptyMessage={loading ? "Loading classes..." : "No classes found"}
                             onSelectionChange={(sel) => {
                                 setSelectedClass(sel);
-                                setSelectedStudent([]); // reset student when class changes
+                                setSelectedStudent([]);      // 1) czyść model
+                                setStudentKey((k) => k + 1); // 2) wymuś remount UI dropdownu studenta
                             }}
                             multiselect={false}
                             disabled={loading}
                         />
 
                         <FilterDropdown
-                            key={"student"}
+                            key={`student-${studentKey}`} // remount zawsze po zmianie klasy
                             disabled={selectedClass.length === 0 || loading}
                             label={"For student"}
                             placeholder={"Select student"}
-                            emptyMessage={selectedClass.length === 0 ? "Select class first" : "No students found"}
+                            emptyMessage={
+                                selectedClass.length === 0 ? "Select class first" : "No students found"
+                            }
                             items={availableStudents}
                             onSelectionChange={setSelectedStudent}
                             multiselect={false}

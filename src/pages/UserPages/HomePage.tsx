@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
@@ -24,36 +24,61 @@ export type ExerciseBrief = {
 
 export function HomePage() {
   const { user } = useUser();
+  const activeRole = user?.activeRole ?? null;
+
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [courses, setCourses] = useState<CourseBrief[]>([]);
-  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
-    null,
-  );
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [assignmentsRaw, setAssignmentsRaw] = useState<ExerciseBrief[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
 
+  // Unieważnianie starych odpowiedzi (race condition guard)
+  const requestIdRef = useRef(0);
+
+  // Refetch kursów przy każdej zmianie roli
   useEffect(() => {
-    const fetchCourses = async () => {
+    const currentReqId = ++requestIdRef.current;
+
+    // natychmiast wyczyść widok po zmianie roli
+    setCourses([]);
+    setSelectedCourseId(null);
+    setLoadingCourses(true);
+
+    const run = async () => {
       try {
-        const data = await getCourseBriefs();
+        if (!activeRole) {
+          // brak roli   nie fetchujemy nic
+          return;
+        }
+        const data = await getCourseBriefs(activeRole);
+        // jeśli w międzyczasie rola się zmieniła, ignorujemy tę odpowiedź
+        if (currentReqId !== requestIdRef.current) return;
         setCourses(data);
       } catch {
+        if (currentReqId !== requestIdRef.current) return;
+        // brak toasta przy 204 jest obsłużony w getCourseBriefs -> zwróci []
+        // pokaż błąd tylko dla faktycznych błędów
         toast.error("Failed to load courses. Please try again later.");
+      } finally {
+        if (currentReqId === requestIdRef.current) setLoadingCourses(false);
       }
     };
-    fetchCourses();
-  }, []);
 
-  // Get only once (or when user changes), filtering is done on the frontend
+    run();
+    // brak cleanupu potrzebnego   unieważnianie robi requestIdRef
+  }, [activeRole]);
+
+  // Pobranie zadań raz (jeśli mają zależeć od użytkownika/roli, dodaj zależność)
   useEffect(() => {
     const studentId = getUserId();
     if (!studentId) return;
 
     api
-      .get<ExerciseBrief[]>(`/api/exercises/unsolved-by-user/${studentId}`)
-      .then((res) => setAssignmentsRaw(res.data ?? []))
-      .catch((err) =>
-        console.error("Assignments could not be retrieved:", err),
-      );
+        .get<ExerciseBrief[]>(`/api/exercises/unsolved-by-user/${studentId}`)
+        .then((res) => setAssignmentsRaw(res.data ?? []))
+        .catch((err) =>
+            console.error("Assignments could not be retrieved:", err),
+        );
   }, []);
 
   const filteredCourses = useMemo(() => {
@@ -83,33 +108,37 @@ export function HomePage() {
       };
     });
   }, [filteredRaw]);
-  console.log(user?.activeRole);
 
   return (
-    <div className="bg-white h-screen">
-      <NavigationBar />
-      <Content>
-        <div className="space-y-4">
-          <CourseFilter
-            student={user?.activeRole == "student" || false}
-            setSelectedCourseId={setSelectedCourseId}
-            selectedCourseId={selectedCourseId}
-            setSelectedStudentId={
-              user?.activeRole == "teacher" ? setSelectedStudentId : undefined
-            }
-            selectedStudentId={
-              user?.activeRole == "teacher" ? selectedStudentId : undefined
-            }
-            setupClassButton={user?.activeRole == "student" || false}
-          />
-          <CalendarSummary key={selectedCourseId ?? 'all'} courses={filteredCourses} />
-          <AssignmentSummary
-            assignments={visibleAssignments}
-            student={user?.activeRole == "student" || false}
-          />
-          <ChatSummary />
-        </div>
-      </Content>
-    </div>
+      <div className="bg-white h-screen">
+        <NavigationBar />
+        <Content>
+          <div className="space-y-4">
+            <CourseFilter
+                student={activeRole === "student" || false}
+                setSelectedCourseId={setSelectedCourseId}
+                selectedCourseId={selectedCourseId}
+                setSelectedStudentId={
+                  activeRole === "teacher" ? setSelectedStudentId : undefined
+                }
+                selectedStudentId={
+                  activeRole === "teacher" ? selectedStudentId : undefined
+                }
+                setupClassButton={activeRole === "student" || false}
+
+            />
+            <CalendarSummary
+                key={`${activeRole ?? "none"}-${selectedCourseId ?? "all"}`}
+                courses={filteredCourses}
+            />
+
+            <AssignmentSummary
+                assignments={visibleAssignments}
+                student={activeRole === "student" || false}
+            />
+            <ChatSummary />
+          </div>
+        </Content>
+      </div>
   );
 }

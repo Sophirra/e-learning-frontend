@@ -10,6 +10,7 @@ import type {
   TeacherReview,
 } from "@/api/types.ts";
 import type {Spectator} from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
+import type {Role} from "@/features/user/user.ts";
 
 /**
  * Fetches detailed course data by courseID.
@@ -29,10 +30,10 @@ export const getCourseById = async (courseId: string): Promise<Course> => {
  * @returns Promise resolving to an array of TeacherAvailability.
  */
 export const getTeacherAvailabilityByCourseId = async (
-  courseId: string,
+    courseId: string,
 ): Promise<TeacherAvailability[]> => {
   const { data } = await Api.get<TeacherAvailability[]>(
-    `/api/courses/${courseId}/teacher/availability`,
+      `/api/courses/${courseId}/teacher/availability`,
   );
   return data ?? [];
 };
@@ -45,10 +46,10 @@ export const getTeacherAvailabilityByCourseId = async (
  * @returns Promise resolving to an array of ApiDayAvailability objects.
  */
 export const getApiDayAvailability = async (
-  courseId: string,
+    courseId: string,
 ): Promise<ApiDayAvailability[]> => {
   const { data } = await Api.get<ApiDayAvailability[]>(
-    `/api/courses/${courseId}/teacher/availability`,
+      `/api/courses/${courseId}/teacher/availability`,
   );
   return data ?? [];
 };
@@ -71,10 +72,10 @@ export const getTeacherById = async (teacherId: string): Promise<Teacher> => {
  * @returns Promise resolving to an array of TeacherReview objects.
  */
 export const getTeacherReviews = async (
-  teacherId: string,
+    teacherId: string,
 ): Promise<TeacherReview[]> => {
   const { data } = await Api.get<TeacherReview[]>(
-    `/api/teacher/${teacherId}/reviews`,
+      `/api/teacher/${teacherId}/reviews`,
   );
   return data ?? [];
 };
@@ -87,10 +88,10 @@ export const getTeacherReviews = async (
  * @returns Promise resolving to an array of TeacherAvailability objects.
  */
 export const getTeacherAvailability = async (
-  teacherId: string,
+    teacherId: string,
 ): Promise<TeacherAvailability[]> => {
   const { data } = await Api.get<TeacherAvailability[]>(
-    `/api/teacher/${teacherId}/availability`,
+      `/api/teacher/${teacherId}/availability`,
   );
   return data ?? [];
 };
@@ -184,32 +185,57 @@ export const getCourses = async (filters?: {
 };
 
 /**
- * Fetches all upcoming in 14 days classes for the currently authenticated user from the API.
+ * Fetches all upcoming classes (within the next 14 days) for the currently authenticated user.
  *
- * The API endpoint `/api/classes/upcoming` automatically determines whether the user
- * is a **teacher** or **student** based on their JWT roles and returns only the relevant classes.
+ * Depending on the user's active role, this function calls the appropriate API endpoint:
+ * - `/api/classes/upcoming-as-teacher`   when the user is a **teacher**.
+ * - `/api/classes/upcoming-as-student`   when the user is a **student**.
  *
- * Each item includes:
- * - `courseId`   the unique identifier of the course.
- * - `courseName`   the name of the course.
- * - `startTime`   the class start date and time (converted from ISO string to `Date`).
- * - `teacherId`   the identifier of the teacher assigned to the course.
+ * Each returned object includes:
+ * - `courseId`   unique identifier of the course.
+ * - `courseName`   name of the course.
+ * - `startTime`   class start date and time (converted from ISO string to `Date`).
+ * - `teacherId`   identifier of the teacher assigned to the course.
  *
- * @returns {Promise<CourseBrief[]>} A promise that resolves to a list of upcoming classes.
+ * @param {Role | undefined} activeRole - The current user's role, determining which endpoint to query.
+ * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming classes.
  *
  * @remarks
- * The returned `startTime` field is converted from an ISO 8601 string
- * to a native JavaScript `Date` object for easier date manipulation in the frontend.
+ * The API automatically filters data based on the user's JWT roles.
+ * The `startTime` field is converted from an ISO 8601 string into a native JavaScript `Date`
+ * for easier handling of dates and times on the frontend.
  */
+export const getCourseBriefs = async (
+    activeRole: Role | undefined,
+): Promise<CourseBrief[]> => {
+  if (!activeRole) return [];
 
-export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
-  const { data } = await Api.get<CourseBrief[]>(`/api/classes/upcoming`);
+  const url =
+      activeRole === "teacher"
+          ? `/api/classes/upcoming-as-teacher`
+          : `/api/classes/upcoming-as-student`;
 
-  return data.map((c) => ({
+  const resp = await Api.get<CourseBrief[]>(url);
+
+  // Jeśli API wrapper zwraca AxiosResponse   sprawdzamy status
+  const status = (resp as any)?.status;
+  const arr: unknown = (resp as any)?.data ?? resp;
+
+  if (status === 204 || !arr) return [];
+
+  if (!Array.isArray(arr)) {
+    console.warn("getCourseBriefs: unexpected response shape", resp);
+    return [];
+  }
+
+  return arr.map((c) => ({
     ...c,
     startTime: new Date(c.startTime),
   }));
 };
+
+
+
 
 
 /**
@@ -226,8 +252,8 @@ export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
  * @returns {Promise<Spectator[]>} A promise that resolves to a list of spectators.
  */
 export const getSpectators = async (): Promise<Spectator[]> => {
-    const { data } = await Api.get<Spectator[]>("/api/spectators");
-    return data;
+  const { data } = await Api.get<Spectator[]>("/api/spectators");
+  return data;
 };
 
 
@@ -250,9 +276,9 @@ export const getSpectators = async (): Promise<Spectator[]> => {
  * @returns {Promise<void>} A promise that resolves when the operation completes successfully.
  */
 export const removeSpectator = async (spectatorId: string): Promise<void> => {
-    await Api.delete("/api/spectators", {
-        data: { spectatorId },
-    });
+  await Api.delete("/api/spectators", {
+    data: { spectatorId },
+  });
 };
 
 /**
@@ -275,7 +301,7 @@ export const removeSpectator = async (spectatorId: string): Promise<void> => {
  * @returns {Promise<void>} Resolves when the spectator is successfully added.
  */
 export const addSpectator = async (spectatorEmail: string): Promise<void> => {
-    await Api.post("/api/spectators", { spectatorEmail });
+  await Api.post("/api/spectators", { spectatorEmail });
 };
 
 /**
@@ -300,7 +326,7 @@ export const addSpectator = async (spectatorEmail: string): Promise<void> => {
  * @returns {Promise<void>} Resolves when the invitation has been successfully accepted.
  */
 export const acceptSpectatorInvite = async (token: string): Promise<void> => {
-    await Api.post("/api/spectators/invites/accept", { token });
+  await Api.post("/api/spectators/invites/accept", { token });
 };
 
 
@@ -319,14 +345,14 @@ export const acceptSpectatorInvite = async (token: string): Promise<void> => {
  * @returns {Promise<any>} Resolves with the uploaded file metadata returned by the backend.
  */
 export const uploadUserFile = async (file: File): Promise<any> => {
-    const formData = new FormData();
-    formData.append("file", file);
+  const formData = new FormData();
+  formData.append("file", file);
 
-    const response = await Api.post("/api/user/files", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-    });
+  const response = await Api.post("/api/user/files", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
-    return response.data;
+  return response.data;
 };
 
 
