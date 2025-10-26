@@ -94,7 +94,7 @@ export function FilterDropdown({
   return (
     <div className="flex flex-col gap-2">
       {(label || reset) && (
-        <div className="flex items-center justify-between gap-2 h-9">
+        <div className="flex items-center justify-between gap-2 h-6">
           {label && <Label>{label}</Label>}
           {reset && selectedValues.length > 0 && (
             <Button variant="ghost" size="icon" onClick={handleReset}>

@@ -60,7 +60,7 @@ export function StudentsPage() {
   //TODO: get student data to display in student card. Can be here or in StudentCard component.
 
   return (
-    <div className="bg-white h-screen">
+    <div className="bg-white min-h-screen">
       <NavigationBar />
       <Content>
         <div className={"space-y-4"}>

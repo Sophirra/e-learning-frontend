@@ -7,8 +7,9 @@ import type {
   Teacher,
   TeacherAvailability,
   TeacherReview,
+  FileData,
 } from "@/api/types.ts";
-import type {Spectator} from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
+import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -210,7 +211,6 @@ export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
   }));
 };
 
-
 /**
  * Fetches all spectators for the currently authenticated student from the API.
  *
@@ -225,10 +225,9 @@ export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
  * @returns {Promise<Spectator[]>} A promise that resolves to a list of spectators.
  */
 export const getSpectators = async (): Promise<Spectator[]> => {
-    const { data } = await Api.get<Spectator[]>("/api/spectators");
-    return data;
+  const { data } = await Api.get<Spectator[]>("/api/spectators");
+  return data;
 };
-
 
 /**
  * Removes a spectator relationship for the currently authenticated user.
@@ -249,9 +248,9 @@ export const getSpectators = async (): Promise<Spectator[]> => {
  * @returns {Promise<void>} A promise that resolves when the operation completes successfully.
  */
 export const removeSpectator = async (spectatorId: string): Promise<void> => {
-    await Api.delete("/api/spectators", {
-        data: { spectatorId },
-    });
+  await Api.delete("/api/spectators", {
+    data: { spectatorId },
+  });
 };
 
 /**
@@ -274,7 +273,7 @@ export const removeSpectator = async (spectatorId: string): Promise<void> => {
  * @returns {Promise<void>} Resolves when the spectator is successfully added.
  */
 export const addSpectator = async (spectatorEmail: string): Promise<void> => {
-    await Api.post("/api/spectators", { spectatorEmail });
+  await Api.post("/api/spectators", { spectatorEmail });
 };
 
 /**
@@ -299,9 +298,8 @@ export const addSpectator = async (spectatorEmail: string): Promise<void> => {
  * @returns {Promise<void>} Resolves when the invitation has been successfully accepted.
  */
 export const acceptSpectatorInvite = async (token: string): Promise<void> => {
-    await Api.post("/api/spectators/invites/accept", { token });
+  await Api.post("/api/spectators/invites/accept", { token });
 };
-
 
 /**
  * Uploads a file for the currently authenticated user.
@@ -314,17 +312,57 @@ export const acceptSpectatorInvite = async (token: string): Promise<void> => {
  * - `file`   the file to upload.
 
 
- * @param {File} file - The file object selected by the user (from an `<input type="file">`).
+ * @param {FileData} file - The file object selected by the user (from an `<input type="file">`).
  * @returns {Promise<any>} Resolves with the uploaded file metadata returned by the backend.
  */
-export const uploadUserFile = async (file: File): Promise<any> => {
-    const formData = new FormData();
-    formData.append("file", file);
+export const uploadUserFile = async (file: FileData): Promise<any> => {
+  const formData = new FormData();
+  formData.append("file", file);
 
-    const response = await Api.post("/api/user/files", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-    });
+  const response = await Api.post("/api/user/files", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
-    return response.data;
+  return response.data;
 };
 
+/**
+ * Fetches a filtered list of files from the backend.
+ *
+ * Supports multiple optional filters. Each provided filter
+ * will be converted into a query parameter and appended to the request URL.
+ * ```
+ *
+ * @param filters - Optional filtering parameters.
+ * @returns Promise resolving to an array of Course objects.
+ */
+//TODO: modify according to backend (created based on getCourses)
+export const getFiles = async (filters?: {
+  userId: string;
+  query?: string;
+  studentId?: string;
+  teacherId?: string;
+  courseId?: string;
+  origin?: string[];
+  tags?: string[];
+  createdBy?: string[];
+  type?: string[];
+  //optional: dates (can be added)
+}): Promise<FileData[]> => {
+  const params = new URLSearchParams();
+
+  // Append filters as query parameters if present
+  filters?.origin?.forEach((v) => params.append("origin", v));
+  filters?.tags?.forEach((v) => params.append("tags", v));
+  filters?.createdBy?.forEach((v) => params.append("createdBy", v));
+  filters?.type?.forEach((v) => params.append("type", v));
+  if (filters?.userId) params.append("userId", filters.userId);
+  if (filters?.teacherId) params.append("teacherId", filters.teacherId);
+  if (filters?.query) params.append("query", filters.query);
+
+  const queryString = params.toString();
+  const url = `/api/files${queryString ? `?${queryString}` : ""}`;
+
+  const { data } = await Api.get<FileData[]>(url);
+  return data ?? [];
+};

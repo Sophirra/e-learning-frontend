@@ -23,52 +23,47 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table.tsx";
-import {
-  Files,
-  MoreHorizontal,
-  RefreshCw,
-  ArrowUpDown,
-  ExternalLink,
-  Share2,
-  Trash2,
-  Pen,
-} from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect} from "react";
 import { cn } from "@/lib/utils.ts";
 import { Content } from "@/components/ui/content.tsx";
-
-interface FileData {
-  id: string;
-  title: string;
-  dateCreated: Date;
-  dateShared: Date | null;
-  course: string;
-  tags: string[];
-}
+import CourseFilter from "@/components/complex/courseFilter.tsx";
+import { useUser } from "@/features/user/UserContext.tsx";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
+import {
+  FilterDropdown,
+  type SelectableItem,
+} from "@/components/complex/filterDropdown.tsx";
+import {getFiles} from "@/api/apiCalls.ts";
+import type {FileData} from "@/api/types.ts"
 
 type SortField = "title" | "dateCreated" | "dateShared" | "course";
 type SortOrder = "none" | "asc" | "desc";
 
-interface Filter {
-  course: string;
-  origin: string;
-  sharedBetween: string;
-  type: string;
-  tags: string[];
-}
-
 export function FilesPage() {
+  const { user } = useUser();
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{
     field: SortField | null;
     order: SortOrder;
   }>({ field: null, order: "none" });
 
-  const [filters, setFilters] = useState<Filter>({
+  const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState<FileData[]>([]);
+  const [selectedOrigin, setSelectedOrigin] = useState<SelectableItem[]>([]);
+  const [selectedSharedBy, setSelectedSharedBy] = useState<SelectableItem[]>(
+    [],
+  );
+  const [selectedType, setSelectedType] = useState<SelectableItem[]>([]);
+  const [selectedTags, setSelectedTags] = useState<SelectableItem[]>([]);
+
+  const [filters, setFilters] = useState<>({
+    student: "",
     course: "",
-    origin: "",
-    sharedBetween: "",
-    type: "",
+    origin: [],
+    sharedBy: [],
+    type: [],
     tags: [],
   });
 
@@ -76,10 +71,12 @@ export function FilesPage() {
   const mockFiles: FileData[] = [
     {
       id: "1",
-      title: "Wykład 1",
-      dateCreated: new Date(2025, 6, 1),
-      dateShared: new Date(2025, 6, 2),
-      course: "Mathematics",
+      name: "Wykład 1",
+      uploadedAt: "12/09/2025",
+      uploadedBy: "Jane Doe",
+      url: "https://example.com/file1.pdf",
+      courseId: "1",
+      courseName: "Mathematics",
       tags: ["lecture", "pdf"],
     },
     // Dodaj więcej przykładowych plików
@@ -110,146 +107,108 @@ export function FilesPage() {
     });
   }, [mockFiles, sortConfig]);
 
-  const resetFilters = () => {
-    setFilters({
-      course: "",
-      origin: "",
-      sharedBetween: "",
-      type: "",
-      tags: [],
-    });
+  useEffect(() => {
+    fetchFiles();
+  }, [])
+
+  async function fetchFiles  (filters?: Parameters<typeof getFiles[0]>) {
+    setLoading(true);
+    try{
+      const data = await getFiles(filters);
+      setFiles(data);
+
+    }
+  }
+
+  const handleApplyFilters = () => {
+    const newFilters = {
+      student: selectedStudentId || "",
+      course: selectedCourseId || "",
+      ...(selectedOrigin.length && {
+        origin: selectedOrigin.map((item) => item.value),
+      }),
+      ...(selectedSharedBy.length && {
+        sharedBy: selectedSharedBy.map((item) => item.value),
+      }),
+      ...(selectedType.length && {
+        type: selectedType.map((item) => item.value),
+      }),
+      ...(selectedTags.length && {
+        tags: selectedTags.map((item) => item.value),
+      }),
+    };
+
+    fetchFiles(newFilters);
   };
 
   return (
     <div className="min-h-screen bg-white">
       <NavigationBar />
       <Content>
-        {/* Filters */}
-        <div className="fixed top left-0 right-0 bg-white border-b z-20">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center gap-4">
-              <Select
-                value={filters.course}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, course: value }))
-                }
-              >
-                <SelectTrigger
-                  className={cn(
-                    "w-[150px]",
-                    filters.course && "border-primary text-primary",
-                  )}
-                >
-                  <SelectValue placeholder="Course" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="math">Mathematics</SelectItem>
-                  <SelectItem value="physics">Physics</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={filters.origin}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, origin: value }))
-                }
-              >
-                <SelectTrigger
-                  className={cn(
-                    "w-[150px]",
-                    filters.origin && "border-primary text-primary",
-                  )}
-                >
-                  <SelectValue placeholder="Origin" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="uploaded">Uploaded</SelectItem>
-                  <SelectItem value="generated">Generated</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={filters.sharedBetween}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, sharedBetween: value }))
-                }
-              >
-                <SelectTrigger
-                  className={cn(
-                    "w-[150px]",
-                    filters.sharedBetween && "border-primary text-primary",
-                  )}
-                >
-                  <SelectValue placeholder="Shared between" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All students</SelectItem>
-                  <SelectItem value="group">Group</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={filters.type}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, type: value }))
-                }
-              >
-                <SelectTrigger
-                  className={cn(
-                    "w-[150px]",
-                    filters.type && "border-primary text-primary",
-                  )}
-                >
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pdf">PDF</SelectItem>
-                  <SelectItem value="doc">DOC</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={filters.tags.join(",")}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, tags: [value] }))
-                }
-              >
-                <SelectTrigger
-                  className={cn(
-                    "w-[150px]",
-                    filters.tags.length > 0 && "border-primary text-primary",
-                  )}
-                >
-                  <SelectValue placeholder="Tags" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="lecture">Lecture</SelectItem>
-                  <SelectItem value="homework">Homework</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={resetFilters}
-                className="ml-auto"
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
+        <div className={"flex flex-col gap-2"}>
+          <CourseFilter
+            student={user?.activeRole === "student"}
+            selectedCourseId={selectedCourseId}
+            setSelectedCourseId={setSelectedCourseId}
+            selectedStudentId={selectedStudentId}
+            setSelectedStudentId={setSelectedStudentId}
+            setupClassButton={false}
+          />
+          {/* Filters */}
+          <div className="flex items-center gap-4">
+            <FilterDropdown
+              reset={true}
+              label={"Origin"}
+              placeholder={"Where file was created"}
+              emptyMessage={"Origin"}
+              items={[
+                { name: "Uploaded", value: "uploaded" },
+                { name: "Generated", value: "generated" },
+              ]}
+              onSelectionChange={setSelectedOrigin}
+            />
+            <FilterDropdown
+              reset={true}
+              label={"Shared by"}
+              placeholder={"Who shared the file"}
+              emptyMessage={"Shared by"}
+              items={[
+                { name: "Me", value: "user" },
+                { name: "Teacher A", value: "teacher1" },
+                { name: "Teacher B", value: "teacher2" },
+                { name: "Student A", value: "student1" },
+                { name: "Student B", value: "student2" },
+              ]}
+              onSelectionChange={setSelectedSharedBy}
+            />
+            <FilterDropdown
+              reset={true}
+              label={"Type"}
+              placeholder={"Type of the file"}
+              emptyMessage={"Origin"}
+              items={[
+                { name: "PDF", value: "pdf" },
+                { name: "Word", value: "word" },
+                { name: "JPG", value: "jpg" },
+              ]}
+              onSelectionChange={setSelectedType}
+            />
+            <FilterDropdown
+              reset={true}
+              label={"Tags"}
+              placeholder={"Tags associated"}
+              emptyMessage={"Origin"}
+              items={[
+                { name: "Vocabulary", value: "vocabulary" },
+                { name: "Grammar", value: "grammar" },
+                { name: "Exam", value: "exam" },
+                { name: "Obligatory", value: "obligatory" },
+              ]}
+              onSelectionChange={setSelectedTags}
+            />
+            <Button onClick={handleApplyFilters}>Apply filters</Button>
           </div>
         </div>
-
-        <div className="h-[64px]" />
-
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-4">
-          <Files className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Files</h1>
-        </div>
-        <Separator className="mb-6" />
-
-        {/* Files Table */}
         <Table>
           <TableHeader>
             <TableRow>
@@ -257,25 +216,29 @@ export function FilesPage() {
                 onClick={() => handleSort("title")}
                 className="cursor-pointer"
               >
-                Title <ArrowUpDown className="inline h-4 w-4 ml-1" />
+                Title
+                {/*<ArrowUpDown className="inline h-4 w-4 ml-1" />*/}
               </TableHead>
               <TableHead
                 onClick={() => handleSort("dateCreated")}
                 className="cursor-pointer"
               >
-                Date Created <ArrowUpDown className="inline h-4 w-4 ml-1" />
+                Date Created
+                {/*<ArrowUpDown className="inline h-4 w-4 ml-1" />*/}
               </TableHead>
               <TableHead
                 onClick={() => handleSort("dateShared")}
                 className="cursor-pointer"
               >
-                Date Shared <ArrowUpDown className="inline h-4 w-4 ml-1" />
+                Date Shared
+                {/*<ArrowUpDown className="inline h-4 w-4 ml-1" />*/}
               </TableHead>
               <TableHead
                 onClick={() => handleSort("course")}
                 className="cursor-pointer"
               >
-                Course <ArrowUpDown className="inline h-4 w-4 ml-1" />
+                Course
+                {/*<ArrowUpDown className="inline h-4 w-4 ml-1" />*/}
               </TableHead>
               <TableHead>Tags</TableHead>
               <TableHead></TableHead>
@@ -291,16 +254,16 @@ export function FilesPage() {
                 )}
                 onClick={() => setSelectedFile(file.id)}
               >
-                <TableCell>{file.title}</TableCell>
-                <TableCell>{file.dateCreated.toLocaleDateString()}</TableCell>
+                <TableCell>{file.name}</TableCell>
+                <TableCell>{file.uploadedAt}</TableCell>
                 <TableCell>
-                  {file.dateShared?.toLocaleDateString() || "-"}
+                  {file.uploadedBy}
                 </TableCell>
-                <TableCell>{file.course}</TableCell>
+                <TableCell>{file.courseName}</TableCell>
                 <TableCell>
                   <ScrollArea className="w-[200px]">
                     <div className="flex gap-2 whitespace-nowrap">
-                      {file.tags.map((tag, index) => (
+                      {file.tags?.map((tag, index) => (
                         <span
                           key={index}
                           className="px-2 py-1 text-sm bg-secondary rounded-full"
@@ -315,24 +278,24 @@ export function FilesPage() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
+                        <icons.ArrowBigLeft/>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>
-                        <ExternalLink className="h-4 w-4 mr-2" />
+                        <icons.Link/>
                         Open in new tab
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Share2 className="h-4 w-4 mr-2" />
+                        <icons.CheckIcon/>
                         Share
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Pen className="h-4 w-4 mr-2" />
+                        <icons.Edit/>
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-destructive">
-                        <Trash2 className="h-4 w-4 mr-2" />
+                        <icons.Trash/>
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>

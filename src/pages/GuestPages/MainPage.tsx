@@ -31,7 +31,6 @@ const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
 ];
 function MainPage() {
   const navigate = useNavigate();
-  const [, setCourses] = useState<CourseWidget[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Dropdown data
@@ -115,7 +114,6 @@ function MainPage() {
     setLoading(true);
     try {
       const data = await getCourses(filters);
-      setCourses(data);
       setFilteredCourses(data);
     } catch (err) {
       console.error("Error fetching courses:", err);
