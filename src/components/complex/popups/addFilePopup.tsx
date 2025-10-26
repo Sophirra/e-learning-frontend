@@ -1,17 +1,23 @@
 import {
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogClose,
+  Dialog,
+  DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import { Label } from "@/components/ui/label.tsx";
-import type { PopupType } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
+import { ChooseFilePopup } from "@/components/complex/popups/chooseFilePopup.tsx";
+import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx";
+import { useState } from "react";
+import type { FileData } from "@/api/types.ts";
 
 export function AddFilePopup() {
+  const [chosenFile, setChosenFile] = useState<FileData | null>(null);
+  function handleAddFile(file: FileData) {
+    //TODO: backend magic
+  }
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -24,22 +30,20 @@ export function AddFilePopup() {
         <DialogTitle>Add new file to class</DialogTitle>
       </DialogHeader>
       <div className={"flex flex-col gap-4 pt-2"}>
-        <Button variant={"outline"}>Choose from library</Button>
-        <Button
-          variant={"outline"}
-          onClick={() => setOpenedPopup("uploadFile")}
-        >
-          Upload new file
-        </Button>
+        <ChooseFilePopup setChosenFile={setChosenFile} />
+        <UploadFilePopup setChosenFile={setChosenFile} />
         <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
-          <Button onClick={() => setOpenedPopup("addTask")}>Cancel</Button>
+          <DialogClose>
+            <Button>Cancel</Button>
+          </DialogClose>
           <Button
             variant={"outline"}
+            disabled={!chosenFile}
             onSelect={() => {
-              setOpenedPopup("addTask");
+              chosenFile && handleAddFile(chosenFile);
             }}
           >
-            Create
+            Add
           </Button>
         </DialogFooter>
       </div>

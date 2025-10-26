@@ -12,8 +12,12 @@ import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx";
+import { useState } from "react";
+import { ChooseFilePopup } from "@/components/complex/popups/chooseFilePopup.tsx";
+import type { FileData } from "@/api/types.ts";
 
 export function AddAssignmentPopup() {
+  const [chosenFile, setChosenFile] = useState<FileData | null>(null);
   return (
     <Dialog>
       <DialogTrigger>
@@ -31,8 +35,9 @@ export function AddAssignmentPopup() {
           <Input id={"descr"} type={"text"} />
           <Label>Additional file</Label>
           <div className={"flex flex-row gap-4"}>
-            <Button variant={"outline"}>Choose from library</Button>
-            <UploadFilePopup />
+            {chosenFile && <p>{chosenFile.fileName}</p>}
+            <ChooseFilePopup setChosenFile={setChosenFile} />
+            <UploadFilePopup setChosenFile={setChosenFile} />
           </div>
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
             <DialogClose>

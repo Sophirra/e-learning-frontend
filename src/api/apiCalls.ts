@@ -8,6 +8,7 @@ import type {
   TeacherAvailability,
   TeacherReview,
   FileData,
+  FileFilter,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 
@@ -269,8 +270,8 @@ export const removeSpectator = async (spectatorId: string): Promise<void> => {
  * - **403 Forbidden**   the user is not a student.
  * - **404 Not Found**   spectator not found or relationship already exists.
  *
- * @param {string} spectatorId - The unique identifier (GUID) of the spectator to be added.
  * @returns {Promise<void>} Resolves when the spectator is successfully added.
+ * @param spectatorEmail
  */
 export const addSpectator = async (spectatorEmail: string): Promise<void> => {
   await Api.post("/api/spectators", { spectatorEmail });
@@ -312,10 +313,10 @@ export const acceptSpectatorInvite = async (token: string): Promise<void> => {
  * - `file`   the file to upload.
 
 
- * @param {FileData} file - The file object selected by the user (from an `<input type="file">`).
+ * @param {File} file - The file object selected by the user (from an `<input type="file">`).
  * @returns {Promise<any>} Resolves with the uploaded file metadata returned by the backend.
  */
-export const uploadUserFile = async (file: FileData): Promise<any> => {
+export const uploadUserFile = async (file: File): Promise<any> => {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -337,18 +338,7 @@ export const uploadUserFile = async (file: FileData): Promise<any> => {
  * @returns Promise resolving to an array of Course objects.
  */
 //TODO: modify according to backend (created based on getCourses)
-export const getFiles = async (filters?: {
-  userId: string;
-  query?: string;
-  studentId?: string;
-  teacherId?: string;
-  courseId?: string;
-  origin?: string[];
-  tags?: string[];
-  createdBy?: string[];
-  type?: string[];
-  //optional: dates (can be added)
-}): Promise<FileData[]> => {
+export const getFiles = async (filters?: FileFilter): Promise<FileData[]> => {
   const params = new URLSearchParams();
 
   // Append filters as query parameters if present
@@ -356,12 +346,12 @@ export const getFiles = async (filters?: {
   filters?.tags?.forEach((v) => params.append("tags", v));
   filters?.createdBy?.forEach((v) => params.append("createdBy", v));
   filters?.type?.forEach((v) => params.append("type", v));
-  if (filters?.userId) params.append("userId", filters.userId);
+  // if (filters?.userId) params.append("userId", filters.userId);
   if (filters?.teacherId) params.append("teacherId", filters.teacherId);
   if (filters?.query) params.append("query", filters.query);
 
   const queryString = params.toString();
-  const url = `/api/files${queryString ? `?${queryString}` : ""}`;
+  const url = `/api/user/files${queryString ? `?${queryString}` : ""}`;
 
   const { data } = await Api.get<FileData[]>(url);
   return data ?? [];

@@ -94,11 +94,21 @@ export interface CourseBrief {
 }
 export interface FileData {
   id: string;
-  name: string;
-  url: string;
+  fileName: string;
+  relativePath: string;
   uploadedAt: string;
   uploadedBy: string;
   courseId?: string;
   courseName?: string;
   tags?: string[];
+}
+export interface FileFilter {
+  query?: string;
+  studentId?: string;
+  courseId?: string;
+  origin?: string[];
+  tags?: string[];
+  createdBy?: string[];
+  type?: string[];
+  //optional: dates (can be added)
 }

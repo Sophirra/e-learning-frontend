@@ -1,13 +1,16 @@
-import {Button} from "@/components/ui/button.tsx";
-import type {CourseBrief} from "@/api/types.tsx";
-import {iconLibrary as icons} from "@/components/iconLibrary.tsx";
-import {FilterDropdown} from "@/components/complex/filterDropdown.tsx";
-import {SetupNewClassPopup} from "@/components/complex/popups/setupNewClassPopup.tsx";
-import {useEffect, useRef, useState} from "react";
-import api, {getUserId} from "@/api/api.ts";
-import {useUser} from "@/features/user/UserContext.tsx";
-import {mapParticipationToCourseBrief, mapApiCourseToCourseBrief} from "@/mappers/courseMappers.ts";
-import {AddTaskPopup} from "@/components/complex/popups/assignments/addTaskPopup.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import type { CourseBrief } from "@/api/types.tsx";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
+import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
+import { SetupNewClassPopup } from "@/components/complex/popups/setupNewClassPopup.tsx";
+import { useEffect, useRef, useState } from "react";
+import api, { getUserId } from "@/api/api.ts";
+import { useUser } from "@/features/user/UserContext.tsx";
+import {
+  mapParticipationToCourseBrief,
+  mapApiCourseToCourseBrief,
+} from "@/mappers/courseMappers.ts";
+import { AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
 
 type StudentBrief = { id: string; name: string; surname: string };
 
@@ -18,15 +21,15 @@ export default function CourseFilter({
   selectedStudentId,
   setSelectedStudentId,
   setupClassButton = false,
- addAssignmentButton = false
+  addAssignmentButton = false,
 }: {
   student: boolean;
   selectedCourseId: string | null;
   setSelectedCourseId: (courseId: string | null) => void;
   selectedStudentId?: string | null;
   setSelectedStudentId?: (studentId: string | null) => void;
-  setupClassButton: boolean;
-  addAssignmentButton: boolean;
+  setupClassButton?: boolean;
+  addAssignmentButton?: boolean;
 }) {
   const [courses, setCourses] = useState<CourseBrief[]>([]);
   const [students, setStudents] = useState<StudentBrief[]>([]);
@@ -48,7 +51,7 @@ export default function CourseFilter({
           const data = res.data ?? [];
           const mapped: CourseBrief[] = data
             .map(mapParticipationToCourseBrief)
-            .filter((c): c is CourseBrief => !!c);
+            .filter((c: any): c is CourseBrief => !!c);
 
           // if (!canceled) {
           //   setCourses(mapped);
@@ -238,7 +241,9 @@ export default function CourseFilter({
     <div className="flex flex-row justify-between gap-4">
       <div className="flex gap-2 text-left overflow-x-auto scr">
         <Button
-          variant={selectedCourseId || selectedStudentId ? "outline" : "default"}
+          variant={
+            selectedCourseId || selectedStudentId ? "outline" : "default"
+          }
           onClick={resetFilters}
         >
           All courses
@@ -300,9 +305,14 @@ export default function CourseFilter({
         </Button>
       </div>
       {setupClassButton ? (
-        <SetupNewClassPopup course={selectedCourseId ?? ""}/>
+        <SetupNewClassPopup course={selectedCourseId ?? ""} />
       ) : addAssignmentButton ? (
-        AddTaskPopup("", true, true, true)
+        AddTaskPopup(
+          "",
+          selectedCourseId ? selectedCourseId : undefined,
+          selectedStudentId ? selectedStudentId : undefined,
+          true,
+        )
       ) : null}
     </div>
   );

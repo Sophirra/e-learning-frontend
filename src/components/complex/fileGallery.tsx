@@ -1,0 +1,316 @@
+import { Button } from "@/components/ui/button.tsx";
+import { ScrollArea } from "@/components/ui/scroll-area.tsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu.tsx";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table.tsx";
+import { useState, useMemo, useEffect } from "react";
+import { cn } from "@/lib/utils.ts";
+import { useUser } from "@/features/user/UserContext.tsx";
+import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
+import {
+  FilterDropdown,
+  type SelectableItem,
+} from "@/components/complex/filterDropdown.tsx";
+import { getFiles } from "@/api/apiCalls.ts";
+import type { FileData, FileFilter } from "@/api/types.ts";
+import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx";
+import { formatDate } from "date-fns";
+
+type SortField = "title" | "dateCreated" | "sharedBy" | "course";
+type SortOrder = "none" | "asc" | "desc";
+
+export function FileGallery({
+  courseId,
+  studentId,
+  setSelectedFileProp,
+}: {
+  courseId?: string;
+  studentId?: string;
+  setSelectedFileProp?: (file: FileData) => void;
+}) {
+  const { user } = useUser();
+  const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    field: SortField | null;
+    order: SortOrder;
+  }>({ field: "dateCreated", order: "desc" });
+
+  const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState<FileData[]>([]);
+  const [selectedOrigin, setSelectedOrigin] = useState<SelectableItem[]>([]);
+  const [selectedSharedBy, setSelectedSharedBy] = useState<SelectableItem[]>(
+    [],
+  );
+  const [selectedType, setSelectedType] = useState<SelectableItem[]>([]);
+  const [selectedTags, setSelectedTags] = useState<SelectableItem[]>([]);
+
+  const [filters, setFilters] = useState<FileFilter>({
+    studentId: studentId ? studentId : "",
+    courseId: courseId ? courseId : "",
+    origin: [],
+    createdBy: [],
+    type: [],
+    tags: [],
+  });
+
+  // Przykładowe dane
+  const mockFiles: FileData[] = [
+    {
+      id: "1",
+      fileName: "Wykład 1",
+      uploadedAt: "12/09/2025",
+      uploadedBy: "Jane Doe",
+      relativePath: "https://example.com/file1.pdf",
+      courseId: "1",
+      courseName: "Mathematics",
+      tags: ["lecture", "pdf"],
+    },
+    // Dodaj więcej przykładowych plików
+  ];
+
+  const handleSort = (field: SortField) => {
+    setSortConfig((current) => {
+      if (current.field !== field) return { field, order: "asc" };
+      if (current.order === "none") return { field, order: "asc" };
+      if (current.order === "asc") return { field, order: "desc" };
+      return { field: null, order: "none" };
+    });
+  };
+
+  // const sortedFiles = useMemo(() => {
+  //   if (!sortConfig.field || sortConfig.order === "none") return mockFiles;
+  //
+  //   return [...mockFiles].sort((a, b) => {
+  //     const aValue = a[sortConfig.field!];
+  //     const bValue = b[sortConfig.field!];
+  //     const modifier = sortConfig.order === "asc" ? 1 : -1;
+  //
+  //     if (aValue === null) return 1;
+  //     if (bValue === null) return -1;
+  //     if (aValue < bValue) return -1 * modifier;
+  //     if (aValue > bValue) return 1 * modifier;
+  //     return 0;
+  //   });
+  // }, [mockFiles, sortConfig]);
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+
+  async function fetchFiles(filters?: Parameters<typeof getFiles>[0]) {
+    setLoading(true);
+    try {
+      const data = await getFiles(filters);
+      setFiles(data);
+    } catch (e) {
+      console.error("Error fetching files:", e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleApplyFilters = () => {
+    const newFilters = {
+      student: studentId || "",
+      course: courseId || "",
+      ...(selectedOrigin.length && {
+        origin: selectedOrigin.map((item) => item.value),
+      }),
+      ...(selectedSharedBy.length && {
+        sharedBy: selectedSharedBy.map((item) => item.value),
+      }),
+      ...(selectedType.length && {
+        type: selectedType.map((item) => item.value),
+      }),
+      ...(selectedTags.length && {
+        tags: selectedTags.map((item) => item.value),
+      }),
+    };
+
+    fetchFiles(newFilters);
+  };
+
+  function resetFilters() {
+    setSelectedOrigin([]);
+    setSelectedSharedBy([]);
+    setSelectedType([]);
+    setSelectedTags([]);
+  }
+  const SortableTableHead = ({
+    field,
+    children,
+  }: {
+    field: SortField;
+    children: React.ReactNode;
+  }) => (
+    <TableHead onClick={() => handleSort(field)} className="cursor-pointer">
+      <div className={"cursor-pointer flex items-center justify-between"}>
+        {children}
+        <icons.Sort
+          className={
+            sortConfig.field === field ? "text-neutral-950" : "text-slate-400"
+          }
+        />
+      </div>
+    </TableHead>
+  );
+
+  return (
+    <div>
+      <div className="flex items-end gap-4">
+        <FilterDropdown
+          reset={true}
+          label={"Origin"}
+          placeholder={"Where file was created"}
+          emptyMessage={"Origin"}
+          items={[
+            { name: "Uploaded", value: "uploaded" },
+            { name: "Generated", value: "generated" },
+          ]}
+          onSelectionChange={setSelectedOrigin}
+        />
+        <FilterDropdown
+          reset={true}
+          label={"Shared by"}
+          placeholder={"Who shared the file"}
+          emptyMessage={"Shared by"}
+          items={[
+            { name: "Me", value: "user" },
+            { name: "Teacher A", value: "teacher1" },
+            { name: "Teacher B", value: "teacher2" },
+            { name: "Student A", value: "student1" },
+            { name: "Student B", value: "student2" },
+          ]}
+          onSelectionChange={setSelectedSharedBy}
+        />
+        <FilterDropdown
+          reset={true}
+          label={"Type"}
+          placeholder={"Type of the file"}
+          emptyMessage={"Origin"}
+          items={[
+            { name: "PDF", value: "pdf" },
+            { name: "Word", value: "word" },
+            { name: "JPG", value: "jpg" },
+          ]}
+          onSelectionChange={setSelectedType}
+        />
+        <FilterDropdown
+          reset={true}
+          label={"Tags"}
+          placeholder={"Tags associated"}
+          emptyMessage={"Origin"}
+          items={[
+            { name: "Vocabulary", value: "vocabulary" },
+            { name: "Grammar", value: "grammar" },
+            { name: "Exam", value: "exam" },
+            { name: "Obligatory", value: "obligatory" },
+          ]}
+          onSelectionChange={setSelectedTags}
+        />
+        <Button
+          variant={"outline"}
+          size={"icon"}
+          onClick={() => resetFilters()}
+        >
+          <icons.Reset />
+        </Button>
+        <Button onClick={handleApplyFilters}>Apply filters</Button>
+        <div className="w-1/1 text-right">
+          <UploadFilePopup />
+        </div>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <SortableTableHead field="title">Title</SortableTableHead>
+            <SortableTableHead field="dateCreated">Created</SortableTableHead>
+            <SortableTableHead field="sharedBy">Shared by</SortableTableHead>
+            <SortableTableHead field="course">Course</SortableTableHead>
+            <TableHead>Tags</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className={"justify-start"}>
+          {files.map((file) => (
+            <TableRow
+              key={file.id}
+              className={cn(
+                "cursor-pointer",
+                selectedFile?.id === file.id && "font-semibold",
+                "h-10 text-start",
+              )}
+              onClick={() => {
+                setSelectedFile(file);
+                setSelectedFileProp && setSelectedFileProp(file);
+              }}
+            >
+              <TableCell>{file.fileName}</TableCell>
+              <TableCell>
+                {formatDate(file.uploadedAt, "hh:mm E dd/MM/yyyy")}
+              </TableCell>
+              <TableCell>{file.uploadedBy}</TableCell>
+              <TableCell>{file.courseName}</TableCell>
+              <TableCell>
+                <ScrollArea className="w-[200px]">
+                  <div className="flex gap-2 whitespace-nowrap">
+                    {file.tags?.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-secondary rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </TableCell>
+              <TableCell>
+                {selectedFile?.id === file.id ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <icons.MoreHorizontalIcon />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <icons.Link />
+                        Open in new tab
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <icons.Share />
+                        Share
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <icons.Edit />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">
+                        <icons.Trash />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <div className={"h-8"} />
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}

@@ -14,8 +14,13 @@ import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { uploadUserFile } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
+import type { FileData } from "@/api/types.ts";
 
-export function UploadFilePopup() {
+export function UploadFilePopup({
+  setChosenFile,
+}: {
+  setChosenFile: (file: FileData | null) => void;
+}) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -46,6 +51,11 @@ export function UploadFilePopup() {
         success: (res) => `File uploaded successfully: ${res.name}`,
         error: "Upload failed. Please try again.",
       });
+      setChosenFile &&
+        setChosenFile(
+          null,
+          //TODO: automatically set selected file after upload
+        );
     } finally {
       setUploading(false);
     }
