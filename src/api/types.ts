@@ -92,3 +92,13 @@ export interface CourseBrief {
   teacherId: string;
   startTime: Date;
 }
+export interface FileData {
+  id: string;
+  name: string;
+  url: string;
+  uploadedAt: string;
+  uploadedBy: string;
+  courseId?: string;
+  courseName?: string;
+  tags?: string[];
+}
