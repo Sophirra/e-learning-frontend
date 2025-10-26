@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Label } from "@/components/ui/label.tsx";
 import type { CourseBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useState } from "react";
@@ -19,7 +18,7 @@ import {
 } from "@/components/complex/filterDropdown.tsx";
 import WeekScheduleDialog, {
   type TimeSlot,
-} from "@/components/complex/weekSchedule.tsx";
+} from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 
 export function SetupNewClassPopup({ course }: { course: string }) {
   //TODO: add data from backend

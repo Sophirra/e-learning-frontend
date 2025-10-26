@@ -111,7 +111,7 @@ export function FilterDropdown({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="min-w-[180px] w-1/1 justify-between"
+              className="min-w-[180px] w-1/1 justify-start"
             >
               {Icon ? <Icon /> : null}
               {selectedValues.length > 0
@@ -136,7 +136,7 @@ export function FilterDropdown({
                   <icons.Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      selectedValues.includes(item)
+                      selectedValues.some((v) => v.value === item.value)
                         ? "opacity-100"
                         : "opacity-0",
                     )}

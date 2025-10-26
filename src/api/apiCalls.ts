@@ -1,10 +1,12 @@
 import Api from "@/api/api.ts";
-import type { ApiDayAvailability } from "@/components/complex/weekSchedule.tsx";
+import type { ApiDayAvailability } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import type {
-    Course, CourseBrief, CourseWidget,
-    Teacher,
-    TeacherAvailability,
-    TeacherReview,
+  Course,
+  CourseBrief,
+  CourseWidget,
+  Teacher,
+  TeacherAvailability,
+  TeacherReview,
 } from "@/api/types.ts";
 import type {Spectator} from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 
@@ -15,8 +17,8 @@ import type {Spectator} from "@/components/complex/popups/spectators/spectatorLi
  * @returns Promise resolving to a Course object.
  */
 export const getCourseById = async (courseId: string): Promise<Course> => {
-    const { data } = await Api.get<Course>(`/api/courses/${courseId}`);
-    return data;
+  const { data } = await Api.get<Course>(`/api/courses/${courseId}`);
+  return data;
 };
 
 /**
@@ -26,12 +28,12 @@ export const getCourseById = async (courseId: string): Promise<Course> => {
  * @returns Promise resolving to an array of TeacherAvailability.
  */
 export const getTeacherAvailabilityByCourseId = async (
-    courseId: string
+  courseId: string,
 ): Promise<TeacherAvailability[]> => {
-    const { data } = await Api.get<TeacherAvailability[]>(
-        `/api/courses/${courseId}/teacher/availability`
-    );
-    return data ?? [];
+  const { data } = await Api.get<TeacherAvailability[]>(
+    `/api/courses/${courseId}/teacher/availability`,
+  );
+  return data ?? [];
 };
 
 /**
@@ -42,14 +44,13 @@ export const getTeacherAvailabilityByCourseId = async (
  * @returns Promise resolving to an array of ApiDayAvailability objects.
  */
 export const getApiDayAvailability = async (
-    courseId: string
+  courseId: string,
 ): Promise<ApiDayAvailability[]> => {
-    const { data } = await Api.get<ApiDayAvailability[]>(
-        `/api/courses/${courseId}/teacher/availability`
-    );
-    return data ?? [];
+  const { data } = await Api.get<ApiDayAvailability[]>(
+    `/api/courses/${courseId}/teacher/availability`,
+  );
+  return data ?? [];
 };
-
 
 /**
  * Fetches detailed teacher data by their unique identifier.
@@ -58,8 +59,8 @@ export const getApiDayAvailability = async (
  * @returns Promise resolving to a Teacher object.
  */
 export const getTeacherById = async (teacherId: string): Promise<Teacher> => {
-    const { data } = await Api.get<Teacher>(`/api/teacher/${teacherId}`);
-    return data;
+  const { data } = await Api.get<Teacher>(`/api/teacher/${teacherId}`);
+  return data;
 };
 
 /**
@@ -69,12 +70,12 @@ export const getTeacherById = async (teacherId: string): Promise<Teacher> => {
  * @returns Promise resolving to an array of TeacherReview objects.
  */
 export const getTeacherReviews = async (
-    teacherId: string
+  teacherId: string,
 ): Promise<TeacherReview[]> => {
-    const { data } = await Api.get<TeacherReview[]>(
-        `/api/teacher/${teacherId}/reviews`
-    );
-    return data ?? [];
+  const { data } = await Api.get<TeacherReview[]>(
+    `/api/teacher/${teacherId}/reviews`,
+  );
+  return data ?? [];
 };
 
 /**
@@ -85,14 +86,13 @@ export const getTeacherReviews = async (
  * @returns Promise resolving to an array of TeacherAvailability objects.
  */
 export const getTeacherAvailability = async (
-    teacherId: string
+  teacherId: string,
 ): Promise<TeacherAvailability[]> => {
-    const { data } = await Api.get<TeacherAvailability[]>(
-        `/api/teacher/${teacherId}/availability`
-    );
-    return data ?? [];
+  const { data } = await Api.get<TeacherAvailability[]>(
+    `/api/teacher/${teacherId}/availability`,
+  );
+  return data ?? [];
 };
-
 
 /**
  * Fetches all available course categories.
@@ -103,8 +103,8 @@ export const getTeacherAvailability = async (
  * @returns Promise resolving to an array of category names (strings).
  */
 export const getCourseCategories = async (): Promise<string[]> => {
-    const { data } = await Api.get<{ name: string }[]>(`/api/courses/categories`);
-    return data.map((c) => c.name);
+  const { data } = await Api.get<{ name: string }[]>(`/api/courses/categories`);
+  return data.map((c) => c.name);
 };
 
 /**
@@ -115,8 +115,8 @@ export const getCourseCategories = async (): Promise<string[]> => {
  * @returns Promise resolving to an array of level names (strings).
  */
 export const getCourseLevels = async (): Promise<string[]> => {
-    const { data } = await Api.get<{ name: string }[]>(`/api/courses/levels`);
-    return data.map((l) => l.name);
+  const { data } = await Api.get<{ name: string }[]>(`/api/courses/levels`);
+  return data.map((l) => l.name);
 };
 
 /**
@@ -127,11 +127,9 @@ export const getCourseLevels = async (): Promise<string[]> => {
  * @returns Promise resolving to an array of language names (strings).
  */
 export const getCourseLanguages = async (): Promise<string[]> => {
-    const { data } = await Api.get<{ name: string }[]>(`/api/courses/languages`);
-    return data.map((l) => l.name);
+  const { data } = await Api.get<{ name: string }[]>(`/api/courses/languages`);
+  return data.map((l) => l.name);
 };
-
-
 
 /**
  * Fetches a filtered list of courses from the backend.
@@ -156,32 +154,32 @@ export const getCourseLanguages = async (): Promise<string[]> => {
  * @returns Promise resolving to an array of Course objects.
  */
 export const getCourses = async (filters?: {
-    categories?: string[];
-    levels?: string[];
-    languages?: string[];
-    priceFrom?: number;
-    priceTo?: number;
-    teacherId?: string;
-    query?: string;
+  categories?: string[];
+  levels?: string[];
+  languages?: string[];
+  priceFrom?: number;
+  priceTo?: number;
+  teacherId?: string;
+  query?: string;
 }): Promise<CourseWidget[]> => {
-    const params = new URLSearchParams();
+  const params = new URLSearchParams();
 
-    // Append filters as query parameters if present
-    filters?.categories?.forEach((c) => params.append("categories", c));
-    filters?.levels?.forEach((l) => params.append("levels", l));
-    filters?.languages?.forEach((lng) => params.append("languages", lng));
-    if (typeof filters?.priceFrom === "number")
-        params.append("priceFrom", String(filters.priceFrom));
-    if (typeof filters?.priceTo === "number")
-        params.append("priceTo", String(filters.priceTo));
-    if (filters?.teacherId) params.append("teacherId", filters.teacherId);
-    if (filters?.query) params.append("query", filters.query);
+  // Append filters as query parameters if present
+  filters?.categories?.forEach((c) => params.append("categories", c));
+  filters?.levels?.forEach((l) => params.append("levels", l));
+  filters?.languages?.forEach((lng) => params.append("languages", lng));
+  if (typeof filters?.priceFrom === "number")
+    params.append("priceFrom", String(filters.priceFrom));
+  if (typeof filters?.priceTo === "number")
+    params.append("priceTo", String(filters.priceTo));
+  if (filters?.teacherId) params.append("teacherId", filters.teacherId);
+  if (filters?.query) params.append("query", filters.query);
 
-    const queryString = params.toString();
-    const url = `/api/courses${queryString ? `?${queryString}` : ""}`;
+  const queryString = params.toString();
+  const url = `/api/courses${queryString ? `?${queryString}` : ""}`;
 
-    const { data } = await Api.get<CourseWidget[]>(url);
-    return data ?? [];
+  const { data } = await Api.get<CourseWidget[]>(url);
+  return data ?? [];
 };
 
 /**
@@ -204,12 +202,12 @@ export const getCourses = async (filters?: {
  */
 
 export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
-    const { data } = await Api.get<CourseBrief[]>(`/api/classes/upcoming`);
+  const { data } = await Api.get<CourseBrief[]>(`/api/classes/upcoming`);
 
-    return data.map((c) => ({
-        ...c,
-        startTime: new Date(c.startTime),
-    }));
+  return data.map((c) => ({
+    ...c,
+    startTime: new Date(c.startTime),
+  }));
 };
 
 

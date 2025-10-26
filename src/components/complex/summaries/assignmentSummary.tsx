@@ -2,7 +2,7 @@ import {iconLibrary as icons} from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Label} from "@/components/ui/label.tsx";
-import {AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
+import {AddTaskPopup} from "@/components/complex/popups/assignments/addTaskPopup.tsx";
 
 export type AnyTask = QuizTask | AssignmentTask;
 
@@ -28,30 +28,32 @@ interface AssignmentTask extends TaskProps {
 }
 
 export function AssignmentSummary({
-  assignments,
-  student,
-}: {
-  assignments: AnyTask[];
-  student: boolean;
+                                      assignments,
+                                      student,
+                                      classId,
+                                  }: {
+    assignments: AnyTask[];
+    student: boolean;
+    classId?: string;
 }) {
-  function composeTaskDetails(task: AnyTask) {
-    let statusLabel = "";
-    if (!task.completed) {
-      statusLabel = "To be solved";
-    } else if (task.type === "quiz") {
-      statusLabel = "Completed";
-    } else if (task.type === "assignment") {
-      if (!task.graded) {
-        statusLabel = "Waiting for grade";
-      } else if (task.grade !== undefined) {
-        statusLabel = "Graded " + task.grade;
-        if (task.comments) statusLabel += " (" + task.comments + ")";
-      } else {
-        statusLabel = task.comments ?? "No grade found";
-      }
+    function composeTaskDetails(task: AnyTask) {
+        let statusLabel = "";
+        if (!task.completed) {
+            statusLabel = "To be solved";
+        } else if (task.type === "quiz") {
+            statusLabel = "Completed";
+        } else if (task.type === "assignment") {
+            if (!task.graded) {
+                statusLabel = "Waiting for grade";
+            } else if (task.grade !== undefined) {
+                statusLabel = "Graded " + task.grade;
+                if (task.comments) statusLabel += " (" + task.comments + ")";
+            } else {
+                statusLabel = task.comments ?? "No grade found";
+            }
+        }
+        return statusLabel;
     }
-    return statusLabel;
-  }
 
     return (
         <>
@@ -59,12 +61,14 @@ export function AssignmentSummary({
                 label={"Assignments"}
                 labelIcon={icons.ClipboardList}
                 canHide={true}
-                customButton={student ? AddTaskPopup : undefined}
+                customButton={student ? undefined : () => AddTaskPopup(classId, false, false, false)}
             >
                 <div className="flex flex-col gap-2">
                     {assignments === null || assignments?.length === 0 ? (
-                            <Label className="mt-2 ml-4">No assignments available for the selected courses/classes</Label>
-                        ) :
+                        <Label className="mt-2 ml-4">
+                            No assignments available for the selected courses/classes
+                        </Label>
+                    ) : (
                         assignments?.map((task: AnyTask) => (
                             <div
                                 className={"flex flex-row gap-0"}
@@ -78,7 +82,7 @@ export function AssignmentSummary({
                                 <Label>{composeTaskDetails(task)}</Label>
                             </div>
                         ))
-                    }
+                    )}
                 </div>
             </Summary>
         </>

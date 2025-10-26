@@ -7,8 +7,9 @@ export function UserSheetContentLoggedIn({
 }: {
   onLogout: () => void;
 }) {
-  let { user } = useUser();
+  let { user, changeRole } = useUser();
   if (!user) return null;
+  console.log(user);
   return (
     <div className="mt-4 p-8 flex flex-col gap-4">
       <h3>
@@ -19,7 +20,18 @@ export function UserSheetContentLoggedIn({
       </h3>
       <h3>
         <strong>Logged as:</strong>{" "}
-        {user?.student ? "student" : user?.teacher ? "teacher" : "unknown??"}
+        {user.activeRole ? user.activeRole : "unknown??"}
+        {user.roles.length > 1 && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              changeRole(user.roles.filter((r) => r !== user?.activeRole)[0]);
+            }}
+          >
+            Change to {user.roles.filter((r) => r !== user?.activeRole)}
+          </Button>
+        )}
       </h3>
       <Button variant="default">
         <Link key={"home"} to={"/home"}>

@@ -11,8 +11,13 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { CourseWidget } from "@/api/types.ts";
 import { SearchBar } from "@/components/complex/searchBar.tsx";
-import {getCourseCategories, getCourseLanguages, getCourseLevels, getCourses} from "@/api/apiCalls.ts";
-import {toast} from "sonner";
+import {
+  getCourseCategories,
+  getCourseLanguages,
+  getCourseLevels,
+  getCourses,
+} from "@/api/apiCalls.ts";
+import { toast } from "sonner";
 
 // === PRZEDZIAŁY CENOWE ===
 const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
@@ -84,8 +89,6 @@ function MainPage() {
     fetchCourses();
   }, []);
 
-
-
   //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
   //odp: przeniesione wszystkie calle do pliku apiCalls.ts
   useEffect(() => {
@@ -105,10 +108,8 @@ function MainPage() {
         toast.error("Could not load filter data.");
       }
     };
-
     loadFilters();
   }, []);
-
 
   const fetchCourses = async (filters?: Parameters<typeof getCourses>[0]) => {
     setLoading(true);
@@ -171,7 +172,7 @@ function MainPage() {
               items={categories.map((c) => {
                 return { name: c, value: c };
               })}
-              multiselect={false}
+              multiselect={true}
               onSelectionChange={setSelectedCategory}
             />
             <FilterDropdown

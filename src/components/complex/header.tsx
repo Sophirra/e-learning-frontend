@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import { SpectatorListPopup } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 
 export function Header() {
-  let { user } = useUser();
+  let { user, changeRole } = useUser();
   return (
     <header>
       <div className="px-26 py-6 flex justify-between items-left bg-white">
@@ -33,7 +33,11 @@ export function Header() {
             <MenubarMenu>
               <MenubarTrigger className="p-0">
                 <Button size="icon" variant="default">
-                  <icons.UserIcon />
+                  {user?.activeRole === "student" ? (
+                    <icons.UserIcon />
+                  ) : (
+                    <icons.TeacherIcon />
+                  )}
                 </Button>
               </MenubarTrigger>
               <MenubarContent>
@@ -48,6 +52,17 @@ export function Header() {
                     <SpectatorListPopup />
                   </>
                 ) : null}
+                {user && user.roles.length > 1 && (
+                  <MenubarItem
+                    onClick={() => {
+                      changeRole(
+                        user.roles.filter((r) => r !== user?.activeRole)[0],
+                      );
+                    }}
+                  >
+                    Change to {user.roles.filter((r) => r !== user?.activeRole)}
+                  </MenubarItem>
+                )}
               </MenubarContent>
             </MenubarMenu>
           </Menubar>

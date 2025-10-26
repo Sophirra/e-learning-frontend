@@ -1,7 +1,7 @@
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentCalendar } from "@/features/calendar/studentCalendar.tsx";
+import { TeacherCalendar } from "@/features/calendar/teacherCalendar.tsx";
 import ErrorPage from "@/pages/ErrorPage.tsx";
 
 export function CalendarPage() {
@@ -10,10 +10,10 @@ export function CalendarPage() {
   return (
     <div className="bg-white h-screen">
       <NavigationBar />
-      {user?.student ? (
-        <StudentCalendar />
-      ) : user?.teacher ? (
+      {user?.activeRole == "teacher" ? (
         <TeacherCalendar />
+      ) : user?.activeRole == "student" ? (
+        <StudentCalendar />
       ) : (
         <ErrorPage />
       )}
