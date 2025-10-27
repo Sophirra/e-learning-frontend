@@ -16,12 +16,17 @@ import { useState } from "react";
 import { ChooseFilePopup } from "@/components/complex/popups/chooseFilePopup.tsx";
 import type { FileData } from "@/api/types.ts";
 
-export function AddAssignmentPopup() {
+export function AddAssignmentPopup({ classId }: { classId: string }) {
   const [chosenFile, setChosenFile] = useState<FileData | null>(null);
+  function addAssignment() {
+    //TODO: backend magic - add assignment with optional file to class
+  }
   return (
     <Dialog>
       <DialogTrigger>
-        <Button variant={"outline"}>Add new assignment</Button>
+        <Button variant={"outline"} disabled={!classId}>
+          Add new assignment
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -43,7 +48,9 @@ export function AddAssignmentPopup() {
             <DialogClose>
               <Button>Cancel</Button>
             </DialogClose>
-            <Button variant={"outline"}>Create</Button>
+            <Button variant={"outline"} onClick={() => addAssignment()}>
+              Create
+            </Button>
           </DialogFooter>
         </div>
       </DialogContent>

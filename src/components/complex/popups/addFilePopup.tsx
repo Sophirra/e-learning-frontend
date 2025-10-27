@@ -5,6 +5,7 @@ import {
   DialogClose,
   Dialog,
   DialogTrigger,
+  DialogContent,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
@@ -13,10 +14,10 @@ import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx
 import { useState } from "react";
 import type { FileData } from "@/api/types.ts";
 
-export function AddFilePopup() {
+export function AddFilePopup(classId?: string) {
   const [chosenFile, setChosenFile] = useState<FileData | null>(null);
   function handleAddFile(file: FileData) {
-    //TODO: backend magic
+    //TODO: backend magic - if classId, associate file to class
   }
   return (
     <Dialog>
@@ -26,12 +27,14 @@ export function AddFilePopup() {
           Add
         </Button>
       </DialogTrigger>
-      <DialogHeader>
-        <DialogTitle>Add new file to class</DialogTitle>
-      </DialogHeader>
-      <div className={"flex flex-col gap-4 pt-2"}>
-        <ChooseFilePopup setChosenFile={setChosenFile} />
-        <UploadFilePopup setChosenFile={setChosenFile} />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add new file</DialogTitle>
+        </DialogHeader>
+        <div className={"flex flex-row justify-center gap-4 pt-2"}>
+          <ChooseFilePopup setChosenFile={setChosenFile} />
+          <UploadFilePopup setChosenFile={setChosenFile} />
+        </div>
         <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
           <DialogClose>
             <Button>Cancel</Button>
@@ -46,7 +49,7 @@ export function AddFilePopup() {
             Add
           </Button>
         </DialogFooter>
-      </div>
+      </DialogContent>
     </Dialog>
   );
 }

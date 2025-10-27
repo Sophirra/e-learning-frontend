@@ -21,7 +21,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { useNavigate } from "react-router-dom";
 
 export function AddTaskPopup(
-  classId?: string,
+  classId: string,
   courseId?: string,
   studentId?: string,
   buttonOutline?: boolean,
@@ -57,7 +57,10 @@ export function AddTaskPopup(
       }}
     >
       <DialogTrigger asChild>
-        <Button variant={buttonOutline ? "outline" : "ghost"}>
+        <Button
+          variant={buttonOutline ? "outline" : "ghost"}
+          disabled={!classId}
+        >
           <icons.Plus />
           {extendedName ? "Add new task" : "Add"}
         </Button>
@@ -139,7 +142,7 @@ export function AddTaskPopup(
                   </Button>
                 </DialogClose>
               ) : (
-                <AddAssignmentPopup />
+                <AddAssignmentPopup classId={classId} />
               )
             ) : (
               <Button variant={"outline"} disabled={true}>

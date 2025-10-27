@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { icons } from "lucide-react";
 import { ChooseFilePopup } from "@/components/complex/popups/chooseFilePopup.tsx";
 import { AddFilePopup } from "@/components/complex/popups/addFilePopup.tsx";
+import { AddAssignmentFilePopup } from "@/components/complex/popups/assignments/addAssignmentFilePopup.tsx";
 
 export type FileLink = {
   id?: string;
@@ -21,10 +22,12 @@ export type FileProps = {
 };
 
 export function FilesSummary({
+  classId,
   files,
   lastCount,
   student,
 }: {
+  classId?: string;
   files: FileProps[];
   lastCount: number;
   student: boolean;
@@ -37,7 +40,12 @@ export function FilesSummary({
       labelIcon={icons.File}
       canHide={true}
       //TODO: investigate
-      customButton={<AddFilePopup />}
+      customButton={
+        student
+          ? undefined
+          : () =>
+              classId != "" ? AddFilePopup(classId) : console.log("no class id")
+      }
     >
       <div className="flex flex-col gap-2 pl-2">
         {displayedFiles.length === 0 ? (

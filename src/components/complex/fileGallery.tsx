@@ -34,10 +34,12 @@ export function FileGallery({
   courseId,
   studentId,
   setSelectedFileProp,
+  slim,
 }: {
   courseId?: string;
   studentId?: string;
   setSelectedFileProp?: (file: FileData) => void;
+  slim?: boolean;
 }) {
   const { user } = useUser();
   const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
@@ -167,7 +169,7 @@ export function FileGallery({
   );
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <div className="flex items-end gap-4">
         <FilterDropdown
           reset={true}
@@ -226,12 +228,20 @@ export function FileGallery({
         >
           <icons.Reset />
         </Button>
-        <Button onClick={handleApplyFilters}>Apply filters</Button>
-        <div className="w-1/1 text-right">
-          <UploadFilePopup />
-        </div>
+        {slim ? (
+          <Button onClick={handleApplyFilters} size={"icon"}>
+            <icons.Check />
+          </Button>
+        ) : (
+          <Button onClick={handleApplyFilters}>Apply filters</Button>
+        )}
+        {!slim && (
+          <div className="w-1/1 text-right">
+            <UploadFilePopup />
+          </div>
+        )}
       </div>
-      <Table>
+      <Table className={"w-full"}>
         <TableHeader>
           <TableRow>
             <SortableTableHead field="title">Title</SortableTableHead>

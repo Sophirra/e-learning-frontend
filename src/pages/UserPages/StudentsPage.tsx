@@ -16,6 +16,7 @@ import {
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
+import { FileGallery } from "@/components/complex/fileGallery.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -101,6 +102,17 @@ export function StudentsPage() {
                 />
                 <ChatSummary />
                 {/*<FilesSharedSummary student={false} />*/}
+                <Summary
+                  label={"Shared files"}
+                  labelIcon={icons.File}
+                  canHide={true}
+                >
+                  <FileGallery
+                    slim={true}
+                    studentId={selectedStudentId}
+                    courseId={selectedCourseId ? selectedCourseId : undefined}
+                  />
+                </Summary>
               </div>
             </div>
           ) : (

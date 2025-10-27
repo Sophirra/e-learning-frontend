@@ -5,6 +5,7 @@ import {
   DialogClose,
   Dialog,
   DialogTrigger,
+  DialogContent,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
@@ -16,7 +17,7 @@ import type { FileData } from "@/api/types.ts";
 export function AddAssignmentFilePopup() {
   const [chosenFile, setChosenFile] = useState<FileData | null>(null);
   function handleAddAssignmentFile(file: FileData) {
-    //TODO: backend magic
+    //TODO: backend magic - add file to assignment based on classId
   }
   return (
     <Dialog>
@@ -26,27 +27,29 @@ export function AddAssignmentFilePopup() {
           Add
         </Button>
       </DialogTrigger>
-      <DialogHeader>
-        <DialogTitle>Add new file to class</DialogTitle>
-      </DialogHeader>
-      <div className={"flex flex-col gap-4 pt-2"}>
-        <ChooseFilePopup setChosenFile={setChosenFile} />
-        <UploadFilePopup setChosenFile={setChosenFile} />
-        <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
-          <DialogClose>
-            <Button>Cancel</Button>
-          </DialogClose>
-          <Button
-            variant={"outline"}
-            disabled={!chosenFile}
-            onSelect={() => {
-              chosenFile && handleAddAssignmentFile(chosenFile);
-            }}
-          >
-            Create
-          </Button>
-        </DialogFooter>
-      </div>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add new file to class</DialogTitle>
+        </DialogHeader>
+        <div className={"flex flex-col gap-4 pt-2"}>
+          <ChooseFilePopup setChosenFile={setChosenFile} />
+          <UploadFilePopup setChosenFile={setChosenFile} />
+          <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
+            <DialogClose>
+              <Button>Cancel</Button>
+            </DialogClose>
+            <Button
+              variant={"outline"}
+              disabled={!chosenFile}
+              onSelect={() => {
+                chosenFile && handleAddAssignmentFile(chosenFile);
+              }}
+            >
+              Create
+            </Button>
+          </DialogFooter>
+        </div>
+      </DialogContent>
     </Dialog>
   );
 }
