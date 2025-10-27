@@ -61,6 +61,7 @@ export function AssignmentSummary({
       labelIcon={icons.ClipboardList}
       canHide={true}
       customButton={
+        //TODO: zmodyfikować do uzupełnienia assignment type
         student || !classId ? undefined : () => AddTaskPopup(classId, false)
       }
     >

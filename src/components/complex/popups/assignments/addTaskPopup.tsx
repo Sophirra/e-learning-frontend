@@ -22,10 +22,10 @@ import { useNavigate } from "react-router-dom";
 
 export function AddTaskPopup(
   classId: string,
+  allowOnlyAssignment?: boolean,
   courseId?: string,
   studentId?: string,
   buttonOutline?: boolean,
-  allowOnlyAssignment?: boolean,
   extendedName?: boolean,
 ) {
   const navigate = useNavigate();
