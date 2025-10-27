@@ -347,7 +347,7 @@ export const getFiles = async (filters?: FileFilter): Promise<FileData[]> => {
   filters?.createdBy?.forEach((v) => params.append("createdBy", v));
   filters?.type?.forEach((v) => params.append("type", v));
   // if (filters?.userId) params.append("userId", filters.userId);
-  if (filters?.teacherId) params.append("teacherId", filters.teacherId);
+  // if (filters?.teacherId) params.append("teacherId", filters.teacherId);
   if (filters?.query) params.append("query", filters.query);
 
   const queryString = params.toString();

@@ -31,7 +31,7 @@ export function AddAssignmentPopup({ classId }: { classId: string }) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create new assignment</DialogTitle>
-          <DialogDescription>Choose class and task type</DialogDescription>
+          <DialogDescription>Add assignment details:</DialogDescription>
         </DialogHeader>
         <div className={"flex flex-col gap-4 pt-2"}>
           <Label>Title</Label>

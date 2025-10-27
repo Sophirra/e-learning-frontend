@@ -62,7 +62,7 @@ export function AssignmentSummary({
       canHide={true}
       customButton={
         //TODO: zmodyfikować do uzupełnienia assignment type
-        student || !classId ? undefined : () => AddTaskPopup(classId, false)
+        student || !classId ? undefined : () => AddTaskPopup(classId)
       }
     >
       <div className="flex flex-col gap-2">

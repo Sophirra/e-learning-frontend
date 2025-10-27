@@ -23,38 +23,35 @@ import { useNavigate } from "react-router-dom";
 export function AddTaskPopup(
   classId: string,
   allowOnlyAssignment?: boolean,
-  courseId?: string,
-  studentId?: string,
+  // courseId?: string,
+  // studentId?: string,
   buttonOutline?: boolean,
   extendedName?: boolean,
 ) {
   const navigate = useNavigate();
-  //TODO: download data from backend
-  let availableClasses = [
-    { className: "class1", classId: "course1_id" },
-    { className: "class2", classId: "course2_id" },
-  ];
-  let availableStudents = [
-    { studentName: "student1", studentId: "student1_id" },
-    { studentName: "student2", studentId: "student2_id" },
-  ];
-  let [selectedClass, setSelectedClass] = useState<SelectableItem[]>([]);
-  let [selectedStudent, setSelectedStudent] = useState<SelectableItem[]>([]);
-  let [selectedTaskType, setSelectedTaskType] = useState<SelectableItem[]>([
-    { name: "Assignment", value: "0" },
-  ]);
+  // let availableClasses = [
+  //   { className: "class1", classId: "course1_id" },
+  //   { className: "class2", classId: "course2_id" },
+  // ];
+  // let availableStudents = [
+  //   { studentName: "student1", studentId: "student1_id" },
+  //   { studentName: "student2", studentId: "student2_id" },
+  // ];
+  // let [selectedClass, setSelectedClass] = useState<SelectableItem[]>([]);
+  // let [selectedStudent, setSelectedStudent] = useState<SelectableItem[]>([]);
+  let [selectedTaskType, setSelectedTaskType] = useState<SelectableItem[]>([]);
 
   return (
     <Dialog
-      onOpenChange={() => {
-        setSelectedClass(
-          courseId ? [{ value: courseId, name: "courseId" }] : [],
-        );
-        setSelectedStudent(
-          studentId ? [{ value: studentId, name: "studentId" }] : [],
-        );
-        setSelectedTaskType([{ name: "Assignment", value: "0" }]);
-      }}
+    // onOpenChange={() => {
+    //   // setSelectedClass(
+    //   //   courseId ? [{ value: courseId, name: "courseId" }] : [],
+    //   // );
+    //   // setSelectedStudent(
+    //   //   studentId ? [{ value: studentId, name: "studentId" }] : [],
+    //   // );
+    //   //setSelectedTaskType([{ name: "Assignment", value: "0" }]);
+    // }}
     >
       <DialogTrigger asChild>
         <Button
@@ -68,38 +65,40 @@ export function AddTaskPopup(
       <DialogContent className={"sm:max-w-[425px]"}>
         <DialogHeader>
           <DialogTitle>Add new task to class</DialogTitle>
-          <DialogDescription>Choose class and task type</DialogDescription>
+          <DialogDescription>Choose task type</DialogDescription>
         </DialogHeader>
         <div className={"flex flex-col gap-4"}>
-          <FilterDropdown
-            key={"class"}
-            items={availableClasses.map((c) => {
-              return { name: c.className, value: c.classId };
-            })}
-            placeholder={"Select class"}
-            label={"Class"}
-            emptyMessage={"Select class"}
-            onSelectionChange={setSelectedClass}
-            multiselect={false}
-          />
-          <FilterDropdown
-            key={"student"}
-            disabled={selectedClass.length == 0}
-            label={"For student"}
-            placeholder={"Select student"}
-            emptyMessage={"Select student"}
-            items={availableStudents.map((s) => {
-              return { name: s.studentName, value: s.studentId };
-            })}
-            onSelectionChange={setSelectedStudent}
-            multiselect={false}
-          />
-          {allowOnlyAssignment ? null : (
+          {/*<FilterDropdown*/}
+          {/*  key={"class"}*/}
+          {/*  items={availableClasses.map((c) => {*/}
+          {/*    return { name: c.className, value: c.classId };*/}
+          {/*  })}*/}
+          {/*  placeholder={"Select class"}*/}
+          {/*  label={"Class"}*/}
+          {/*  emptyMessage={"Select class"}*/}
+          {/*  onSelectionChange={setSelectedClass}*/}
+          {/*  multiselect={false}*/}
+          {/*/>*/}
+          {/*<FilterDropdown*/}
+          {/*  key={"student"}*/}
+          {/*  disabled={selectedClass.length == 0}*/}
+          {/*  label={"For student"}*/}
+          {/*  placeholder={"Select student"}*/}
+          {/*  emptyMessage={"Select student"}*/}
+          {/*  items={availableStudents.map((s) => {*/}
+          {/*    return { name: s.studentName, value: s.studentId };*/}
+          {/*  })}*/}
+          {/*  onSelectionChange={setSelectedStudent}*/}
+          {/*  multiselect={false}*/}
+          {/*/>*/}
+          {allowOnlyAssignment ? (
+            <p>Type assignment</p>
+          ) : (
             <FilterDropdown
               key={"taskType"}
-              disabled={
-                selectedStudent.length == 0 || selectedClass.length == 0
-              }
+              // disabled={
+              //   selectedStudent.length == 0 || selectedClass.length == 0
+              // }
               items={[
                 { name: "Assignment", value: "0" },
                 { name: "Quiz", value: "1" },
@@ -113,9 +112,7 @@ export function AddTaskPopup(
           )}
 
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
-            {selectedTaskType.length > 0 &&
-            selectedClass.length > 0 &&
-            selectedStudent.length > 0 ? (
+            {selectedTaskType.length > 0 ? (
               selectedTaskType[0].name == "Quiz" ? (
                 <CopyQuizPopup />
               ) : (
@@ -126,9 +123,7 @@ export function AddTaskPopup(
                 Copy
               </Button>
             )}
-            {selectedTaskType.length > 0 &&
-            selectedClass.length > 0 &&
-            selectedStudent.length > 0 ? (
+            {selectedTaskType.length > 0 ? (
               selectedTaskType[0].name == "Quiz" ? (
                 <DialogClose asChild>
                   <Button

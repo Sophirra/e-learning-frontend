@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Content } from "@/components/ui/content.tsx";
-import type { Course } from "@/features/course/course.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
@@ -32,15 +31,6 @@ export function StudentsPage() {
   );
   //courses for specific student from current teacher (user)
   const [courses, setCourses] = useState<CourseBrief[]>([]);
-
-  let sampleCourse = {
-    id: "1",
-    name: "GameDev",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    thumbnailUrl:
-      "https://i.pinimg.com/736x/ee/2a/71/ee2a7149341c2b23ae2e9c7358ec247d.jpg",
-    teacherId: "1",
-  };
 
   const sampleAssignment: AnyTask = {
     id: "1",

@@ -3,7 +3,6 @@ import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type { CourseBrief } from "@/components/complex/studentDetailsCard.tsx";
 import AssignmentTile from "@/components/complex/AssignmentTile.tsx";
 import { AssignmentTitle } from "@/components/complex/summaries/assignmentPageContent/AssignmentTitle.tsx";
 import { AssignmentAttachedFiles } from "@/components/complex/summaries/assignmentPageContent/AssignmentAttachedFiles.tsx";
@@ -46,14 +45,7 @@ export function AssignmentPage() {
   );
   const [pageMode, setAssignmentPageMode] = useState<Mode>("view");
 
-  //TODO: temp data to be replaced from backend
-  let courses: CourseBrief[] = [
-    //todo: GET FROM API
-    { id: "1", name: "one" },
-    { id: "2", name: "two" },
-    { id: "3", name: "three" },
-  ];
-
+  //TODO: get from backend
   const assignments: AssignmentBrief[] = [
     {
       id: "a1",
@@ -220,9 +212,6 @@ export function AssignmentPage() {
           setSelectedCourseId={setSelectedCourseId}
           selectedCourseId={selectedCourseId}
           setupClassButton={false}
-          addAssignmentButton={
-            user?.activeRole === "teacher" && pageMode === "view"
-          }
         />
         <div className="flex flex-row gap-8 p-4">
           {/*overflow-y-auto">*/}

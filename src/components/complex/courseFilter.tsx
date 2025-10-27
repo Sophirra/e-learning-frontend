@@ -10,7 +10,6 @@ import {
   mapParticipationToCourseBrief,
   mapApiCourseToCourseBrief,
 } from "@/mappers/courseMappers.ts";
-import { AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
 
 type StudentBrief = { id: string; name: string; surname: string };
 
@@ -21,7 +20,6 @@ export default function CourseFilter({
   selectedStudentId,
   setSelectedStudentId,
   setupClassButton = false,
-  addAssignmentButton = false,
 }: {
   student: boolean;
   selectedCourseId: string | null;
@@ -306,13 +304,6 @@ export default function CourseFilter({
       </div>
       {setupClassButton ? (
         <SetupNewClassPopup course={selectedCourseId ?? ""} />
-      ) : addAssignmentButton ? (
-        AddTaskPopup(
-          "",
-          selectedCourseId ? selectedCourseId : undefined,
-          selectedStudentId ? selectedStudentId : undefined,
-          true,
-        )
       ) : null}
     </div>
   );
