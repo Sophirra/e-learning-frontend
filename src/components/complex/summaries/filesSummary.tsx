@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { icons } from "lucide-react";
 import { ChooseFilePopup } from "@/components/complex/popups/chooseFilePopup.tsx";
 import { AddFilePopup } from "@/components/complex/popups/addFilePopup.tsx";
-import { AddAssignmentFilePopup } from "@/components/complex/popups/assignments/addAssignmentFilePopup.tsx";
+// import { AddAssignmentFilePopup } from "@/components/complex/popups/assignments/addAssignmentFilePopup.tsx";
 
 export type FileLink = {
   id?: string;
