@@ -2,13 +2,17 @@ import {iconLibrary as icons} from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Label} from "@/components/ui/label.tsx";
-import type {AssignmentBrief} from "@/pages/UserPages/AssignmentPage.tsx";
+import type {AssignmentBrief, Mode} from "@/pages/UserPages/AssignmentPage.tsx";
+import {useUser} from "@/features/user/UserContext.tsx";
 
 export function AssignmentAttachedFiles({
                                             assignment,
+                                            pageMode
                                         }: {
     assignment: AssignmentBrief;
+    pageMode: Mode
 }) {
+    const {user} = useUser();
     const convertFileNameToConvenientName = (fileName: string): string => {
         // Remove file extension
         const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
@@ -58,6 +62,12 @@ export function AssignmentAttachedFiles({
                             <a href={file.path} target="_blank" rel="noopener noreferrer">
                                 <Button variant="link">{file.name}</Button>
                             </a>
+                            {user?.activeRole === "teacher" && pageMode === "edit" && (
+                                <Button>
+                                    <icons.Trash2></icons.Trash2>
+                                    Remove
+                                </Button>
+                            )}
                         </div>
                     ))
                 )}
