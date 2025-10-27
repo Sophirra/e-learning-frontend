@@ -33,10 +33,10 @@ export function Header() {
             <MenubarMenu>
               <MenubarTrigger className="p-0">
                 <Button size="icon" variant="default">
-                  {user?.activeRole === "student" ? (
-                    <icons.UserIcon />
-                  ) : (
+                  {user?.activeRole === "teacher" ? (
                     <icons.TeacherIcon />
+                  ) : (
+                    <icons.UserIcon />
                   )}
                 </Button>
               </MenubarTrigger>
