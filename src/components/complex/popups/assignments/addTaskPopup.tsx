@@ -208,5 +208,5 @@ export function AddTaskPopup(_classId?: string) {
         );
     }
 
-    return <AddTaskPopupContent />;
+  return <AddTaskPopupContent />;
 }
