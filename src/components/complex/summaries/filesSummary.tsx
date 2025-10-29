@@ -2,7 +2,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { icons } from "lucide-react";
-import { AddFilePopup } from "@/components/complex/popups/addFilePopup.tsx";
+import { AddFilePopup } from "@/components/complex/popups/files/addFilePopup.tsx";
 
 export type FileLink = {
   id?: string;

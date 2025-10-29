@@ -375,6 +375,11 @@ export function updateFileData(
  * @returns {Promise<FileTag[]>} A promise that resolves to an array of available tags.
  */
 export async function getAvailableTags(): Promise<FileTag[]> {
-  const { data } = await Api.get(`/api/files/tags`); //?? robione na czuja
+  const { data } = await Api.get(`/api/files/tags`); //TODO?? robione na czuja
   return data;
+}
+
+export async function deleteFile(fileId: string) {
+  //TODO: call delete file
+  await Api.delete(`/api/user/files/${fileId}`); //TODO?? check
 }

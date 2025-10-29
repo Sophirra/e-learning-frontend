@@ -14,15 +14,12 @@ import type { FileData, FileTag } from "@/api/types.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
 import { getUserId } from "@/api/api.ts";
-import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
 import { getAvailableTags, updateFileData } from "@/api/apiCalls.ts";
 
 export function EditFilePopup({ file }: { file: FileData }) {
-  const user = useUser();
   const userId = getUserId();
-  const [tags, setTags] = useState<FileTag[]>(file.tags ? file.tags : []);
+  const [tags] = useState<FileTag[]>(file.tags ? file.tags : []);
   const [nameError, setNameError] = useState<boolean>(false);
   const [newFileName, setNewFileName] = useState<string>(file.fileName);
   const [newTags, setNewTags] = useState<FileTag[]>(tags);

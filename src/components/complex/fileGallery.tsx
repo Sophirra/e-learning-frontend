@@ -28,6 +28,7 @@ import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePop
 import { formatDate } from "date-fns";
 import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";
 import { Edit } from "lucide-react";
+import { DeleteFilePopup } from "@/components/complex/popups/files/deleteFilePopup.tsx";
 
 type SortField = "title" | "dateCreated" | "sharedBy" | "course";
 type SortOrder = "none" | "asc" | "desc";
@@ -290,7 +291,10 @@ export function FileGallery({
               </TableCell>
               <TableCell>
                 {selectedFile?.id === file.id ? (
-                  <EditFilePopup file={selectedFile} />
+                  <div className={"flex flex-row align-right"}>
+                    <EditFilePopup file={selectedFile} />
+                    <DeleteFilePopup file={selectedFile} />
+                  </div>
                 ) : (
                   // <DropdownMenu>
                   //   <DropdownMenuTrigger asChild>

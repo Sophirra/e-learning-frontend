@@ -11,9 +11,9 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx";
+import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { useState } from "react";
-import { ChooseFilePopup } from "@/components/complex/popups/chooseFilePopup.tsx";
+import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
 import type { FileData } from "@/api/types.ts";
 
 export function AddAssignmentPopup({ classId }: { classId: string }) {
