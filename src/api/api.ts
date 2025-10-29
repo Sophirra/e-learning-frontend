@@ -1,11 +1,11 @@
-import axios from "axios";
+import axios, {type AxiosError, type AxiosRequestConfig} from "axios";
 import { jwtDecode } from "jwt-decode";
 import type { Role } from "@/features/user/user.ts";
 
 let api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
-    ContentType: "application/json",
+    "Content-Type": "application/json",
   },
   withCredentials: true,
 });
@@ -16,34 +16,111 @@ export function setAccessToken(token: string | null) {
   accessToken = token;
 }
 
+/**
+ * There was a problem with logging out a user which was caused by multiple parallel refresh attempts
+ * after rapid page reloads. Each request tried to use the same (now-rotated) refresh token, so only the first
+ * succeeded while the others failed with "invalid/expired" and triggered a logout. Additionally, the client
+ * was manually retrying requests without coordinating refresh, creating a race condition. We fixed it by implementing
+ * a single-flight refresh (one refresh at a time), queuing pending requests during refresh, and replaying them once
+ * a new access token is issued. The refresh call uses a separate axios instance (no interceptors) and the server
+ * always sets the new refresh token cookie on successful refresh.
+ */
+
+// Global flag to unsure that only one refresh runs at a time.
+let isRefreshing = false;
+
+
+// We keep the original request configuration and promise handlers so that after
+// a successful refresh, we can repeat the suspended requests with a new access token.
+type QueuedRequest = {
+    resolve: (val: unknown) => void;
+    reject: (reason?: any) => void;
+    config: AxiosRequestConfig & { _retry?: boolean };
+};
+
+// Queue of requests waiting for refresh to complete.
+let queue: QueuedRequest[] = [];
+
+
+// Put a failed (401) request into the queue.
+// Resolves by re-sending the request after refresh, or rejects if refresh fails.
+function enqueueRequest(config: AxiosRequestConfig & { _retry?: boolean }) {
+    return new Promise((resolve, reject) => {
+        queue.push({ resolve, reject, config });
+    });
+}
+
+// Replay all queued requests after a successful refresh.
+// Note: Authorization header will be injected by the request interceptor with the latest token.
+function replayQueuedRequests() {
+    const q = [...queue]; queue = [];
+    q.forEach(({ resolve, config }) => resolve(api(config)));
+}
+
+// Reject all queued requests if refresh fails.
+function rejectQueuedRequests(err: any) {
+    const q = [...queue]; queue = [];
+    q.forEach(({ reject }) => reject(err));
+}
+
+// Separate client for refresh (no interceptors) to avoid refresh loops.
+const refreshClient = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
+});
+
+
+// Perform the actual refresh call; store the new access token in RAM.
+// Important: use refreshClient (no interceptors) to prevent recursion.
+async function doRefresh() {
+    const res = await refreshClient.post("/api/security/refresh", null);
+    const newAT = res?.data?.accessToken as string | undefined;
+    if (!newAT) throw new Error("No accessToken in refresh response.");
+    setAccessToken(newAT);
+}
+
+// --- Interceptors ---
+
 //adding access token to all request going through
 api.interceptors.request.use((config) => {
-  if (accessToken) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${accessToken}`;
-  }
-  return config;
+    if (accessToken) {
+        config.headers = config.headers ?? {};
+        (config.headers as any).Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
 });
 
 //refreshing token when expired
 api.interceptors.response.use(
-  (res) => res,
-  async (err) => {
-    let original = err.config;
-    if (err.response?.status === 401 && original && !original._retry) {
-      original._retry = true;
-      try {
-        let res = await api.post("/api/security/refresh"); //refresh token doklejany przez cookies(?)
-        setAccessToken(res.data.accessToken);
-        original.headers.Authorization = `Bearer ${accessToken}`;
-        return api(original);
-      } catch (e) {
-        setAccessToken(null);
-        console.error(e);
-      }
+    (res) => res,
+    async (err: AxiosError) => {
+        const original = err.config as (AxiosRequestConfig & { _retry?: boolean }) | undefined;
+        const status = err.response?.status;
+
+        if (!original || !status) return Promise.reject(err);
+
+        if (status === 401 && !original._retry) {
+            original._retry = true;
+
+            if (!isRefreshing) {
+                isRefreshing = true;
+                try {
+                    await doRefresh();
+                    replayQueuedRequests();
+                } catch (e) {
+                    setAccessToken(null);
+                    rejectQueuedRequests(e);
+                } finally {
+                    isRefreshing = false;
+                }
+            }
+
+            // Suspend this request until refresh finishes.
+            return enqueueRequest(original);
+        }
+
+        return Promise.reject(err);
     }
-    return Promise.reject(err);
-  },
 );
 
 interface JwtPayload {
