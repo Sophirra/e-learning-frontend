@@ -100,15 +100,21 @@ export interface FileData {
   uploadedBy: string;
   courseId?: string;
   courseName?: string;
-  tags?: string[];
+  tags: FileTag[];
 }
 export interface FileFilter {
   query?: string;
   studentId?: string;
   courseId?: string;
   origin?: string[];
-  tags?: string[];
+  tagIds?: string[];
   createdBy?: string[];
   type?: string[];
   //optional: dates (can be added)
+}
+
+export interface FileTag {
+  id: string;
+  name: string;
+  ownerId: string;
 }
