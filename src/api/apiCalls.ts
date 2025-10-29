@@ -1,4 +1,4 @@
-import Api from "@/api/api.ts";
+import Api, { getUserId } from "@/api/api.ts";
 import type { ApiDayAvailability } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import type {
   Course,
@@ -9,6 +9,7 @@ import type {
   TeacherReview,
   FileData,
   FileFilter,
+  FileTag,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 
@@ -356,3 +357,24 @@ export const getFiles = async (filters?: FileFilter): Promise<FileData[]> => {
   const { data } = await Api.get<FileData[]>(url);
   return data ?? [];
 };
+
+/**
+ * Updates the file data in the database.
+ * @param fileId id of the file to update
+ * @param data new file name and tags
+ */
+export function updateFileData(
+  fileId: string,
+  data: { fileName: string; tags: FileTag[] },
+) {
+  //TODO: send shit
+}
+
+/**
+ * Gets the available tags for the current user.
+ * @returns {Promise<FileTag[]>} A promise that resolves to an array of available tags.
+ */
+export async function getAvailableTags(): Promise<FileTag[]> {
+  const { data } = await Api.get(`/api/files/tags`); //?? robione na czuja
+  return data;
+}

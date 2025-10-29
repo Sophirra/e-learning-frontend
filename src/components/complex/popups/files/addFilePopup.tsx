@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { ChooseFilePopup } from "@/components/complex/popups/chooseFilePopup.tsx";
-import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx";
+import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
+import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { useState } from "react";
 import type { FileData } from "@/api/types.ts";
 

@@ -24,8 +24,10 @@ import {
 } from "@/components/complex/filterDropdown.tsx";
 import { getFiles } from "@/api/apiCalls.ts";
 import type { FileData, FileFilter } from "@/api/types.ts";
-import { UploadFilePopup } from "@/components/complex/popups/uploadFilePopup.tsx";
+import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { formatDate } from "date-fns";
+import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";
+import { Edit } from "lucide-react";
 
 type SortField = "title" | "dateCreated" | "sharedBy" | "course";
 type SortOrder = "none" | "asc" | "desc";
@@ -280,7 +282,7 @@ export function FileGallery({
                         key={index}
                         className="px-2 py-1 text-sm bg-secondary rounded-full"
                       >
-                        {tag}
+                        {tag.name}
                       </span>
                     ))}
                   </div>
@@ -288,32 +290,33 @@ export function FileGallery({
               </TableCell>
               <TableCell>
                 {selectedFile?.id === file.id ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <icons.MoreHorizontalIcon />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <icons.Link />
-                        Open in new tab
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <icons.Share />
-                        Share
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <icons.Edit />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
-                        <icons.Trash />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <EditFilePopup file={selectedFile} />
                 ) : (
+                  // <DropdownMenu>
+                  //   <DropdownMenuTrigger asChild>
+                  //     <Button variant="ghost" size="icon">
+                  //       <icons.MoreHorizontalIcon />
+                  //     </Button>
+                  //   </DropdownMenuTrigger>
+                  //   <DropdownMenuContent align="end">
+                  //     <DropdownMenuItem>
+                  //       <icons.Link />
+                  //       Open in new tab
+                  //     </DropdownMenuItem>
+                  //     <DropdownMenuItem>
+                  //       <icons.Share />
+                  //       Share
+                  //     </DropdownMenuItem>
+                  //     <DropdownMenuItem>
+                  //       {/*<EditFilePopup />*/}
+                  //       {/*file={selectedFile} />*/}
+                  //     </DropdownMenuItem>
+                  //     <DropdownMenuItem className="text-destructive">
+                  //       <icons.Trash />
+                  //       Delete
+                  //     </DropdownMenuItem>
+                  //   </DropdownMenuContent>
+                  // </DropdownMenu>
                   <div className={"h-8"} />
                 )}
               </TableCell>
