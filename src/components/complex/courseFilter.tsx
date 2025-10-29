@@ -27,7 +27,6 @@ export default function CourseFilter({
   selectedStudentId?: string | null;
   setSelectedStudentId?: (studentId: string | null) => void;
   setupClassButton?: boolean;
-  addAssignmentButton?: boolean;
 }) {
   const [courses, setCourses] = useState<CourseBrief[]>([]);
   const [students, setStudents] = useState<StudentBrief[]>([]);
