@@ -55,6 +55,16 @@ export interface TeacherAvailability {
   timeslots: { timeFrom: string; timeUntil: string }[];
 }
 
+/**
+ * Generic interface representing a paginated API response.
+ **/
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
 // Course Section
 export interface CourseWidget {
   id: string;
