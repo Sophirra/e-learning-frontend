@@ -44,8 +44,10 @@ export function StudentCalendar() {
         return searchParams.get("courseId");
     });
 
-    // The class selected in the left column
-    const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+    // selectedClassId: init z URL
+    const [selectedClassId, setSelectedClassId] = useState<string | null>(() => {
+        return searchParams.get("classId");
+    });
 
     // Raw timeline data (to recalculate when clicking a class)
     const [timeline, setTimeline] = useState<ClassBriefDto[]>([]);
@@ -58,11 +60,13 @@ export function StudentCalendar() {
     const [assignments, setAssignments] = useState<AnyTask[]>([]);
     const [files, setFiles] = useState<FileProps[]>([]);
 
-    // Sync with ?courseId in URL and clear selected class on change
+    // Sync with ?courseId & ?classId in URL
     useEffect(() => {
-        const incoming = searchParams.get("courseId");
-        setSelectedCourseId((prev) => (prev !== incoming ? incoming : prev));
-        setSelectedClassId(null);
+        const incomingCourseId = searchParams.get("courseId");
+        const incomingClassId = searchParams.get("classId");
+
+        setSelectedCourseId((prev) => (prev !== incomingCourseId ? incomingCourseId : prev));
+        setSelectedClassId((prev) => (prev !== incomingClassId ? incomingClassId : prev));
     }, [searchParams]);
 
     // RETRIEVE TIMELINE
@@ -124,9 +128,22 @@ export function StudentCalendar() {
     }, [selectedCourseId]);
 
     // Handler to toggle the selected class (clicking the same tile again clears the filter)
-    const handleSelectClassId = useCallback((id: string | null) => {
-        setSelectedClassId((prev) => (prev === id ? null : id));
-    }, []);
+    const handleSelectClassId = useCallback(
+        (id: string | null) => {
+            setSelectedClassId((prev) => {
+                const next = prev === id ? null : id;
+
+                const params: Record<string, string> = {};
+                const currentCourseId = searchParams.get("courseId");
+                if (currentCourseId) params.courseId = currentCourseId;
+                if (next) params.classId = next;
+
+                setSearchParams(params, { replace: true });
+                return next;
+            });
+        },
+        [searchParams, setSearchParams]
+    );
 
     // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
     useEffect(() => {
@@ -194,7 +211,7 @@ export function StudentCalendar() {
                 filePath: f.path,
                 associatedCourseName: cls.courseName,
                 associatedClassDate: cls.startTime.slice(0, 10),
-            })),
+            }))
         );
 
         setLinks(mappedLinks);
@@ -202,19 +219,36 @@ export function StudentCalendar() {
         setFiles(mappedFiles);
     }, [selectedClassId, timeline]);
 
+    // Auto-scroll do wybranej kafelki (gdy przyszło z URL lub po kliknięciu)
+    useEffect(() => {
+        if (!selectedClassId) return;
+        const el = document.getElementById(`class-${selectedClassId}`);
+        if (el) {
+            requestAnimationFrame(() => {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+            });
+        }
+    }, [classes, selectedClassId]);
+
     return (
         <Content>
             <CourseFilter
                 student={true}
                 setSelectedCourseId={(val) => {
-                    // val może być stringiem lub funkcją (prev => next)
                     const nextId =
-                        typeof val === "function" ? (val as (p: string | null) => string | null)(selectedCourseId) : val;
+                        typeof val === "function"
+                            ? (val as (p: string | null) => string | null)(selectedCourseId)
+                            : val;
+
+                    if (nextId === selectedCourseId) {
+                        // nic nie rób: nie czyść selectedClassId ani query stringa
+                        return;
+                    }
 
                     setSelectedCourseId(nextId);
                     setSelectedClassId(null);
 
-                    // aktualizacja query paramów (bez użycia funkcji, żeby uniknąć przecieków)
+                    // aktualizacja query paramów   bez classId po realnej zmianie kursu
                     if (nextId) {
                         setSearchParams({ courseId: nextId }, { replace: true });
                     } else {
@@ -233,12 +267,13 @@ export function StudentCalendar() {
                         </div>
                     ) : (
                         classes.map((c) => (
-                            <ClassTile
-                                key={c.id}
-                                {...c}
-                                setSelectedClassId={handleSelectClassId}
-                                selectedClassId={selectedClassId}
-                            />
+                            <div key={c.id} id={`class-${c.id}`}>
+                                <ClassTile
+                                    {...c}
+                                    setSelectedClassId={handleSelectClassId}
+                                    selectedClassId={selectedClassId}
+                                />
+                            </div>
                         ))
                     )}
                 </div>
