@@ -2,7 +2,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { icons } from "lucide-react";
-import { AddFilePopup } from "@/components/complex/popups/addFilePopup.tsx";
+import { AddFilePopup } from "@/components/complex/popups/files/addFilePopup.tsx";
 
 export type FileLink = {
   id?: string;
@@ -20,10 +20,12 @@ export type FileProps = {
 };
 
 export function FilesSummary({
+  classId,
   files,
   lastCount,
   student,
 }: {
+  classId?: string;
   files: FileProps[];
   lastCount: number;
   student: boolean;
@@ -35,7 +37,9 @@ export function FilesSummary({
       label={"Files shared"}
       labelIcon={icons.File}
       canHide={true}
-      customButton={student ? undefined : () => AddFilePopup()}
+      customButton={
+        student || !classId ? undefined : () => AddFilePopup(classId)
+      }
     >
       <div className="flex flex-col gap-2 pl-2">
         {displayedFiles.length === 0 ? (

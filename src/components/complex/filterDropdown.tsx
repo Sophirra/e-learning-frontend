@@ -39,8 +39,8 @@ interface FilterDropdownProps {
   reset?: boolean;
   disabled?: boolean;
   icon?: React.ComponentType<any>;
-  /** key of the default item */
-  defaultValue?: string;
+  /** key of the default items */
+  defaultValues?: string[];
 }
 
 export function FilterDropdown({
@@ -54,13 +54,12 @@ export function FilterDropdown({
   searchable = true,
   reset = true,
   disabled = false,
-  defaultValue = undefined,
+  defaultValues = undefined,
   icon: Icon,
 }: FilterDropdownProps) {
   const [selectedValues, setSelectedValues] = useState<SelectableItem[]>(() => {
-    if (defaultValue) {
-      const defaultItem = items.find((item) => item.value === defaultValue);
-      return defaultItem ? [defaultItem] : [];
+    if (defaultValues) {
+      return items.filter((item) => defaultValues.includes(item.value));
     }
     return [];
   });
@@ -94,7 +93,7 @@ export function FilterDropdown({
   return (
     <div className="flex flex-col gap-2">
       {(label || reset) && (
-        <div className="flex items-center justify-between gap-2 h-9">
+        <div className="flex items-center justify-between gap-2 h-6">
           {label && <Label>{label}</Label>}
           {reset && selectedValues.length > 0 && (
             <Button variant="ghost" size="icon" onClick={handleReset}>

@@ -10,7 +10,6 @@ import {
   mapParticipationToCourseBrief,
   mapApiCourseToCourseBrief,
 } from "@/mappers/courseMappers.ts";
-import { AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
 
 type StudentBrief = { id: string; name: string; surname: string };
 
@@ -21,15 +20,13 @@ export default function CourseFilter({
   selectedStudentId,
   setSelectedStudentId,
   setupClassButton = false,
-  addAssignmentButton = false,
 }: {
   student: boolean;
   selectedCourseId: string | null;
   setSelectedCourseId: (courseId: string | null) => void;
   selectedStudentId?: string | null;
   setSelectedStudentId?: (studentId: string | null) => void;
-  setupClassButton: boolean;
-  addAssignmentButton: boolean;
+  setupClassButton?: boolean;
 }) {
   const [courses, setCourses] = useState<CourseBrief[]>([]);
   const [students, setStudents] = useState<StudentBrief[]>([]);
@@ -53,6 +50,14 @@ export default function CourseFilter({
             .map(mapParticipationToCourseBrief)
             .filter((c: any): c is CourseBrief => !!c);
 
+          // if (!canceled) {
+          //   setCourses(mapped);
+          //   setSelectedCourseId((prev: string | null) =>
+          //     mapped.some((c: CourseBrief) => c.courseId === prev)
+          //       ? prev
+          //       : null,
+          //   );
+          // }
           if (!canceled) {
             setCourses(mapped);
 
@@ -69,7 +74,7 @@ export default function CourseFilter({
           const studentList = sRes.data ?? [];
           const courseList: CourseBrief[] = (cRes.data ?? [])
             .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-            .filter((c: any): c is CourseBrief => !!c);
+            .filter((c: CourseBrief | null): c is CourseBrief => !!c);
 
           if (!canceled) {
             setStudents(studentList);
@@ -135,7 +140,7 @@ export default function CourseFilter({
 
         const courseList: CourseBrief[] = (res.data ?? [])
           .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-          .filter((c: any): c is CourseBrief => !!c);
+          .filter((c: CourseBrief | null): c is CourseBrief => !!c);
 
         setCourses(courseList);
 
@@ -298,8 +303,6 @@ export default function CourseFilter({
       </div>
       {setupClassButton ? (
         <SetupNewClassPopup course={selectedCourseId ?? ""} />
-      ) : addAssignmentButton ? (
-        AddTaskPopup("", true, true, true)
       ) : null}
     </div>
   );

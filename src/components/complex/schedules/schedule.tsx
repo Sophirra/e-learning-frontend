@@ -14,6 +14,7 @@ export interface TimeSlot {
   classId?: string;
 }
 
+//TODO: dodać studentId i courseId i dostosować końcówkę na api
 //type that is downloaded from backend - can be moved
 export interface ClassSchedule {
   classId: string;

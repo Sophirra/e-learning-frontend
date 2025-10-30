@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Content } from "@/components/ui/content.tsx";
-import type { Course } from "@/features/course/course.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
@@ -16,6 +15,7 @@ import {
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
+import { FileGallery } from "@/components/complex/fileGallery.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -31,15 +31,6 @@ export function StudentsPage() {
   );
   //courses for specific student from current teacher (user)
   const [courses, setCourses] = useState<CourseBrief[]>([]);
-
-  let sampleCourse = {
-    id: "1",
-    name: "GameDev",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    thumbnailUrl:
-      "https://i.pinimg.com/736x/ee/2a/71/ee2a7149341c2b23ae2e9c7358ec247d.jpg",
-    teacherId: "1",
-  };
 
   const sampleAssignment: AnyTask = {
     id: "1",
@@ -60,7 +51,7 @@ export function StudentsPage() {
   //TODO: get student data to display in student card. Can be here or in StudentCard component.
 
   return (
-    <div className="bg-white h-screen">
+    <div className="bg-white min-h-screen">
       <NavigationBar />
       <Content>
         <div className={"space-y-4"}>
@@ -101,6 +92,17 @@ export function StudentsPage() {
                 />
                 <ChatSummary />
                 {/*<FilesSharedSummary student={false} />*/}
+                <Summary
+                  label={"Shared files"}
+                  labelIcon={icons.File}
+                  canHide={true}
+                >
+                  <FileGallery
+                    slim={true}
+                    studentId={selectedStudentId}
+                    courseId={selectedCourseId ? selectedCourseId : undefined}
+                  />
+                </Summary>
               </div>
             </div>
           ) : (

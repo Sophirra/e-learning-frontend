@@ -1,4 +1,4 @@
-import Api from "@/api/api.ts";
+import Api, { getUserId } from "@/api/api.ts";
 import type { ApiDayAvailability } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import type {
   ClassWithStudentsDTO,
@@ -8,8 +8,11 @@ import type {
   Teacher,
   TeacherAvailability,
   TeacherReview,
+  FileData,
+  FileFilter,
+  FileTag,
 } from "@/api/types.ts";
-import type {Spectator} from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
+import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type {Role} from "@/features/user/user.ts";
 import {readPersistedRole} from "@/features/user/RolePersistence.ts";
 
@@ -31,10 +34,10 @@ export const getCourseById = async (courseId: string): Promise<Course> => {
  * @returns Promise resolving to an array of TeacherAvailability.
  */
 export const getTeacherAvailabilityByCourseId = async (
-    courseId: string,
+  courseId: string,
 ): Promise<TeacherAvailability[]> => {
   const { data } = await Api.get<TeacherAvailability[]>(
-      `/api/courses/${courseId}/teacher/availability`,
+    `/api/courses/${courseId}/teacher/availability`,
   );
   return data ?? [];
 };
@@ -47,10 +50,10 @@ export const getTeacherAvailabilityByCourseId = async (
  * @returns Promise resolving to an array of ApiDayAvailability objects.
  */
 export const getApiDayAvailability = async (
-    courseId: string,
+  courseId: string,
 ): Promise<ApiDayAvailability[]> => {
   const { data } = await Api.get<ApiDayAvailability[]>(
-      `/api/courses/${courseId}/teacher/availability`,
+    `/api/courses/${courseId}/teacher/availability`,
   );
   return data ?? [];
 };
@@ -73,10 +76,10 @@ export const getTeacherById = async (teacherId: string): Promise<Teacher> => {
  * @returns Promise resolving to an array of TeacherReview objects.
  */
 export const getTeacherReviews = async (
-    teacherId: string,
+  teacherId: string,
 ): Promise<TeacherReview[]> => {
   const { data } = await Api.get<TeacherReview[]>(
-      `/api/teacher/${teacherId}/reviews`,
+    `/api/teacher/${teacherId}/reviews`,
   );
   return data ?? [];
 };
@@ -89,10 +92,10 @@ export const getTeacherReviews = async (
  * @returns Promise resolving to an array of TeacherAvailability objects.
  */
 export const getTeacherAvailability = async (
-    teacherId: string,
+  teacherId: string,
 ): Promise<TeacherAvailability[]> => {
   const { data } = await Api.get<TeacherAvailability[]>(
-      `/api/teacher/${teacherId}/availability`,
+    `/api/teacher/${teacherId}/availability`,
   );
   return data ?? [];
 };
@@ -282,7 +285,6 @@ export const getSpectators = async (): Promise<Spectator[]> => {
   return data;
 };
 
-
 /**
  * Removes a spectator relationship for the currently authenticated user.
  *
@@ -355,7 +357,6 @@ export const acceptSpectatorInvite = async (token: string): Promise<void> => {
   await Api.post("/api/spectators/invites/accept", { token });
 };
 
-
 /**
  * Uploads a file for the currently authenticated user.
  *
@@ -381,6 +382,61 @@ export const uploadUserFile = async (file: File): Promise<any> => {
   return response.data;
 };
 
+/**
+ * Fetches a filtered list of files from the backend.
+ *
+ * Supports multiple optional filters. Each provided filter
+ * will be converted into a query parameter and appended to the request URL.
+ * ```
+ *
+ * @param filters - Optional filtering parameters.
+ * @returns Promise resolving to an array of Course objects.
+ */
+//TODO: modify according to backend (created based on getCourses)
+export const getFiles = async (filters?: FileFilter): Promise<FileData[]> => {
+  const params = new URLSearchParams();
+
+  // Append filters as query parameters if present
+  filters?.origin?.forEach((v) => params.append("origin", v));
+  filters?.tags?.forEach((v) => params.append("tags", v));
+  filters?.createdBy?.forEach((v) => params.append("createdBy", v));
+  filters?.type?.forEach((v) => params.append("type", v));
+  // if (filters?.userId) params.append("userId", filters.userId);
+  // if (filters?.teacherId) params.append("teacherId", filters.teacherId);
+  if (filters?.query) params.append("query", filters.query);
+
+  const queryString = params.toString();
+  const url = `/api/user/files${queryString ? `?${queryString}` : ""}`;
+
+  const { data } = await Api.get<FileData[]>(url);
+  return data ?? [];
+};
+
+/**
+ * Updates the file data in the database.
+ * @param fileId id of the file to update
+ * @param data new file name and tags
+ */
+export function updateFileData(
+  fileId: string,
+  data: { fileName: string; tags: FileTag[] },
+) {
+  //TODO: send shit
+}
+
+/**
+ * Gets the available tags for the current user.
+ * @returns {Promise<FileTag[]>} A promise that resolves to an array of available tags.
+ */
+export async function getAvailableTags(): Promise<FileTag[]> {
+  const { data } = await Api.get(`/api/files/tags`); //TODO?? robione na czuja
+  return data;
+}
+
+export async function deleteFile(fileId: string) {
+  //TODO: call delete file
+  await Api.delete(`/api/user/files/${fileId}`); //TODO?? check
+}
 
 /**
  * Fetches all classes taught by the currently authenticated teacher (taken from JWT),

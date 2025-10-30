@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { CourseBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
@@ -73,7 +73,7 @@ export function StudentDetailsCard({
             { to: "/chats", icon: icons.MessageSquare, label: "Chats" },
             { to: "/quizzes", icon: icons.Brain, label: "Quizzes" },
           ]
-            //filter to remove null from list
+            //filter to remove null from the list
             .filter(Boolean)
             //ignore warnings - null is filtered out
             // @ts-ignore

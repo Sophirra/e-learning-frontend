@@ -66,7 +66,7 @@ export function SetupNewClassPopup({ course }: { course: string }) {
           multiselect={false}
           placeholder={"Select course"}
           emptyMessage={"No course selected"}
-          defaultValue={
+          defaultValues={
             selectedCourse.length > 0 ? selectedCourse[0].value : undefined
           }
           onSelectionChange={setSelectedCourse}
