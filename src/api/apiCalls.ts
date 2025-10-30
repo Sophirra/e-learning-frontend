@@ -4,7 +4,7 @@ import type {
   ClassWithStudentsDTO,
   Course,
   CourseBrief,
-  CourseWidget,
+  CourseWidget, PagedResult,
   Teacher,
   TeacherAvailability,
   TeacherReview,
@@ -14,6 +14,7 @@ import type {
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type {Role} from "@/features/user/user.ts";
+import {readPersistedRole} from "@/features/user/RolePersistence.ts";
 
 /**
  * Fetches detailed course data by courseID.
@@ -137,27 +138,31 @@ export const getCourseLanguages = async (): Promise<string[]> => {
 };
 
 /**
- * Fetches a filtered list of courses from the backend.
+ * Fetches a paginated and optionally filtered list of courses from the backend.
  *
  * Supports multiple optional filters such as category, level, language,
- * price range, teacher, and search query. Each provided filter
- * will be converted into a query parameter and appended to the request URL.
+ * price range, teacher, and search query. Pagination parameters (`pageNumber`, `pageSize`)
+ * can also be provided to control which subset of results is returned.
+ *
+ * Each provided filter will be serialized into query parameters and appended to the request URL.
  *
  * Example usage:
  * ```ts
- * const courses = await getCourses({
+ * const result = await getCourses({
  *   categories: ["Programming", "Mathematics"],
  *   levels: ["Beginner"],
  *   languages: ["English"],
  *   priceFrom: 50,
  *   priceTo: 200,
  *   query: "React",
+ *   pageNumber: 1,
+ *   pageSize: 5,
  * });
- * ```
  *
- * @param filters - Optional filtering parameters (categories, levels, languages, etc.).
- * @returns Promise resolving to an array of Course objects.
+ * @param filters - Optional filtering and pagination parameters.
+ * @returns A promise resolving to a {@link PagedResult} containing a list of {@link CourseWidget} items.
  */
+
 export const getCourses = async (filters?: {
   categories?: string[];
   levels?: string[];
@@ -166,76 +171,101 @@ export const getCourses = async (filters?: {
   priceTo?: number;
   teacherId?: string;
   query?: string;
-}): Promise<CourseWidget[]> => {
+  pageNumber?: number;
+  pageSize?: number;
+}): Promise<PagedResult<CourseWidget>> => {
   const params = new URLSearchParams();
 
-  // Append filters as query parameters if present
+
   filters?.categories?.forEach((c) => params.append("categories", c));
   filters?.levels?.forEach((l) => params.append("levels", l));
   filters?.languages?.forEach((lng) => params.append("languages", lng));
-  if (typeof filters?.priceFrom === "number")
-    params.append("priceFrom", String(filters.priceFrom));
-  if (typeof filters?.priceTo === "number")
-    params.append("priceTo", String(filters.priceTo));
-  if (filters?.teacherId) params.append("teacherId", filters.teacherId);
-  if (filters?.query) params.append("query", filters.query);
+
+  if (typeof filters?.priceFrom === "number") params.set("priceFrom", String(filters.priceFrom));
+  if (typeof filters?.priceTo === "number")   params.set("priceTo", String(filters.priceTo));
+  if (filters?.teacherId)                     params.set("teacherId", filters.teacherId);
+  if (filters?.query)                         params.set("query", filters.query);
+
+
+  if (typeof filters?.pageNumber === "number") params.set("pageNumber", String(filters.pageNumber));
+  if (typeof filters?.pageSize === "number")   params.set("pageSize", String(filters.pageSize));
 
   const queryString = params.toString();
   const url = `/api/courses${queryString ? `?${queryString}` : ""}`;
 
-  const { data } = await Api.get<CourseWidget[]>(url);
-  return data ?? [];
+  const { data } = await Api.get<PagedResult<CourseWidget>>(url);
+  return data ?? { items: [], totalCount: 0, page: 1, pageSize: 10 };
 };
+
+
 
 /**
  * Fetches all upcoming classes (within the next 14 days) for the currently authenticated user.
  *
- * Depending on the user's active role, this function calls the appropriate API endpoint:
- * - `/api/classes/upcoming-as-teacher`   when the user is a **teacher**.
- * - `/api/classes/upcoming-as-student`   when the user is a **student**.
+ * The user's active role is automatically read from cookies (`activeRole`) to determine
+ * which API endpoint should be called:
+ *
+ * - `/api/classes/upcoming-as-teacher`   when the stored role is **teacher**.
+ * - `/api/classes/upcoming-as-student`   when the stored role is **student**.
  *
  * Each returned object includes:
  * - `courseId`   unique identifier of the course.
  * - `courseName`   name of the course.
- * - `startTime`   class start date and time (converted from ISO string to `Date`).
+ * - `startTime`   class start date and time (converted from an ISO string to a native `Date`).
  * - `teacherId`   identifier of the teacher assigned to the course.
  *
- * @param {Role | undefined} activeRole - The current user's role, determining which endpoint to query.
  * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming classes.
+ * If no role is found in cookies or the API returns no data, an empty array is returned.
  *
  * @remarks
- * The API automatically filters data based on the user's JWT roles.
- * The `startTime` field is converted from an ISO 8601 string into a native JavaScript `Date`
- * for easier handling of dates and times on the frontend.
+ * - The active role is persisted in cookies using the `activeRole` key.
+ * - The API response is type-checked to handle both AxiosResponse and plain arrays.
+ * - The `startTime` field is converted into a `Date` object for easier frontend handling.
  */
-export const getCourseBriefs = async (
-    activeRole: Role | undefined,
-): Promise<CourseBrief[]> => {
-  if (!activeRole) return [];
+export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
 
-  const url =
-      activeRole === "teacher"
-          ? `/api/classes/upcoming-as-teacher`
-          : `/api/classes/upcoming-as-student`;
+  const role: Role | undefined =
+      typeof window !== "undefined" ? readPersistedRole() : undefined;
 
-  const resp = await Api.get<CourseBrief[]>(url);
 
-  // Jeśli API wrapper zwraca AxiosResponse   sprawdzamy status
-  const status = (resp as any)?.status;
-  const arr: unknown = (resp as any)?.data ?? resp;
-
-  if (status === 204 || !arr) return [];
-
-  if (!Array.isArray(arr)) {
-    console.warn("getCourseBriefs: unexpected response shape", resp);
+  if (!role) {
+    console.warn("getCourseBriefs: no active role found in cookies");
     return [];
   }
 
-  return arr.map((c) => ({
-    ...c,
-    startTime: new Date(c.startTime),
-  }));
+  const url =
+      role === "teacher"
+          ? "/api/classes/upcoming-as-teacher"
+          : "/api/classes/upcoming-as-student";
+
+  try {
+    const resp = await Api.get<CourseBrief[]>(url);
+
+
+    const status = (resp as any)?.status;
+    const arr: unknown = (resp as any)?.data ?? resp;
+
+    if (status === 204 || !arr) return [];
+
+    if (!Array.isArray(arr)) {
+      console.warn("getCourseBriefs: unexpected response shape", resp);
+      return [];
+    }
+
+    return arr.map((c) => ({
+      ...c,
+      startTime: new Date(c.startTime),
+    }));
+  } catch (err) {
+    console.error("getCourseBriefs: error fetching data", err);
+    return [];
+  }
 };
+
+
+
+
+
 
 /**
  * Fetches all spectators for the currently authenticated student from the API.
