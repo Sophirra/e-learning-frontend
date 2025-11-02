@@ -3,7 +3,6 @@ import { Content } from "@/components/ui/content.tsx";
 /* import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import { type ClassTileProps } from "@/components/complex/classTile.tsx";
 import {
   type LinkProps,
   LinksSummary,
@@ -51,273 +50,166 @@ type ClassBriefDto = {
 };
 
 export function TeacherCalendar() {
+  // Course filter
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
-  // The class selcted in the left column
+
+  // Left column
+  const [availability, setAvailability] = useState<ApiDayAvailability[]>([]);
+  const [allScheduledClasses, setAllScheduledClasses] = useState<
+    ClassSchedule[]
+  >([]);
+  const [scheduledClasses, setScheduledClasses] = useState<ClassSchedule[]>([]);
+
+  // The class selected in the left column
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
-
-  // Raw timeline data (to recalculate when clicking a class)
-  const [timeline, setTimeline] = useState<ClassBriefDto[]>([]);
-
-  // Left column: class tiles
-  const [classes, setClasses] = useState<ClassTileProps[]>([]);
 
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
   const [assignments, setAssignments] = useState<AnyTask[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
-  //TODO: MODIFY TO ACCOMMODATE TO TEACHER
-
-  // RETRIEVE TIMELINE
   useEffect(() => {
-    const studentId = getUserId();
-    if (!studentId) return;
+    const teacherId = getUserId(); // assuming this returns teacherId
+    if (!teacherId) return;
 
-    const from = new Date();
-    from.setDate(from.getDate() - 30);
-    const to = new Date();
+    const today = new Date();
+    const end = new Date();
+    end.setDate(today.getDate() + 6);
 
-    const params: any = {
-      from: from.toISOString(),
-      to: to.toISOString(),
-    };
+    const startParam = today.toISOString().slice(0, 10);
+    const endParam = end.toISOString().slice(0, 10);
 
-    if (selectedCourseId) {
-      params.participationIds = selectedCourseId;
-    }
-
+    // Fetch availability
     api
-      .get<ClassBriefDto[]>(`/api/students/${studentId}/timeline`, { params })
+      .get<ApiDayAvailability[]>(`/api/teacher/${teacherId}/availability`)
       .then((res) => {
-        const data = (res.data ?? []) as ClassBriefDto[];
-
-        setTimeline(data); // Save raw data
-
-        // Build left column data
-        const now = new Date();
-        const mappedClasses: ClassTileProps[] = data
-          .map((cls) => {
-            const start = new Date(cls.startTime);
-            let state: "upcoming" | "ongoing" | "completed" = "completed";
-
-            if (start > now) state = "upcoming";
-            else if (
-              start <= now &&
-              now.getTime() - start.getTime() < 60 * 60 * 1000
-            )
-              // 60 * 60 * 1000 = 1 hour
-              state = "ongoing";
-
-            return {
-              id: cls.id,
-              state,
-              date: start,
-              title: cls.courseName,
-              duration: 60,
-            };
-          })
-          // Sort by date descending
-          .sort((a, b) => b.date.getTime() - a.date.getTime());
-
-        setClasses(mappedClasses);
-
-        // If the selected class no longer exists (course change) -> clear the filter
-        setSelectedClassId((prev) =>
-          prev && !data.some((c) => c.id === prev) ? null : prev,
-        );
+        const mapped: ApiDayAvailability[] = res.data.map((day) => ({
+          day: day.day,
+          timeslots: day.timeslots.map((slot) => ({
+            timeFrom: slot.timeFrom.slice(0, 5),
+            timeUntil: slot.timeUntil.slice(0, 5),
+          })),
+        }));
+        setAvailability(mapped);
       })
-      .catch((err) => {
-        console.error("Timeline could not be retrieved:", err);
-      });
-  }, [selectedCourseId]);
+      .catch((err) => console.error("Availability fetch failed:", err));
+
+    // Fetch upcoming classes
+    api
+      .get<ClassSchedule[]>(`/api/teacher/${teacherId}/upcoming-classes`, {
+        params: {
+          start: startParam,
+          end: endParam,
+        },
+      })
+      .then((res) => {
+        setAllScheduledClasses(res.data);
+        setScheduledClasses(res.data);
+      })
+      .catch((err) => console.error("Upcoming classes fetch failed:", err));
+  }, []);
 
   // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
   useEffect(() => {
-    // A source data for aggregation: either a single class or the entire timeline
-    const source = selectedClassId
-      ? timeline.filter((c) => c.id === selectedClassId)
-      : timeline;
+    if (!selectedClassId) {
+      setLinks([]);
+      setAssignments([]);
+      setFiles([]);
+      return;
+    }
 
-    // Links
-    const now = new Date();
-    const mappedLinks: LinkProps[] = source.flatMap((cls) => {
-      const start = new Date(cls.startTime);
-      const isMeetingActive =
-        !!cls.linkToMeeting &&
-        Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
+    api
+      .get<ClassBriefDto>(`/api/classes/${selectedClassId}`)
+      .then((res) => {
+        const cls = res.data;
+        const now = new Date();
+        const start = new Date(cls.startTime);
+        const isMeetingActive =
+          !!cls.linkToMeeting &&
+          Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
 
-      const allLinks = [...(cls.links ?? [])];
-      if (isMeetingActive && cls.linkToMeeting) {
-        // If the meeting is "active", put it at the beginning
-        allLinks.unshift(cls.linkToMeeting);
-      }
+        // LINKS
+        const allLinks = [...(cls.links ?? [])];
+        if (isMeetingActive && cls.linkToMeeting) {
+          allLinks.unshift(cls.linkToMeeting);
+        }
 
-      return allLinks.map((link) => ({
-        path: link,
-        isMeeting: link === cls.linkToMeeting,
-        courseName: cls.courseName,
-        className: `[${cls.startTime.slice(0, 10)}]`,
-      }));
-    });
+        const mappedLinks: LinkProps[] = allLinks.map((link) => ({
+          path: link,
+          isMeeting: link === cls.linkToMeeting,
+          courseName: cls.courseName,
+          className: `[${cls.startTime.toString().slice(0, 10)}]`,
+        }));
 
-    // Assignments (exercises + quizzes)
-    const mappedAssignments: AnyTask[] = source.flatMap((cls) => {
-      const courseName = cls.courseName;
-      const className = `Class ${cls.id.slice(0, 4)}`;
-      const classDate = cls.startTime.slice(0, 10);
+        // ASSIGNMENTS
+        const courseName = cls.courseName;
+        const className = `Class ${cls.id.toString().slice(0, 4)}`;
+        const classDate = cls.startTime.toString().slice(0, 10);
 
-      const exercises = (cls.exercises ?? []).map((ex) => ({
-        id: ex.id,
-        name: `Exercise ${courseName} [${classDate}]`,
-        className,
-        courseName,
-        completed: !!ex.grade,
-        type: "assignment" as const,
-        status: ex.exerciseStatus === "completed" ? "good" : "behind",
-        graded: ex.grade !== undefined,
-        grade: ex.grade,
-      }));
+        const exercises = (cls.exercises ?? []).map((ex) => ({
+          id: ex.id,
+          name: `Exercise ${courseName} [${classDate}]`,
+          className,
+          courseName,
+          completed: !!ex.grade,
+          type: "assignment" as const,
+          status: ex.exerciseStatus === "completed" ? "good" : "behind",
+          graded: ex.grade !== undefined,
+          grade: ex.grade ?? null,
+        }));
 
-      const quizzes = (cls.quizzes ?? []).map((qz) => ({
-        id: qz.id,
-        name: `Quiz ${courseName} [${classDate}]`,
-        className,
-        courseName,
-        completed: !!qz.score,
-        type: "quiz" as const,
-        graded: qz.score !== undefined,
-        grade: qz.score,
-      }));
+        const quizzes = (cls.quizzes ?? []).map((qz) => ({
+          id: qz.id,
+          name: `Quiz ${courseName} [${classDate}]`,
+          className,
+          courseName,
+          completed: !!qz.score,
+          type: "quiz" as const,
+          graded: qz.score !== undefined,
+          grade: qz.score ?? null,
+        }));
 
-      return [...exercises, ...quizzes];
-    });
+        const mappedAssignments: AnyTask[] = [...exercises, ...quizzes];
 
-    // Files
-    const mappedFiles: FileProps[] = source.flatMap((cls) =>
-      (cls.files ?? []).map((f) => ({
-        id: f.id,
-        name: f.name,
-        filePath: f.path,
-        associatedCourseName: cls.courseName,
-        associatedClassDate: cls.startTime.slice(0, 10),
-      })),
+        // FILES
+        const mappedFiles: FileProps[] = (cls.files ?? []).map((f) => ({
+          id: f.id,
+          name: f.name,
+          filePath: f.path,
+          associatedCourseName: cls.courseName,
+          associatedClassDate: cls.startTime.toString().slice(0, 10),
+        }));
+
+        setLinks(mappedLinks);
+        setAssignments(mappedAssignments);
+        setFiles(mappedFiles);
+      })
+      .catch((err) => {
+        console.error("Class details could not be retrieved:", err);
+      });
+  }, [selectedClassId]);
+
+  // Filter scheduled classes when filter changes
+  useEffect(() => {
+    let filtered = allScheduledClasses;
+
+    if (selectedStudentId) {
+      filtered = filtered.filter((cls) => cls.studentId === selectedStudentId);
+    }
+
+    if (selectedCourseId) {
+      filtered = filtered.filter((cls) => cls.courseId === selectedCourseId);
+    }
+
+    setScheduledClasses(filtered);
+
+    setSelectedClassId((prev) =>
+      prev && !filtered.some((cls) => cls.classId === prev) ? null : prev,
     );
-
-    setLinks(mappedLinks);
-    setAssignments(mappedAssignments);
-    setFiles(mappedFiles);
-  }, [selectedClassId, timeline]);
-
-  let tempAvailability: ApiDayAvailability[] = [
-    {
-      day: new Date().toISOString().slice(0, 10), // Dzisiaj
-      timeslots: [
-        { timeFrom: "10:00", timeUntil: "11:00" },
-        { timeFrom: "14:00", timeUntil: "15:00" },
-        { timeFrom: "15:00", timeUntil: "16:00" },
-      ],
-    },
-    {
-      day: new Date(Date.now() + 86400000).toISOString().slice(0, 10), // Jutro
-      timeslots: [
-        { timeFrom: "08:00", timeUntil: "09:00" },
-        { timeFrom: "11:00", timeUntil: "12:00" },
-        { timeFrom: "13:00", timeUntil: "14:00" },
-        { timeFrom: "16:00", timeUntil: "17:00" },
-      ],
-    },
-    {
-      day: new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10), // Pojutrze
-      timeslots: [
-        { timeFrom: "10:00", timeUntil: "11:00" },
-        { timeFrom: "12:00", timeUntil: "13:00" },
-        { timeFrom: "14:00", timeUntil: "15:00" },
-      ],
-    },
-    {
-      day: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10),
-      timeslots: [
-        { timeFrom: "10:00", timeUntil: "11:00" },
-        { timeFrom: "11:00", timeUntil: "12:00" },
-        { timeFrom: "15:00", timeUntil: "16:00" },
-      ],
-    },
-    {
-      day: new Date(Date.now() + 86400000 * 4).toISOString().slice(0, 10),
-      timeslots: [],
-    },
-    {
-      day: new Date(Date.now() + 86400000 * 5).toISOString().slice(0, 10),
-      timeslots: [
-        { timeFrom: "13:00", timeUntil: "14:00" },
-        { timeFrom: "14:00", timeUntil: "15:00" },
-      ],
-    },
-    {
-      day: new Date(Date.now() + 86400000 * 6).toISOString().slice(0, 10),
-      timeslots: [
-        { timeFrom: "09:00", timeUntil: "10:00" },
-        { timeFrom: "10:00", timeUntil: "11:00" },
-        { timeFrom: "12:00", timeUntil: "13:00" },
-        { timeFrom: "13:00", timeUntil: "14:00" },
-        { timeFrom: "14:00", timeUntil: "15:00" },
-      ],
-    },
-  ];
-
-  const tempClasses: ClassSchedule[] = [
-    {
-      classId: "class-001",
-      studentName: "Jan Kowalski",
-      courseName: "Mathematics",
-      classDate: new Date(),
-      classStartTime: "09:00",
-      classEndTime: "10:00",
-    },
-    {
-      classId: "class-002",
-      studentName: "Anna Nowak",
-      courseName: "Physics",
-      classDate: new Date(),
-      classStartTime: "11:00",
-      classEndTime: "12:00",
-    },
-    {
-      classId: "class-003",
-      studentName: "Piotr Wiśniewski",
-      courseName: "Chemistry",
-      classDate: new Date(Date.now() + 86400000), // Jutro
-      classStartTime: "10:00",
-      classEndTime: "11:00",
-    },
-    {
-      classId: "class-004",
-      studentName: "Maria Lewandowska",
-      courseName: "Biology",
-      classDate: new Date(Date.now() + 86400000), // Jutro
-      classStartTime: "14:00",
-      classEndTime: "15:00",
-    },
-    {
-      classId: "class-005",
-      studentName: "Tomasz Kamiński",
-      courseName: "Mathematics",
-      classDate: new Date(Date.now() + 86400000 * 2), // Pojutrze
-      classStartTime: "09:00",
-      classEndTime: "10:00",
-    },
-    {
-      classId: "class-006",
-      studentName: "Katarzyna Wójcik",
-      courseName: "English",
-      classDate: new Date(Date.now() + 86400000 * 2), // Pojutrze
-      classStartTime: "13:00",
-      classEndTime: "14:00",
-    },
-  ];
+  }, [selectedStudentId, selectedCourseId]);
 
   function handleSelect(slot: TimeSlot) {
     if (slot.classId) {
@@ -327,7 +219,6 @@ export function TeacherCalendar() {
   }
 
   function handleStudentSelect(studentId: string | null) {
-    //TODO: filter downloaded classes by student
     setSelectedStudentId(studentId);
   }
 
@@ -348,10 +239,11 @@ export function TeacherCalendar() {
           <Schedule
             daysCount={3}
             startDate={new Date()}
-            apiDayAvailability={tempAvailability}
+            apiDayAvailability={availability}
             displayMode={"class"}
-            classes={tempClasses}
+            classes={scheduledClasses}
             onSelect={handleSelect}
+            selectedClassId={selectedClassId ?? undefined}
           />
         </div>
         <div className="w-2/5 space-y-8">
