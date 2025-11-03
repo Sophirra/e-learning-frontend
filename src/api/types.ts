@@ -117,8 +117,8 @@ export interface FileTag {
   id: string;
   name: string;
   ownerId: string;
+  private?: boolean;
 }
-
 
 /**
  * Represents a brief student view used in selection lists.

@@ -444,3 +444,20 @@ export async function addAssignmentGrade( //TODO: check
 ): Promise<void> {
   await Api.post("/api/assignments/grade", { assignmentId, grade, comments });
 }
+
+export async function createTag(
+  tagName: string,
+  isPrivate: boolean,
+): Promise<FileTag> {
+  const userId = getUserId();
+  await Api.post("/api/files/tags", { tagName, userId, isPrivate });
+  let res = await Api.get(`/api/files/tags/${userId}/${tagName}`);
+  const tag: FileTag = res.data; //TODO: not sure if ok
+  return tag;
+}
+
+export async function checkTagName(tagName: string): Promise<boolean> {
+  const userId = getUserId();
+  const res = await Api.get(`/api/files/tags/${userId}/${tagName}`);
+  return res.status === 200;
+}

@@ -103,6 +103,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
             }}
             defaultValues={tags.map((tag) => tag.id)}
           ></FilterDropdown>
+          <NewTagPopup />
         </div>
         <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
           <DialogClose>

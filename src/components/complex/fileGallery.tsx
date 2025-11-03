@@ -216,6 +216,7 @@ export function FileGallery({
           label={"Tags"}
           placeholder={"Tags associated"}
           emptyMessage={"Origin"}
+          //tags should be reduced - if many tags of the same name exist
           items={[
             { name: "Vocabulary", value: "vocabulary" },
             { name: "Grammar", value: "grammar" },
