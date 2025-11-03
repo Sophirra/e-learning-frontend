@@ -14,7 +14,7 @@ export interface TimeSlot {
   classId?: string;
 }
 
-//type that is downloaded from backend - can be moved
+//type downloaded from backend - can be moved
 export interface ClassSchedule {
   classId: string;
   studentId: string;

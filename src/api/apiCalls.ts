@@ -13,7 +13,7 @@ import type {
   FileTag,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
-import type {Role} from "@/features/user/user.ts";
+import type { Role } from "@/features/user/user.ts";
 
 /**
  * Fetches detailed course data by courseID.
@@ -209,14 +209,14 @@ export const getCourses = async (filters?: {
  * for easier handling of dates and times on the frontend.
  */
 export const getCourseBriefs = async (
-    activeRole: Role | undefined,
+  activeRole: Role | undefined,
 ): Promise<CourseBrief[]> => {
   if (!activeRole) return [];
 
   const url =
-      activeRole === "teacher"
-          ? `/api/classes/upcoming-as-teacher`
-          : `/api/classes/upcoming-as-student`;
+    activeRole === "teacher"
+      ? `/api/classes/upcoming-as-teacher`
+      : `/api/classes/upcoming-as-student`;
 
   const resp = await Api.get<CourseBrief[]>(url);
 
@@ -422,8 +422,25 @@ export async function deleteFile(fileId: string) {
  * @returns {Promise<ClassWithStudentsDTO[]>} List of classes with students.
  * @throws  Will rethrow any network or server error from Axios.
  */
-export async function getTeacherClassesWithStudents(): Promise<ClassWithStudentsDTO[]> {
-  const { data } = await Api.get<ClassWithStudentsDTO[]>("/api/teacher/classes-with-students");
+export async function getTeacherClassesWithStudents(): Promise<
+  ClassWithStudentsDTO[]
+> {
+  const { data } = await Api.get<ClassWithStudentsDTO[]>(
+    "/api/teacher/classes-with-students",
+  );
   return data ?? [];
 }
 
+/**
+ * Adds a grade to an assignment.
+ * @param assignmentId
+ * @param grade
+ * @param comments
+ */
+export async function addAssignmentGrade( //TODO: check
+  assignmentId: string,
+  grade: number,
+  comments?: string,
+): Promise<void> {
+  await Api.post("/api/assignments/grade", { assignmentId, grade, comments });
+}
