@@ -3,7 +3,7 @@ import type { ApiDayAvailability } from "@/components/complex/schedules/availabi
 import type {
   ClassWithStudentsDTO,
   Course,
-  CourseBrief,
+  ClassBrief,
   CourseWidget,
   Teacher,
   TeacherAvailability,
@@ -11,6 +11,10 @@ import type {
   FileData,
   FileFilter,
   FileTag,
+  StudentBriefDTO,
+  Student,
+  CourseBriefDTO,
+  CourseBrief,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -201,16 +205,16 @@ export const getCourses = async (filters?: {
  * - `teacherId`   identifier of the teacher assigned to the course.
  *
  * @param {Role | undefined} activeRole - The current user's role, determining which endpoint to query.
- * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming classes.
+ * @returns {Promise<ClassBrief[]>} A promise resolving to a list of upcoming classes.
  *
  * @remarks
  * The API automatically filters data based on the user's JWT roles.
  * The `startTime` field is converted from an ISO 8601 string into a native JavaScript `Date`
  * for easier handling of dates and times on the frontend.
  */
-export const getCourseBriefs = async (
+export const getClassBriefs = async (
   activeRole: Role | undefined,
-): Promise<CourseBrief[]> => {
+): Promise<ClassBrief[]> => {
   if (!activeRole) return [];
 
   const url =
@@ -218,7 +222,7 @@ export const getCourseBriefs = async (
       ? `/api/classes/upcoming-as-teacher`
       : `/api/classes/upcoming-as-student`;
 
-  const resp = await Api.get<CourseBrief[]>(url);
+  const resp = await Api.get<ClassBrief[]>(url);
 
   // Jeśli API wrapper zwraca AxiosResponse   sprawdzamy status
   const status = (resp as any)?.status;
@@ -413,7 +417,7 @@ export async function deleteFile(fileId: string) {
  * along with students enrolled to those classes/courses.
  *
  * Server endpoint:
- *   GET /api/teachers/classes-with-students
+ *   GET /api/teacher/classes-with-students
  *
  * Auth:
  *   Requires a valid JWT with the "Teacher" role. The teacher ID is resolved
@@ -443,4 +447,16 @@ export async function addAssignmentGrade( //TODO: check
   comments?: string,
 ): Promise<void> {
   await Api.post("/api/assignments/grade", { assignmentId, grade, comments });
+}
+
+export async function getStudentData(studentId: string): Promise<Student> {
+  const res = await Api.get(`/api/students/${studentId}`);
+  return { name: res.data.name, courses: res.data.coursesBrief };
+}
+
+export async function getStudentCourses(
+  studentId: string,
+): Promise<CourseBrief[]> {
+  const res = await Api.get(`/api/students/${studentId}/courses`);
+  return res.data;
 }

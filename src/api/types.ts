@@ -32,7 +32,7 @@ export interface Teacher {
   name: string;
   surname: string;
   description: string;
-  coursesBrief?: CourseBrief[];
+  coursesBrief?: ClassBrief[];
   teacherProfilePictureUrl: string;
 }
 
@@ -86,7 +86,7 @@ export interface CourseVariant {
   languageName: string;
 }
 
-export interface CourseBrief {
+export interface ClassBrief {
   startTime: Date;
   courseId: string;
   courseName: string;
@@ -119,7 +119,6 @@ export interface FileTag {
   ownerId: string;
 }
 
-
 /**
  * Represents a brief student view used in selection lists.
  */
@@ -137,4 +136,11 @@ export type ClassWithStudentsDTO = {
   classId: string;
   courseName: string;
   students: StudentBriefDTO[];
+};
+
+export type Student = { name: string; courses: CourseBrief[] };
+
+export type CourseBrief = {
+  id: string;
+  name: string;
 };

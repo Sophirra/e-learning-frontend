@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useNavigate } from "react-router-dom";
-import type { CourseBrief } from "@/api/types.ts";
+import type { ClassBrief, CourseBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 interface StudentDetailsCardProps {
@@ -41,23 +41,24 @@ export function StudentDetailsCard({
       <CardContent className={"space-y-2 text-left"}>
         <Label className={"text-sm"}>Attends:</Label>
         <div className="grid gap-2">
-          {courses.map((course: CourseBrief) => (
-            <Button
-              key={course.courseId}
-              variant={
-                selectedCourseId && selectedCourseId == course.courseId
-                  ? "default"
-                  : "outline"
-              }
-              size={"sm"}
-              className="justify-start text-left h-auto py-1 px-2"
-              onClick={() => {
-                setSelectedCourseId(course.courseId);
-              }}
-            >
-              Filter by {course.courseName}
-            </Button>
-          ))}
+          {courses &&
+            courses.map((course: CourseBrief) => (
+              <Button
+                key={course.id}
+                variant={
+                  selectedCourseId && selectedCourseId == course.id
+                    ? "default"
+                    : "outline"
+                }
+                size={"sm"}
+                className="justify-start text-left h-auto py-1 px-2"
+                onClick={() => {
+                  setSelectedCourseId(course.id);
+                }}
+              >
+                {course.name}
+              </Button>
+            ))}
         </div>
         <Label className={"text-sm text-left"}>See associated:</Label>
         <nav className="flex gap-2 justify-center">

@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type { CourseBrief } from "@/api/types.ts";
+import type { ClassBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useState } from "react";
 import {
@@ -22,7 +22,7 @@ import WeekScheduleDialog, {
 
 export function SetupNewClassPopup({ course }: { course: string }) {
   //TODO: add data from backend
-  let courses: CourseBrief[] = [
+  let courses: ClassBrief[] = [
     { id: "1", name: "Course A" },
     { id: "2", name: "Course B" },
   ];

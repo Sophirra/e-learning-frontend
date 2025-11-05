@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
-import type { CourseBrief } from "@/api/types.ts";
+import type { ClassBrief } from "@/api/types.ts";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
@@ -10,7 +10,7 @@ import {
   AssignmentSummary,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
-import { getCourseBriefs } from "@/api/apiCalls.ts";
+import { getClassBriefs } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
 import api, { getUserId } from "@/api/api.ts";
 
@@ -27,8 +27,10 @@ export function HomePage() {
   const activeRole = user?.activeRole ?? null;
 
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-  const [courses, setCourses] = useState<CourseBrief[]>([]);
-  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [classes, setClasses] = useState<ClassBrief[]>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
   const [assignmentsRaw, setAssignmentsRaw] = useState<ExerciseBrief[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
 
@@ -40,7 +42,7 @@ export function HomePage() {
     const currentReqId = ++requestIdRef.current;
 
     // natychmiast wyczyść widok po zmianie roli
-    setCourses([]);
+    setClasses([]);
     setSelectedCourseId(null);
     setLoadingCourses(true);
 
@@ -50,10 +52,10 @@ export function HomePage() {
           // brak roli   nie fetchujemy nic
           return;
         }
-        const data = await getCourseBriefs(activeRole);
+        const data = await getClassBriefs(activeRole);
         // jeśli w międzyczasie rola się zmieniła, ignorujemy tę odpowiedź
         if (currentReqId !== requestIdRef.current) return;
-        setCourses(data);
+        setClasses(data);
       } catch {
         if (currentReqId !== requestIdRef.current) return;
         // brak toasta przy 204 jest obsłużony w getCourseBriefs -> zwróci []
@@ -74,17 +76,17 @@ export function HomePage() {
     if (!studentId) return;
 
     api
-        .get<ExerciseBrief[]>(`/api/exercises/unsolved-by-user/${studentId}`)
-        .then((res) => setAssignmentsRaw(res.data ?? []))
-        .catch((err) =>
-            console.error("Assignments could not be retrieved:", err),
-        );
+      .get<ExerciseBrief[]>(`/api/exercises/unsolved-by-user/${studentId}`)
+      .then((res) => setAssignmentsRaw(res.data ?? []))
+      .catch((err) =>
+        console.error("Assignments could not be retrieved:", err),
+      );
   }, []);
 
-  const filteredCourses = useMemo(() => {
-    if (!selectedCourseId) return courses;
-    return courses.filter((c) => c.courseId === selectedCourseId);
-  }, [courses, selectedCourseId]);
+  const filteredClasses = useMemo(() => {
+    if (!selectedCourseId) return classes;
+    return classes.filter((c) => c.courseId === selectedCourseId);
+  }, [classes, selectedCourseId]);
 
   const filteredRaw = useMemo(() => {
     if (!selectedCourseId) return assignmentsRaw;
@@ -110,35 +112,34 @@ export function HomePage() {
   }, [filteredRaw]);
 
   return (
-      <div className="bg-white h-screen">
-        <NavigationBar />
-        <Content>
-          <div className="space-y-4">
-            <CourseFilter
-                student={activeRole === "student" || false}
-                setSelectedCourseId={setSelectedCourseId}
-                selectedCourseId={selectedCourseId}
-                setSelectedStudentId={
-                  activeRole === "teacher" ? setSelectedStudentId : undefined
-                }
-                selectedStudentId={
-                  activeRole === "teacher" ? selectedStudentId : undefined
-                }
-                setupClassButton={activeRole === "student" || false}
+    <div className="bg-white h-screen">
+      <NavigationBar />
+      <Content>
+        <div className="space-y-4">
+          <CourseFilter
+            student={activeRole === "student" || false}
+            setSelectedCourseId={setSelectedCourseId}
+            selectedCourseId={selectedCourseId}
+            setSelectedStudentId={
+              activeRole === "teacher" ? setSelectedStudentId : undefined
+            }
+            selectedStudentId={
+              activeRole === "teacher" ? selectedStudentId : undefined
+            }
+            setupClassButton={activeRole === "student" || false}
+          />
+          <CalendarSummary
+            key={`${activeRole ?? "none"}-${selectedCourseId ?? "all"}`}
+            classes={filteredClasses}
+          />
 
-            />
-            <CalendarSummary
-                key={`${activeRole ?? "none"}-${selectedCourseId ?? "all"}`}
-                courses={filteredCourses}
-            />
-
-            <AssignmentSummary
-                assignments={visibleAssignments}
-                student={activeRole === "student" || false}
-            />
-            <ChatSummary />
-          </div>
-        </Content>
-      </div>
+          <AssignmentSummary
+            assignments={visibleAssignments}
+            student={activeRole === "student" || false}
+          />
+          <ChatSummary />
+        </div>
+      </Content>
+    </div>
   );
 }

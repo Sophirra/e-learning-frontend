@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button.tsx";
-import type { CourseBrief } from "@/api/types.tsx";
+import type { ClassBrief } from "@/api/types.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { SetupNewClassPopup } from "@/components/complex/popups/setupNewClassPopup.tsx";
@@ -28,7 +28,7 @@ export default function CourseFilter({
   setSelectedStudentId?: (studentId: string | null) => void;
   setupClassButton?: boolean;
 }) {
-  const [courses, setCourses] = useState<CourseBrief[]>([]);
+  const [courses, setCourses] = useState<ClassBrief[]>([]);
   const [students, setStudents] = useState<StudentBrief[]>([]);
   const { user } = useUser();
   const userId = getUserId();
@@ -46,9 +46,9 @@ export default function CourseFilter({
         if (user.activeRole === "student") {
           const res = await api.get(`/api/students/${userId}/participations`);
           const data = res.data ?? [];
-          const mapped: CourseBrief[] = data
+          const mapped: ClassBrief[] = data
             .map(mapParticipationToCourseBrief)
-            .filter((c: any): c is CourseBrief => !!c);
+            .filter((c: any): c is ClassBrief => !!c);
 
           // if (!canceled) {
           //   setCourses(mapped);
@@ -72,9 +72,9 @@ export default function CourseFilter({
           ]);
 
           const studentList = sRes.data ?? [];
-          const courseList: CourseBrief[] = (cRes.data ?? [])
+          const courseList: ClassBrief[] = (cRes.data ?? [])
             .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-            .filter((c: CourseBrief | null): c is CourseBrief => !!c);
+            .filter((c: ClassBrief | null): c is ClassBrief => !!c);
 
           if (!canceled) {
             setStudents(studentList);
@@ -138,9 +138,9 @@ export default function CourseFilter({
         // Ignores this response if a newer request has already been issued.
         if (gen !== fetchGen.current) return;
 
-        const courseList: CourseBrief[] = (res.data ?? [])
+        const courseList: ClassBrief[] = (res.data ?? [])
           .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-          .filter((c: CourseBrief | null): c is CourseBrief => !!c);
+          .filter((c: ClassBrief | null): c is ClassBrief => !!c);
 
         setCourses(courseList);
 
@@ -225,9 +225,9 @@ export default function CourseFilter({
       ])
         .then(([sRes, cRes]) => {
           setStudents(sRes.data ?? []);
-          const courseList: CourseBrief[] = (cRes.data ?? [])
+          const courseList: ClassBrief[] = (cRes.data ?? [])
             .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-            .filter((c: any): c is CourseBrief => !!c);
+            .filter((c: any): c is ClassBrief => !!c);
           setCourses(courseList);
         })
         .catch((err) => console.error("Could not reload initial lists:", err));
@@ -246,7 +246,7 @@ export default function CourseFilter({
           All courses
         </Button>
         {student &&
-          courses.map((course: CourseBrief) => (
+          courses.map((course: ClassBrief) => (
             <Button
               key={course.courseId}
               variant={
