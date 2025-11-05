@@ -41,6 +41,7 @@ interface FilterDropdownProps {
   icon?: React.ComponentType<any>;
   /** key of the default items */
   defaultValues?: string[];
+  className?: string;
 }
 
 export function FilterDropdown({
@@ -56,6 +57,7 @@ export function FilterDropdown({
   disabled = false,
   defaultValues = undefined,
   icon: Icon,
+  className,
 }: FilterDropdownProps) {
   const [selectedValues, setSelectedValues] = useState<SelectableItem[]>(() => {
     if (defaultValues) {
@@ -72,12 +74,14 @@ export function FilterDropdown({
 
     if (multiselect) {
       // toggle wybór
-      newSelection = selectedValues.includes(selected)
-        ? selectedValues.filter((v) => v !== selected)
+      newSelection = selectedValues.find((v) => v.value === selected.value)
+        ? selectedValues.filter((v) => v.value !== selected.value)
         : [...selectedValues, selected];
     } else {
       // pojedynczy wybór
-      newSelection = selectedValues.includes(selected) ? [] : [selected];
+      newSelection = selectedValues.find((v) => v.value === selected.value)
+        ? []
+        : [selected];
       setOpen(false);
     }
 
@@ -91,7 +95,7 @@ export function FilterDropdown({
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col gap-2", className)}>
       {(label || reset) && (
         <div className="flex items-center justify-between gap-2 h-6">
           {label && <Label>{label}</Label>}
@@ -110,7 +114,7 @@ export function FilterDropdown({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="min-w-[180px] w-1/1 justify-start"
+              className={cn("min-w-[180px] w-full justify-start", className)}
             >
               {Icon ? <Icon /> : null}
               {selectedValues.length > 0
@@ -121,7 +125,7 @@ export function FilterDropdown({
             </Button>
           </PopoverTrigger>
         </div>
-        <PopoverContent className="w-[180px] p-0">
+        <PopoverContent className={cn("min-w-[180px] p-0", className)}>
           <Command>
             {searchable && <CommandInput placeholder={searchPlaceholder} />}
             <CommandEmpty>{emptyMessage}</CommandEmpty>
