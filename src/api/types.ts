@@ -108,7 +108,7 @@ export interface FileData {
   relativePath: string;
   uploadedAt: string;
   uploadedBy: string;
-  courseId?: string;
+  courseId?: string; //TODO: przedyskutować z Zosią, no bo plik może być w wielu kursach
   courseName?: string;
   tags: FileTag[];
 }
