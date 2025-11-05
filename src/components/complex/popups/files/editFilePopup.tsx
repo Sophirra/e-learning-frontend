@@ -16,6 +16,11 @@ import { cn } from "@/lib/utils.ts";
 import { getUserId } from "@/api/api.ts";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { getAvailableTags, updateFileData } from "@/api/apiCalls.ts";
+import { Label } from "@radix-ui/react-label";
+import {
+  createTag as apiCreateTag,
+  checkTagName as apiCheckTagName,
+} from "@/api/apiCalls.ts";
 
 export function EditFilePopup({ file }: { file: FileData }) {
   const userId = getUserId();
@@ -23,24 +28,36 @@ export function EditFilePopup({ file }: { file: FileData }) {
   const [nameError, setNameError] = useState<boolean>(false);
   const [newFileName, setNewFileName] = useState<string>(file.fileName);
   const [newTags, setNewTags] = useState<FileTag[]>(tags);
+  const [createTag, setCreateTag] = useState<boolean>(false);
+  const [tagNameError, setTagNameError] = useState<boolean>(false);
+  const [tagName, setTagName] = useState<string>("");
 
-  //TODO: get available tags from backend
-  const [availableTags, setAvailableTags] = useState<FileTag[]>([
-    { id: "1", name: "tag1", ownerId: userId || "" },
-    { id: "2", name: "tag2", ownerId: userId || "" },
-  ]);
+  async function createNewTag() {
+    //should return tag id to add it to tags collection
+    const newTag: FileTag = await apiCreateTag(tagName);
+    setAvailableTags((prev) => [...prev, newTag]);
+  }
+
+  async function checkTagName(tagName: string) {
+    //zwraca boolean
+    return await apiCheckTagName(tagName);
+  }
+
+  //TODO: get USER available tags from backend
+  const [availableTags, setAvailableTags] = useState<FileTag[]>([]);
+
+  // TODO: check if alright
+  useEffect(() => {
+    async function fetchAvailableTags() {
+      const res = await getAvailableTags();
+      setAvailableTags(res);
+    }
+    fetchAvailableTags();
+  });
 
   function updateFile() {
     updateFileData(file.id, { fileName: newFileName, tags: newTags });
   }
-
-  //TODO: check if alright
-  // useEffect(() => {
-  //   async function fetchAvailableTags() {
-  //     const res = await getAvailableTags();
-  //     setAvailableTags(res);
-  //   }
-  // });
 
   return (
     <Dialog>
@@ -55,6 +72,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
           <DialogTitle>Edit file {file.fileName}</DialogTitle>
         </DialogHeader>
         <div className={"flex flex-col gap-4"}>
+          <Label>File name</Label>
           <Input
             id={"filename"}
             defaultValue={file.fileName}
@@ -80,30 +98,66 @@ export function EditFilePopup({ file }: { file: FileData }) {
                 </div>
               ))
             ) : (
-              <>No tags added yet</>
+              <> No tags added yet</>
             )}
           </div>
-          <FilterDropdown
-            placeholder={"file tags"}
-            emptyMessage={"choose file tags"}
-            label={"Available tags:"}
-            reset={false}
-            items={availableTags.map((tag) => {
-              return { name: tag.name, value: tag.id };
-            })}
-            onSelectionChange={(selectedTags) => {
-              for (const tag of selectedTags) {
-                if (!newTags.some((t) => t.id === tag.value)) {
-                  setNewTags([
-                    ...newTags,
-                    { id: tag.value, name: tag.name, ownerId: userId || "" },
-                  ]);
+          <div className={"flex items-end gap-4"}>
+            <FilterDropdown
+              className={"w-full"}
+              placeholder={"file tags"}
+              emptyMessage={"choose file tags"}
+              label={"Available tags:"}
+              reset={false}
+              items={availableTags.map((tag) => {
+                return { name: tag.name, value: tag.id };
+              })}
+              onSelectionChange={(selectedTags) => {
+                for (const tag of selectedTags) {
+                  if (!newTags.some((t) => t.id === tag.value)) {
+                    setNewTags([
+                      ...newTags,
+                      { id: tag.value, name: tag.name, ownerId: userId || "" },
+                    ]);
+                  }
                 }
-              }
-            }}
-            defaultValues={tags.map((tag) => tag.id)}
-          ></FilterDropdown>
-          <NewTagPopup />
+              }}
+              defaultValues={tags.map((tag) => tag.id)}
+            ></FilterDropdown>
+            <Button
+              onClick={() => setCreateTag(true)}
+              disabled={createTag}
+              variant={"outline"}
+            >
+              <icons.Plus /> New{" "}
+            </Button>
+          </div>
+          {createTag && (
+            <div className={"flex flex-col gap-4"}>
+              <Label>New tag name</Label>
+              <div className={"flex flex-row gap-4"}>
+                <Input
+                  id={"tagname"}
+                  onChange={async (e) => {
+                    const newTagName = e.target.value;
+                    setTagName(newTagName);
+                    if (newTagName.trim() === "") {
+                      setTagNameError(true);
+                    }
+                    // const tagNameExists = await checkTagName(newTagName);
+                    // setTagNameError(tagNameExists);
+                  }}
+                  className={cn(tagNameError ? "border-red-300" : "")}
+                ></Input>
+                <Button
+                  onClick={() => createNewTag()}
+                  disabled={tagNameError || tagName.trim() === ""}
+                >
+                  <icons.Check />
+                  Add
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
         <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
           <DialogClose>

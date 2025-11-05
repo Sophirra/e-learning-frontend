@@ -399,7 +399,7 @@ export function updateFileData(
  * @returns {Promise<FileTag[]>} A promise that resolves to an array of available tags.
  */
 export async function getAvailableTags(): Promise<FileTag[]> {
-  const { data } = await Api.get(`/api/files/tags`); //TODO?? robione na czuja
+  const { data } = await Api.get(`/api/user/files/tags`); //TODO?? robione na czuja
   return data;
 }
 
@@ -445,19 +445,14 @@ export async function addAssignmentGrade( //TODO: check
   await Api.post("/api/assignments/grade", { assignmentId, grade, comments });
 }
 
-export async function createTag(
-  tagName: string,
-  isPrivate: boolean,
-): Promise<FileTag> {
-  const userId = getUserId();
-  await Api.post("/api/files/tags", { tagName, userId, isPrivate });
-  let res = await Api.get(`/api/files/tags/${userId}/${tagName}`);
+export async function createTag(tagName: string): Promise<FileTag> {
+  await Api.post(`/api/files/tags/`, { tagName });
+  let res = await Api.get(`/api/files/tags/${tagName}`);
   const tag: FileTag = res.data; //TODO: not sure if ok
   return tag;
 }
 
 export async function checkTagName(tagName: string): Promise<boolean> {
-  const userId = getUserId();
-  const res = await Api.get(`/api/files/tags/${userId}/${tagName}`);
+  const res = await Api.get(`/api/files/tags/${tagName}`);
   return res.status === 200;
 }

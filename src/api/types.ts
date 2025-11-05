@@ -117,7 +117,6 @@ export interface FileTag {
   id: string;
   name: string;
   ownerId: string;
-  private?: boolean;
 }
 
 /**
