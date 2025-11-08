@@ -11,9 +11,14 @@ import type {
   FileData,
   FileFilter,
   FileTag,
+  Question,
+  Quiz,
+  Answer,
+  QuizBrief,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
+import type { ErrorResponse } from "react-router-dom";
 
 /**
  * Fetches detailed course data by courseID.
@@ -443,4 +448,55 @@ export async function addAssignmentGrade( //TODO: check
   comments?: string,
 ): Promise<void> {
   await Api.post("/api/assignments/grade", { assignmentId, grade, comments });
+}
+
+export async function getQuestionsByCategory(
+  catId: string,
+): Promise<Question[]> {
+  const res = await Api.get(`/api/quiz/question/category/${catId}`);
+  return res.data;
+}
+
+/**
+ * Gets all question parameters with its answers
+ * @param id
+ */
+export async function getQuestionById(id: string): Promise<Question> {
+  const res = await Api.get(`/api/quiz/question/${id}`);
+  return res.data;
+}
+export async function createQuestion(
+  content: string,
+  answers: Answer[],
+  categoryId: string,
+): Promise<Question[]> {
+  //TODO: jeszcze chyba trzeba zrobić posty na odpowiedzi
+  // albo najpierw zrobić post bez odpowiedzi a potem zrobić posty
+  // odpowiedzi z id pytania (jak tworzymy odpowiedzi to nie mamy id pytania)
+  const res = await Api.post("/api/quiz/question", {
+    content,
+    answers,
+    categoryId,
+  });
+  if (res.status === 201) {
+    return [res.data];
+  }
+  throw res.data as ErrorResponse;
+}
+export async function getQuizzes(
+  studentId?: string,
+  courseId?: string,
+  multichoice?: boolean,
+  searchQuery?: string,
+): Promise<QuizBrief[]> {
+  const params = new URLSearchParams();
+  studentId && params.append("studentId", studentId);
+  courseId && params.append("courseId", courseId);
+  multichoice && params.append("multichoice", String(multichoice));
+  searchQuery && params.append("searchQuery", searchQuery);
+
+  const res = await Api.get(
+    `/api/quiz/${params ? `?${params.toString()}` : ""}`,
+  );
+  return res.data;
 }
