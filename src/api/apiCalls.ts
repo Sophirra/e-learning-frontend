@@ -486,17 +486,32 @@ export async function createQuestion(
 export async function getQuizzes(
   studentId?: string,
   courseId?: string,
-  multichoice?: boolean,
+  // multichoice?: boolean,
   searchQuery?: string,
 ): Promise<QuizBrief[]> {
   const params = new URLSearchParams();
   studentId && params.append("studentId", studentId);
   courseId && params.append("courseId", courseId);
-  multichoice && params.append("multichoice", String(multichoice));
+  // multichoice && params.append("multichoice", String(multichoice));
   searchQuery && params.append("searchQuery", searchQuery);
 
   const res = await Api.get(
     `/api/quiz/${params ? `?${params.toString()}` : ""}`,
   );
+  return res.data;
+}
+
+export async function getQuizQuestions(quizId: string): Promise<Question[]> {
+  const res = await Api.get(`/api/quiz/question/${quizId}`); //TODO: ustawić link
+  return res.data;
+}
+
+export async function getStudentById(studentId: string) {
+  const res = await Api.get(`/api/students/${studentId}`);
+  return res.data;
+}
+
+export async function getQuiz(quizId: string): Promise<Quiz> {
+  const res = await Api.get(`/api/quiz/${quizId}`);
   return res.data;
 }

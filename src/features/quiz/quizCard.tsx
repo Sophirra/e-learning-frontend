@@ -8,7 +8,7 @@ export function QuizCard({ quiz }: { quiz: QuizBrief }) {
     <Button
       variant={"ghost"}
       className="shadow-md flex flex-col gap-1 h-1/1 items-start "
-      onClick={() => navigate("/quizzes/" + quiz.id)}
+      // onClick={() => navigate("/quizzes/" + quiz.id)}
     >
       <h3 className="text-lg font-bold truncate">{quiz.name}</h3>
       <p className={"text-sm text-gray-800 font-semibold"}>

@@ -1,5 +1,3 @@
-import type { Question } from "@/interfaces/QuestionInterface.tsx";
-
 export interface RegisterUserDto {
   accountType: "student" | "teacher";
   email: string;
@@ -157,9 +155,10 @@ export type Quiz = {
   courseName: string;
   teacherId: string;
   studentId: string;
-  questions: Question[];
+  // questions: Question[];
   isMultipleChoice: boolean;
   score?: number;
+  maxScore: number;
 };
 
 export type Question = {
