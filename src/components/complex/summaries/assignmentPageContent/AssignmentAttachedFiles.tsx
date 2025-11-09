@@ -13,7 +13,7 @@ export function AssignmentAttachedFiles({
   assignment,
   pageMode,
 }: {
-  assignment: AssignmentBrief;
+  assignment: AssignmentBrief | null;
   pageMode: Mode;
 }) {
   const { user } = useUser();
@@ -41,7 +41,7 @@ export function AssignmentAttachedFiles({
     return formatted;
   };
 
-  const contentFiles = assignment.files?.filter(
+  const contentFiles = assignment?.files?.filter(
     (file) => file.type === "content",
   );
 
@@ -52,7 +52,7 @@ export function AssignmentAttachedFiles({
       canHide={false}
       customButton={
         user?.activeRole === "teacher" && pageMode === "edit"
-          ? () => AddAssignmentFilePopup(assignment.id)
+          ? () => AddAssignmentFilePopup(assignment?.id)
           : undefined
       }
     >

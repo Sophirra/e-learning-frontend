@@ -8,7 +8,7 @@ import { GradeAssignmentPopup } from "@/components/complex/popups/assignments/gr
 export function AssignmentGrade({
   assignment,
 }: {
-  assignment: AssignmentBrief;
+  assignment: AssignmentBrief | null;
 }) {
   const { user } = useUser();
 
@@ -18,7 +18,7 @@ export function AssignmentGrade({
       labelIcon={icons.PenTool}
       canHide={false}
       customButton={() =>
-        user?.activeRole === "teacher" && assignment.id ? (
+        user?.activeRole === "teacher" && assignment?.id ? (
           <GradeAssignmentPopup
             assignmentId={assignment.id}
             readyToGrade={!assignment.graded}
@@ -27,7 +27,7 @@ export function AssignmentGrade({
       }
     >
       <div className="flex flex-col gap-2 p-2 text-xs font-normal ml-1">
-        {assignment.graded && assignment.grade !== undefined ? (
+        {assignment?.graded && assignment.grade !== undefined ? (
           <div className="flex flex-row gap-0 ml-2 mt-2">
             <Label className="mr-4">{assignment.grade}</Label>
             <Label className="font-light">{assignment?.comments}</Label>
