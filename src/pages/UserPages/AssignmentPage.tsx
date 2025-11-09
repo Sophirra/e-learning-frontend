@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
@@ -8,6 +8,7 @@ import { AssignmentTitle } from "@/components/complex/summaries/assignmentPageCo
 import { AssignmentAttachedFiles } from "@/components/complex/summaries/assignmentPageContent/AssignmentAttachedFiles.tsx";
 import { AssignmentSolution } from "@/components/complex/summaries/assignmentPageContent/AssignmentSolution.tsx";
 import { AssignmentGrade } from "@/components/complex/summaries/assignmentPageContent/AssignmentGrade.tsx";
+import api, { getUserId } from "@/api/api.ts";
 
 export type AssignmentBrief = {
   id?: string;
@@ -35,167 +36,44 @@ export type Role = "teacher" | "student";
 export type Mode = "view" | "edit";
 
 export function AssignmentPage() {
-  let { user } = useUser();
-  let [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const { user } = useUser();
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
-  let [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(
-    null,
-  );
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<
+    string | null
+  >(null);
   const [pageMode, setAssignmentPageMode] = useState<Mode>("view");
+  const [assignments, setAssignments] = useState<AssignmentBrief[]>([]);
+  const activeRole = user?.activeRole ?? null;
 
-  //TODO: get from backend
-  const assignments: AssignmentBrief[] = [
-    {
-      id: "a1",
-      name: "Intro to TypeScript",
-      courseName: "Web Development",
-      className: "WD101",
-      status: "graded",
-      graded: true,
-      grade: 85,
-      comments: "Good job overall.",
-      instruction: "Implement basic types and interfaces.",
-      date: new Date("2024-05-10"),
-      files: [
-        {
-          id: "f1",
-          name: "solution.ts",
-          path: "/files/solution.ts",
-          type: "solution",
-          uploadDate: new Date("2024-05-10"),
+  useEffect(() => {
+    const userId = getUserId();
+    if (!userId /* || !selectedCourseId*/) return;
+
+    let endpoint = "";
+
+    if (activeRole === "student") {
+      endpoint = `/api/students/${userId}/exercises`;
+    } else if (activeRole === "teacher") {
+      endpoint = `/api/teacher/${userId}/exercises`;
+    } else {
+      return;
+    }
+
+    api
+      .get<AssignmentBrief[]>(endpoint, {
+        params: {
+          courseId: selectedCourseId,
+          studentId: selectedStudentId ?? undefined,
         },
-      ],
-    },
-    {
-      id: "a2",
-      name: "React Components",
-      courseName: "Frontend Frameworks",
-      status: "submitted",
-      graded: false,
-      date: new Date("2022-05-10"),
-    },
-    {
-      id: "a3",
-      name: "Database Design",
-      courseName: "Backend Development",
-      className: "BD202",
-      status: "graded",
-      graded: true,
-      grade: 92,
-      comments: "Excellent normalization.",
-      instruction: "Design a relational schema for a bookstore.",
-      date: new Date("2023-05-10"),
-      files: [
-        {
-          id: "f2",
-          name: "schema.sql",
-          path: "/files/schema.sql",
-          type: "solution",
-        },
-        {
-          id: "f3",
-          name: "assignment.pdf",
-          path: "/files/assignment.pdf",
-          type: "content",
-        },
-      ],
-    },
-    {
-      id: "a4",
-      name: "API Integration",
-      courseName: "Backend Development",
-      status: "submitted",
-      graded: false,
-      instruction: "Integrate with a public REST API.",
-      date: new Date("2024-01-15"),
-    },
-    {
-      id: "a5",
-      name: "CSS Grid Layout",
-      courseName: "Web Design",
-      className: "WD102",
-      status: "graded",
-      graded: true,
-      grade: 78,
-      comments: "Layout works but lacks responsiveness.",
-      date: new Date("2022-05-10"),
-      files: [
-        {
-          id: "f4",
-          name: "grid.html",
-          path: "/files/grid.html",
-          type: "solution",
-        },
-      ],
-    },
-    {
-      id: "a6",
-      name: "Unit Testing",
-      courseName: "Software Engineering",
-      status: "submitted",
-      graded: false,
-      instruction: "Write unit tests for a calculator module.",
-      date: new Date("2023-05-10"),
-    },
-    {
-      id: "a7",
-      name: "Git & GitHub Basics",
-      courseName: "DevOps",
-      className: "DV101",
-      status: "graded",
-      graded: true,
-      grade: 88,
-      comments: "Well documented commits.",
-      date: new Date("2022-05-10"),
-      files: [
-        {
-          id: "f5",
-          name: "repo.zip",
-          path: "/files/repo.zip",
-          type: "solution",
-        },
-      ],
-    },
-    {
-      id: "a8",
-      name: "Power Platform Integration",
-      courseName: "Business Applications",
-      status: "solutionAdded",
-      graded: false,
-      date: new Date("2024-05-10"),
-    },
-    {
-      id: "a9",
-      name: "Excel Automation",
-      courseName: "MS365 Tools",
-      className: "MS101",
-      status: "submitted",
-      graded: false,
-      instruction: "Automate data entry using Power Automate.",
-      date: new Date("2023-05-10"),
-      files: [
-        {
-          id: "f6",
-          name: "flow.json",
-          path: "/files/flow.json",
-          type: "solution",
-        },
-      ],
-    },
-    {
-      id: "a10",
-      name: "Security Best Practices",
-      courseName: "Cybersecurity",
-      status: "graded",
-      graded: true,
-      grade: 95,
-      comments: "Comprehensive and well structured.",
-      instruction: "List and explain top 10 OWASP vulnerabilities.",
-      date: new Date("2022-05-10"),
-    },
-  ];
+      })
+      .then((res) => setAssignments(res.data ?? []))
+      .catch((err) =>
+        console.error("Assignments could not be retrieved:", err),
+      );
+  }, [activeRole, selectedCourseId, selectedStudentId]);
 
   const handleSelectAssignmentId = useCallback((id: string | null) => {
     setSelectedAssignmentId((prev) => (prev === id ? null : id));
@@ -216,7 +94,9 @@ export function AssignmentPage() {
         <div className="flex flex-row gap-8 p-4">
           {/*overflow-y-auto">*/}
           <div className="w-1/4 sticky top-0 self-start h-fit space-y-2">
-            {assignments.length === 0 ? (
+            {assignments === null ||
+            assignments === undefined ||
+            assignments.length === 0 ? (
               <div className="gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-base">
                 No assignments available for the selected course.
               </div>
@@ -232,33 +112,43 @@ export function AssignmentPage() {
           </div>
 
           <div className="w-3/4 space-y-8">
-            <AssignmentTitle
-              assignment={
-                assignments.find((a) => a.id === selectedAssignmentId) ||
-                assignments[0]
-              }
-              pageMode={pageMode}
-              setPageMode={setAssignmentPageMode}
-            />
-            <AssignmentAttachedFiles
-              assignment={
-                assignments.find((a) => a.id === selectedAssignmentId) ||
-                assignments[0]
-              }
-              pageMode={pageMode}
-            />
-            <AssignmentSolution
-              assignment={
-                assignments.find((a) => a.id === selectedAssignmentId) ||
-                assignments[0]
-              }
-            />
-            <AssignmentGrade
-              assignment={
-                assignments.find((a) => a.id === selectedAssignmentId) ||
-                assignments[0]
-              }
-            />
+            {assignments.length !== 0 &&
+            selectedAssignmentId &&
+            assignments.some((e) => e.id === selectedAssignmentId) ? (
+              <>
+                <AssignmentTitle
+                  assignment={
+                    assignments.find((a) => a.id === selectedAssignmentId) ||
+                    null
+                  }
+                  pageMode={pageMode}
+                  setPageMode={setAssignmentPageMode}
+                />
+                <AssignmentAttachedFiles
+                  assignment={
+                    assignments.find((a) => a.id === selectedAssignmentId) ||
+                    null
+                  }
+                  pageMode={pageMode}
+                />
+                <AssignmentSolution
+                  assignment={
+                    assignments.find((a) => a.id === selectedAssignmentId) ||
+                    null
+                  }
+                />
+                <AssignmentGrade
+                  assignment={
+                    assignments.find((a) => a.id === selectedAssignmentId) ||
+                    null
+                  }
+                />
+              </>
+            ) : (
+              <div className="gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-base">
+                Select an assignment to view its details.
+              </div>
+            )}
           </div>
         </div>
       </Content>
