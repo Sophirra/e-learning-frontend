@@ -9,6 +9,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { getQuizzes } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuizDetailsPopup } from "@/features/quiz/QuizDetailsPopup.tsx";
+import { QuestionGallery } from "@/features/quiz/questionGallery.tsx";
 
 export function QuizGallery() {
   const { user } = useUser();
@@ -109,6 +110,7 @@ export function QuizGallery() {
         label={"Quizzes"}
         labelIcon={icons.Quiz}
         customButton={() => addNewQuizButton()}
+        canHide={user?.activeRole === "teacher"}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mockQuizzes.map((quiz) => (
@@ -116,6 +118,9 @@ export function QuizGallery() {
           ))}
         </div>
       </Summary>
+      {user?.activeRole === "teacher" && (
+        <QuestionGallery enableSelect={false} />
+      )}
     </div>
   );
 }

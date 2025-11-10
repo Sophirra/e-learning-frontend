@@ -54,6 +54,7 @@ import {
   Brain as Quiz,
   Circle,
   CheckCircle,
+  FileQuestion as Question,
 } from "lucide-react";
 import { cn } from "@/lib/utils.ts";
 
@@ -114,6 +115,7 @@ export let iconLibrary = {
   Quiz: wrapIcon(Quiz),
   Circle: wrapIcon(Circle),
   CheckCircle: wrapIcon(CheckCircle),
+  Question: wrapIcon(Question),
 };
 
 function wrapIcon(Icon: React.ComponentType<any>, defaultClass = "size-4") {

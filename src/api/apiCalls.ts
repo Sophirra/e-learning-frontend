@@ -15,6 +15,7 @@ import type {
   Quiz,
   Answer,
   QuizBrief,
+  QuestionCategory,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -449,40 +450,12 @@ export async function addAssignmentGrade( //TODO: check
 ): Promise<void> {
   await Api.post("/api/assignments/grade", { assignmentId, grade, comments });
 }
-
-export async function getQuestionsByCategory(
-  catId: string,
-): Promise<Question[]> {
-  const res = await Api.get(`/api/quiz/question/category/${catId}`);
-  return res.data;
-}
-
 /**
- * Gets all question parameters with its answers
- * @param id
+ * Gets all teacher/student quizzes to display in the gallery
+ * @param studentId
+ * @param courseId
+ * @param searchQuery
  */
-export async function getQuestionById(id: string): Promise<Question> {
-  const res = await Api.get(`/api/quiz/question/${id}`);
-  return res.data;
-}
-export async function createQuestion(
-  content: string,
-  answers: Answer[],
-  categoryId: string,
-): Promise<Question[]> {
-  //TODO: jeszcze chyba trzeba zrobić posty na odpowiedzi
-  // albo najpierw zrobić post bez odpowiedzi a potem zrobić posty
-  // odpowiedzi z id pytania (jak tworzymy odpowiedzi to nie mamy id pytania)
-  const res = await Api.post("/api/quiz/question", {
-    content,
-    answers,
-    categoryId,
-  });
-  if (res.status === 201) {
-    return [res.data];
-  }
-  throw res.data as ErrorResponse;
-}
 export async function getQuizzes(
   studentId?: string,
   courseId?: string,
@@ -501,17 +474,127 @@ export async function getQuizzes(
   return res.data;
 }
 
-export async function getQuizQuestions(quizId: string): Promise<Question[]> {
-  const res = await Api.get(`/api/quiz/question/${quizId}`); //TODO: ustawić link
-  return res.data;
-}
-
+/**
+ * get student data - fill in details based on id
+ * @param studentId
+ */
 export async function getStudentById(studentId: string) {
   const res = await Api.get(`/api/students/${studentId}`);
   return res.data;
 }
 
+/**
+ * get quiz data without questions to display in details
+ * @param quizId
+ */
 export async function getQuiz(quizId: string): Promise<Quiz> {
   const res = await Api.get(`/api/quiz/${quizId}`);
   return res.data;
+}
+
+/**
+ * get quiz questions with answers - for solving. Do not include data about the correctness of answers.
+ * @param quizId
+ */
+export async function getQuizQuestions(quizId: string): Promise<Question[]> {
+  const res = await Api.get(`/api/quiz/question/${quizId}`); //TODO: ustawić link
+  return res.data;
+}
+
+/**
+ * get teacher question categories for filtering and editing questions. Get ALL created categories, even if unused
+ */
+export async function getUserCategories(): Promise<QuestionCategory[]> {
+  const res = await Api.get(`/api/quiz/user/categories`);
+  return res.data;
+}
+
+/**
+ * get teacher's questions to display in the gallery. Do not include answers
+ * @param categoryIds
+ */
+export async function getUserQuestions(
+  categoryIds?: string[],
+): Promise<Question[]> {
+  const params = new URLSearchParams();
+  categoryIds?.forEach((categoryId: string) =>
+    params.append("categories", categoryId),
+  );
+  const res = await Api.get(
+    `/api/quiz/user/questions${params.toString() ? `?${params.toString()}` : ""}`,
+  );
+  return res.data;
+}
+
+/**
+ * get full question with answers. Will be displayed to teacher - include correctness of answers.
+ * @param questionId
+ */
+export async function getFullQuestion(questionId: string): Promise<Question> {
+  const res = await Api.get(`/api/quiz/question/${questionId}/full`);
+  return res.data;
+}
+
+/**
+ * create a new category (while editing/creating a question)
+ * @param categoryName
+ */
+export async function createQuestionCategory(
+  categoryName: string,
+): Promise<QuestionCategory> {
+  const res = await Api.post("/api/quiz/question/category", {
+    categoryName,
+  });
+  return res.data;
+}
+/**
+ * Create new question.
+ * @param content
+ * @param answers
+ * @param categoryIds
+ */
+export async function createQuestion(
+  content: string,
+  answers: Answer[],
+  categoryIds: string[],
+): Promise<Question> {
+  //TODO: jeszcze chyba trzeba zrobić posty na odpowiedzi
+  // albo najpierw zrobić post bez odpowiedzi a potem zrobić posty
+  // odpowiedzi z id pytania (jak tworzymy odpowiedzi to nie mamy id pytania)
+  const res = await Api.post("/api/quiz/question", {
+    content,
+    answers,
+    categoryIds,
+  });
+  if (res.status === 201) {
+    return res.data;
+  }
+  throw res.data as ErrorResponse;
+}
+
+/**
+ * update already created question - all data is replaced - not checked was modified (but can be)
+ * @param questionId
+ * @param content
+ * @param answers
+ * @param categoryIds
+ */
+export async function updateQuestion(
+  questionId: string,
+  content: string,
+  answers: Answer[],
+  categoryIds: string[],
+): Promise<Question> {
+  //TODO: jeszcze chyba trzeba zrobić posty na odpowiedzi
+  // albo najpierw zrobić post bez odpowiedzi a potem zrobić posty
+  // odpowiedzi z id pytania (jak tworzymy odpowiedzi to nie mamy id pytania)
+  const res = await Api.post(`/api/quiz/question/${questionId}`, {
+    content,
+    answers,
+    categoryIds,
+  });
+  if (res.status === 201) {
+    return res.data;
+  }
+  throw res.data as ErrorResponse;
 }

@@ -164,9 +164,8 @@ export type Quiz = {
 export type Question = {
   id?: string; //id opcjonalne - jak tworzymy to nie mamy
   content: string;
-  categoryId: string;
-  categoryName: string;
-  answers: Answer[];
+  categories: QuestionCategory[];
+  answers?: Answer[]; // nie zwracane przy podglądzie
   answered?: boolean; //wysyłane przez solve
 };
 
@@ -181,6 +180,6 @@ export type Answer = {
 export type QuestionCategory = {
   id: string;
   name: string;
-  createdBy: string; //person id
+  createdBy?: string; //person id, też do wywalenia
   description?: string; //imo do wywalenia
 };
