@@ -455,8 +455,12 @@ export async function getStudentData(studentId: string): Promise<Student> {
 }
 
 export async function getStudentCourses(
-  studentId: string,
+  studentId: string | null,
 ): Promise<CourseBrief[]> {
+  if(!studentId) {
+    return [];
+  }
+
   const res = await Api.get(`/api/students/${studentId}/courses`);
   return res.data;
 }

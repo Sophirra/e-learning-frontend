@@ -9,9 +9,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type { ClassBrief } from "@/api/types.ts";
+import type { CourseBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FilterDropdown,
   type SelectableItem,
@@ -19,13 +19,11 @@ import {
 import WeekScheduleDialog, {
   type TimeSlot,
 } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
+import { getStudentCourses } from "@/api/apiCalls.ts";
+import { getUserId } from "@/api/api.ts";
 
 export function SetupNewClassPopup({ course }: { course: string }) {
-  //TODO: add data from backend
-  let courses: ClassBrief[] = [
-    { id: "1", name: "Course A" },
-    { id: "2", name: "Course B" },
-  ];
+  const [courses, setCourses] = useState<CourseBrief[]>([]);
 
   const [selectedCourse, setSelectedCourse] = useState<SelectableItem[]>(() => {
     if (course) {
@@ -37,10 +35,20 @@ export function SetupNewClassPopup({ course }: { course: string }) {
 
     return [];
   });
-  let selectedFrom: string = course ? "outside" : "inside";
+  const selectedFrom: string = course ? "outside" : "inside";
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const data = await getStudentCourses(getUserId());
+      setCourses(data);
+    };
+
+    fetchCourses();
+  }, []);
 
   //TODO: send the request to backend
   function setupClass(timeslot: TimeSlot) {}
+
   return (
     <Dialog>
       <DialogTrigger>
