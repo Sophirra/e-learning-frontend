@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import type { AssignmentBrief } from "@/pages/UserPages/AssignmentPage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
-import type { FileData } from "@/api/types.ts";
 
 export function AssignmentSolution({
   assignment,
 }: {
-  assignment: AssignmentBrief;
+  assignment: AssignmentBrief | null;
 }) {
-  const solutionFiles = assignment.files?.filter(
+  const solutionFiles = assignment?.files?.filter(
     (file) => file.type === "solution",
   );
   const { user } = useUser();
