@@ -8,7 +8,8 @@ import { AssignmentTitle } from "@/components/complex/summaries/assignmentPageCo
 import { AssignmentAttachedFiles } from "@/components/complex/summaries/assignmentPageContent/AssignmentAttachedFiles.tsx";
 import { AssignmentSolution } from "@/components/complex/summaries/assignmentPageContent/AssignmentSolution.tsx";
 import { AssignmentGrade } from "@/components/complex/summaries/assignmentPageContent/AssignmentGrade.tsx";
-import api, { getUserId } from "@/api/api.ts";
+import { getUserId } from "@/api/api.ts";
+import { getExercises } from "@/api/apiCalls.ts";
 
 export type AssignmentBrief = {
   id?: string;
@@ -50,29 +51,14 @@ export function AssignmentPage() {
 
   useEffect(() => {
     const userId = getUserId();
-    if (!userId /* || !selectedCourseId*/) return;
+    if (!userId) return;
 
-    let endpoint = "";
+    const fetchExercises = async () => {
+      const data = await getExercises(userId, activeRole, selectedCourseId, selectedStudentId);
+      setAssignments(data);
+    };
 
-    if (activeRole === "student") {
-      endpoint = `/api/students/${userId}/exercises`;
-    } else if (activeRole === "teacher") {
-      endpoint = `/api/teacher/${userId}/exercises`;
-    } else {
-      return;
-    }
-
-    api
-      .get<AssignmentBrief[]>(endpoint, {
-        params: {
-          courseId: selectedCourseId,
-          studentId: selectedStudentId ?? undefined,
-        },
-      })
-      .then((res) => setAssignments(res.data ?? []))
-      .catch((err) =>
-        console.error("Assignments could not be retrieved:", err),
-      );
+    fetchExercises().then();
   }, [activeRole, selectedCourseId, selectedStudentId]);
 
   const handleSelectAssignmentId = useCallback((id: string | null) => {

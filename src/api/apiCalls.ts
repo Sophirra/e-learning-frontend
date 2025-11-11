@@ -1,4 +1,4 @@
-import Api, { getUserId } from "@/api/api.ts";
+import Api from "@/api/api.ts";
 import type { ApiDayAvailability } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import type {
   ClassWithStudentsDTO,
@@ -11,13 +11,14 @@ import type {
   FileData,
   FileFilter,
   FileTag,
-  StudentBriefDTO,
   Student,
-  CourseBriefDTO,
   CourseBrief,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
+import type { ExerciseBrief } from "@/pages/UserPages/HomePage.tsx";
+import type { AssignmentBrief } from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ClassSchedule } from "@/components/complex/schedules/schedule.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -100,6 +101,15 @@ export const getTeacherAvailability = async (
   const { data } = await Api.get<TeacherAvailability[]>(
     `/api/teacher/${teacherId}/availability`,
   );
+
+  /*const mapped: ApiDayAvailability[] = res.data.map((day) => ({
+    day: day.day,
+    timeslots: day.timeslots.map((slot) => ({
+      timeFrom: slot.timeFrom.slice(0, 5),
+      timeUntil: slot.timeUntil.slice(0, 5),
+    })),
+  }));*/
+
   return data ?? [];
 };
 
@@ -463,4 +473,57 @@ export async function getStudentCourses(
 
   const res = await Api.get(`/api/students/${studentId}/courses`);
   return res.data;
+}
+
+export async function getStudentUnsolvedExercises(studentId: string): Promise<ExerciseBrief[]> {
+  if(!studentId) {
+    return [];
+  }
+
+  const { data } = await Api.get<ExerciseBrief[]>(
+    `/api/exercises/unsolved-by-user/${studentId}`,
+  );
+
+  return data;
+}
+
+export async function getExercises(userId: string, activeRole: string | null, preferredCourseId: string | null, preferredStudentId?: string | null): Promise<AssignmentBrief[]> {
+  if(!userId) {
+    return [];
+  }
+
+  let endpoint = "";
+
+  if (activeRole === "student") {
+    endpoint = `/api/students/${userId}/exercises`;
+  } else if (activeRole === "teacher") {
+    endpoint = `/api/teacher/${userId}/exercises`;
+  } else {
+    return [];
+  }
+
+  const { data } = await Api
+    .get<AssignmentBrief[]>(endpoint, {
+      params: {
+        courseId: preferredCourseId,
+        studentId: preferredStudentId ?? undefined,
+      },
+    })
+
+  return data;
+}
+
+export async function getTeacherUpcomingClasses(teacherId: string, startParam: string, endParam: string): Promise<ClassSchedule[]> {
+  if(!teacherId) {
+    return [];
+  }
+
+  const { data } = await Api.get<ClassSchedule[]>(`/api/teacher/${teacherId}/upcoming-classes`, {
+    params: {
+      start: startParam,
+      end: endParam,
+    },
+  })
+
+  return data;
 }

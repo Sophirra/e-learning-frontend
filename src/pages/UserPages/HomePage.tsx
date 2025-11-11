@@ -10,9 +10,9 @@ import {
   AssignmentSummary,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
-import { getClassBriefs } from "@/api/apiCalls.ts";
+import { getClassBriefs, getStudentUnsolvedExercises } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
-import api, { getUserId } from "@/api/api.ts";
+import { getUserId } from "@/api/api.ts";
 
 export type ExerciseBrief = {
   id: string;
@@ -75,12 +75,12 @@ export function HomePage() {
     const studentId = getUserId();
     if (!studentId) return;
 
-    api
-      .get<ExerciseBrief[]>(`/api/exercises/unsolved-by-user/${studentId}`)
-      .then((res) => setAssignmentsRaw(res.data ?? []))
-      .catch((err) =>
-        console.error("Assignments could not be retrieved:", err),
-      );
+    const fetchUnsolvedExercises = async () => {
+      const data = await getStudentUnsolvedExercises(studentId)
+      setAssignmentsRaw(data);
+    };
+
+    fetchUnsolvedExercises();
   }, []);
 
   const filteredClasses = useMemo(() => {

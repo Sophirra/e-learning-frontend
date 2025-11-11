@@ -21,8 +21,12 @@ import Schedule, {
   type TimeSlot,
 } from "@/components/complex/schedules/schedule.tsx";
 import api, { getUserId } from "@/api/api.ts";
+import {
+  getTeacherAvailability,
+  getTeacherUpcomingClasses,
+} from "@/api/apiCalls.ts";
 
-type ClassBriefDto = {
+export type ClassBriefDto = {
   id: string;
   startTime: string;
   status: string;
@@ -83,33 +87,21 @@ export function TeacherCalendar() {
     const endParam = end.toISOString().slice(0, 10);
 
     // Fetch availability
-    api
-      .get<ApiDayAvailability[]>(`/api/teacher/${teacherId}/availability`)
-      .then((res) => {
-        const mapped: ApiDayAvailability[] = res.data.map((day) => ({
-          day: day.day,
-          timeslots: day.timeslots.map((slot) => ({
-            timeFrom: slot.timeFrom.slice(0, 5),
-            timeUntil: slot.timeUntil.slice(0, 5),
-          })),
-        }));
-        setAvailability(mapped);
-      })
-      .catch((err) => console.error("Availability fetch failed:", err));
+    const fetchAvailability = async () => {
+      const data = await getTeacherAvailability(teacherId);
+      setAvailability(data);
+    };
+
+    fetchAvailability().then();
 
     // Fetch upcoming classes
-    api
-      .get<ClassSchedule[]>(`/api/teacher/${teacherId}/upcoming-classes`, {
-        params: {
-          start: startParam,
-          end: endParam,
-        },
-      })
-      .then((res) => {
-        setAllScheduledClasses(res.data);
-        setScheduledClasses(res.data);
-      })
-      .catch((err) => console.error("Upcoming classes fetch failed:", err));
+    const fetchExercises = async () => {
+      const data = await getTeacherUpcomingClasses(teacherId, startParam, endParam);
+      setAllScheduledClasses(data);
+      setScheduledClasses(data);
+    };
+
+    fetchExercises().then();
   }, []);
 
   // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
