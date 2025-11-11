@@ -29,6 +29,7 @@ import { formatDate } from "date-fns";
 import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";
 import { Edit } from "lucide-react";
 import { DeleteFilePopup } from "@/components/complex/popups/files/deleteFilePopup.tsx";
+import { getUserFileOwners, getUserFileExtensions, getUserFileTags } from "@/api/apiCalls.ts";
 
 type SortField = "title" | "dateCreated" | "sharedBy" | "course";
 type SortOrder = "none" | "asc" | "desc";
@@ -59,6 +60,36 @@ export function FileGallery({
   );
   const [selectedType, setSelectedType] = useState<SelectableItem[]>([]);
   const [selectedTags, setSelectedTags] = useState<SelectableItem[]>([]);
+
+  const [availableOwners, setAvailableOwners] = useState<SelectableItem[]>([]);
+  const [availableExtensions, setAvailableExtensions] = useState<SelectableItem[]>([]);
+  const [availableTags, setAvailableTags] = useState<SelectableItem[]>([]);
+
+  useEffect(() => {
+    async function loadFilters() {
+      try {
+        const owners = await getUserFileOwners();
+        setAvailableOwners(
+            owners.map(o => ({ name: `${o.name} ${o.surname}`, value: o.id }))
+        );
+
+        const extensions = await getUserFileExtensions();
+        setAvailableExtensions(
+            extensions.map(ext => ({ name: ext, value: ext.toLowerCase() }))
+        );
+
+        const tags = await getUserFileTags();
+        setAvailableTags(
+            tags.map(t => ({ name: t.name, value: t.id })) // zakładam że masz FileTag { id, name }
+        );
+      } catch (err) {
+        console.error("Error loading filters:", err);
+      }
+    }
+
+    loadFilters();
+  }, []);
+
 
   const [filters, setFilters] = useState<FileFilter>({
     studentId: studentId ? studentId : "",
@@ -133,13 +164,13 @@ export function FileGallery({
         origin: selectedOrigin.map((item) => item.value),
       }),
       ...(selectedSharedBy.length && {
-        sharedBy: selectedSharedBy.map((item) => item.value),
+        createdBy: selectedSharedBy.map((item) => item.value),
       }),
       ...(selectedType.length && {
         type: selectedType.map((item) => item.value),
       }),
       ...(selectedTags.length && {
-        tags: selectedTags.map((item) => item.value),
+        tags: selectedTags.map((item) => item.name),
       }),
     };
 
@@ -174,29 +205,23 @@ export function FileGallery({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-end gap-4">
-        <FilterDropdown
-          reset={true}
-          label={"Origin"}
-          placeholder={"Where file was created"}
-          emptyMessage={"Origin"}
-          items={[
-            { name: "Uploaded", value: "uploaded" },
-            { name: "Generated", value: "generated" },
-          ]}
-          onSelectionChange={setSelectedOrigin}
-        />
+        {/*<FilterDropdown*/}
+        {/*  reset={true}*/}
+        {/*  label={"Origin"}*/}
+        {/*  placeholder={"Where file was created"}*/}
+        {/*  emptyMessage={"Origin"}*/}
+        {/*  items={[*/}
+        {/*    { name: "Uploaded", value: "uploaded" },*/}
+        {/*    { name: "Generated", value: "generated" },*/}
+        {/*  ]}*/}
+        {/*  onSelectionChange={setSelectedOrigin}*/}
+        {/*/>*/}
         <FilterDropdown
           reset={true}
           label={"Shared by"}
           placeholder={"Who shared the file"}
-          emptyMessage={"Shared by"}
-          items={[
-            { name: "Me", value: "user" },
-            { name: "Teacher A", value: "teacher1" },
-            { name: "Teacher B", value: "teacher2" },
-            { name: "Student A", value: "student1" },
-            { name: "Student B", value: "student2" },
-          ]}
+          emptyMessage={"empty"}
+          items={availableOwners}
           onSelectionChange={setSelectedSharedBy}
         />
         <FilterDropdown
@@ -204,11 +229,7 @@ export function FileGallery({
           label={"Type"}
           placeholder={"Type of the file"}
           emptyMessage={"Origin"}
-          items={[
-            { name: "PDF", value: "pdf" },
-            { name: "Word", value: "word" },
-            { name: "JPG", value: "jpg" },
-          ]}
+          items={availableExtensions}
           onSelectionChange={setSelectedType}
         />
         <FilterDropdown
@@ -216,12 +237,7 @@ export function FileGallery({
           label={"Tags"}
           placeholder={"Tags associated"}
           emptyMessage={"Origin"}
-          items={[
-            { name: "Vocabulary", value: "vocabulary" },
-            { name: "Grammar", value: "grammar" },
-            { name: "Exam", value: "exam" },
-            { name: "Obligatory", value: "obligatory" },
-          ]}
+          items={availableTags}
           onSelectionChange={setSelectedTags}
         />
         <Button
@@ -273,7 +289,7 @@ export function FileGallery({
               <TableCell>
                 {formatDate(file.uploadedAt, "hh:mm E dd/MM/yyyy")}
               </TableCell>
-              <TableCell>{file.uploadedBy}</TableCell>
+              <TableCell>{file.ownerInfo.name + " " + file.ownerInfo.surname}</TableCell>
               <TableCell>{file.courseName}</TableCell>
               <TableCell>
                 <ScrollArea className="w-[200px]">

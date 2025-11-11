@@ -10,7 +10,7 @@ import type {
   TeacherReview,
   FileData,
   FileFilter,
-  FileTag,
+  FileTag, FileOwner,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type {Role} from "@/features/user/user.ts";
@@ -397,7 +397,7 @@ export const getFiles = async (filters?: FileFilter): Promise<FileData[]> => {
   const params = new URLSearchParams();
 
   // Append filters as query parameters if present
-  filters?.origin?.forEach((v) => params.append("origin", v));
+  // filters?.origin?.forEach((v) => params.append("origin", v));
   filters?.tags?.forEach((v) => params.append("tags", v));
   filters?.createdBy?.forEach((v) => params.append("createdBy", v));
   filters?.type?.forEach((v) => params.append("type", v));
@@ -454,6 +454,22 @@ export async function deleteFile(fileId: string) {
  */
 export async function getTeacherClassesWithStudents(): Promise<ClassWithStudentsDTO[]> {
   const { data } = await Api.get<ClassWithStudentsDTO[]>("/api/teacher/classes-with-students");
+  return data ?? [];
+}
+
+
+export async function getUserFileTags(): Promise<FileTag[]> {
+  const { data } = await Api.get<FileTag[]>("/api/user/files/tags");
+  return data ?? [];
+}
+
+export async function getUserFileExtensions(): Promise<string[]> {
+  const { data } = await Api.get<string[]>("/api/user/files/extensions");
+  return data ?? [];
+}
+
+export async function getUserFileOwners(): Promise<FileOwner[]> {
+  const { data } = await Api.get<FileOwner[]>("/api/user/files/owners");
   return data ?? [];
 }
 

@@ -111,6 +111,7 @@ export interface FileData {
   courseId?: string; //TODO: przedyskutować z Zosią, no bo plik może być w wielu kursach
   courseName?: string;
   tags: FileTag[];
+  ownerInfo: FileOwner;
 }
 export interface FileFilter {
   query?: string;
@@ -127,6 +128,12 @@ export interface FileTag {
   id: string;
   name: string;
   ownerId: string;
+}
+
+export interface FileOwner {
+  id: string;
+  name: string;
+  surname: string;
 }
 
 
