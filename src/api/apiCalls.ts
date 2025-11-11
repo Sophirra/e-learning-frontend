@@ -469,7 +469,7 @@ export async function getQuizzes(
   searchQuery && params.append("searchQuery", searchQuery);
 
   const res = await Api.get(
-    `/api/quiz/${params ? `?${params.toString()}` : ""}`,
+    `/api/quizzes/${params ? `?${params.toString()}` : ""}`,
   );
   return res.data;
 }
@@ -488,7 +488,7 @@ export async function getStudentById(studentId: string) {
  * @param quizId
  */
 export async function getQuiz(quizId: string): Promise<Quiz> {
-  const res = await Api.get(`/api/quiz/${quizId}`);
+  const res = await Api.get(`/api/quizzes/${quizId}`);
   return res.data;
 }
 
@@ -497,7 +497,7 @@ export async function getQuiz(quizId: string): Promise<Quiz> {
  * @param quizId
  */
 export async function getQuizQuestions(quizId: string): Promise<Question[]> {
-  const res = await Api.get(`/api/quiz/question/${quizId}`); //TODO: ustawić link
+  const res = await Api.get(`/api/quizzes/${quizId}/question/`); //TODO: ustawić link
   return res.data;
 }
 
