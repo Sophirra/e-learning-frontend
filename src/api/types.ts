@@ -178,8 +178,7 @@ export type Answer = {
 };
 
 export type QuestionCategory = {
-  id: string;
+  id?: string;
   name: string;
-  createdBy?: string; //person id, też do wywalenia
   description?: string; //imo do wywalenia
 };

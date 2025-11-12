@@ -505,7 +505,7 @@ export async function getQuizQuestions(quizId: string): Promise<Question[]> {
  * get teacher question categories for filtering and editing questions. Get ALL created categories, even if unused
  */
 export async function getUserCategories(): Promise<QuestionCategory[]> {
-  const res = await Api.get(`/api/quiz/user/categories`);
+  const res = await Api.get(`/api/quizzes/user/categories`);
   return res.data;
 }
 
@@ -521,7 +521,7 @@ export async function getUserQuestions(
     params.append("categories", categoryId),
   );
   const res = await Api.get(
-    `/api/quiz/user/questions${params.toString() ? `?${params.toString()}` : ""}`,
+    `/api/quizzes/user/questions${params.toString() ? `?${params.toString()}` : ""}`,
   );
   return res.data;
 }
@@ -531,7 +531,7 @@ export async function getUserQuestions(
  * @param questionId
  */
 export async function getFullQuestion(questionId: string): Promise<Question> {
-  const res = await Api.get(`/api/quiz/question/${questionId}/full`);
+  const res = await Api.get(`/api/quizzes/question/${questionId}/full`);
   return res.data;
 }
 
@@ -542,7 +542,7 @@ export async function getFullQuestion(questionId: string): Promise<Question> {
 export async function createQuestionCategory(
   categoryName: string,
 ): Promise<QuestionCategory> {
-  const res = await Api.post("/api/quiz/question/category", {
+  const res = await Api.post("/api/quizzes/question/category", {
     categoryName,
   });
   return res.data;
