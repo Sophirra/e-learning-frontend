@@ -1,17 +1,38 @@
 import { Button } from "@/components/ui/button.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils.ts";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import { Content } from "@/components/ui/content.tsx";
-import type { Answer, Quiz } from "@/api/types.ts";
+import type { Answer, Quiz, Question, QuizSolution } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
+import { toast } from "sonner";
+import {
+  getQuizQuestions,
+  getQuiz as getQuizApi,
+  submitQuiz,
+} from "@/api/apiCalls.ts";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog.tsx";
 
 export function SolveQuizPage() {
+  const navigate = useNavigate();
   const { quizId } = useParams();
+  if (!quizId) {
+    toast.error("Quiz not found");
+    return <div>Quiz not found</div>;
+  }
   const [quiz, setQuiz] = useState<Quiz>({
     id: quizId || "",
     name: "Sample Quiz",
@@ -20,75 +41,93 @@ export function SolveQuizPage() {
     courseName: "Test course",
     teacherId: "1",
     studentId: "1",
-    questions: [
-      {
-        id: "1",
-        content: "This is a sample question",
-        categoryId: "1",
-        categoryName: "Category A",
-        answers: [
-          { id: "1", content: "Answer 1", selected: false },
-          { id: "2", content: "Answer 2", selected: false },
-          { id: "3", content: "Answer 3", selected: false },
-        ],
-        answered: false,
-      },
-      {
-        id: "2",
-        content:
-          "This is a second question. A very very very loooooooooooooooooooooooooooooooooooooong question.",
-        categoryId: "1",
-        categoryName: "Category A",
-        answers: [
-          { id: "1", content: "Answer 1", selected: false },
-          { id: "2", content: "Answer 2", selected: false },
-          { id: "3", content: "Answer 3", selected: false },
-        ],
-        answered: false,
-      },
-    ],
     isMultipleChoice: false,
+    maxScore: 10,
   });
+  const [questions, setQuestions] = useState<Question[]>([
+    {
+      id: "1",
+      content: "This is a sample question",
+      categories: [
+        {
+          id: "1",
+          name: "Category A",
+        },
+        {
+          id: "2",
+          name: "Category B",
+        },
+      ],
+      answers: [
+        { id: "1", content: "Answer 1" },
+        { id: "2", content: "Answer 2" },
+        { id: "3", content: "Answer 3" },
+      ],
+    },
+    {
+      id: "2",
+      content:
+        "This is a second question. A very very very loooooooooooooooooooooooooooooooooooooong question.",
+      categories: [
+        {
+          id: "2",
+          name: "Category B",
+        },
+        {
+          id: "3",
+          name: "Category C",
+        },
+      ],
+      answers: [
+        { id: "1", content: "Answer 1" },
+        { id: "2", content: "Answer 2" },
+        { id: "3", content: "Answer 3" },
+      ],
+    },
+  ]);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const handleAnswerSelect = (answerId: string | undefined) => {
     console.log("Selected answer:", answerId);
-    const updatedQuestions = [...quiz.questions];
+    const updatedQuestions = [...questions];
     const currentQuestion = updatedQuestions[currentQuestionIndex];
 
-    if (quiz.isMultipleChoice) {
-      // Dla multiple choice możemy zaznaczyć wiele odpowiedzi
-      const answerIndex = currentQuestion.answers.findIndex(
-        (a: Answer) => a.id === answerId,
-      );
-      console.log("Answer index:", answerIndex);
-      currentQuestion.answers[answerIndex].selected =
-        !currentQuestion.answers[answerIndex].selected;
-      console.log("Updated answer:", currentQuestion.answers[answerIndex]);
+    if (!currentQuestion.answers) {
+      toast.error("No answers found");
     } else {
-      // Dla single choice odznaczamy wszystkie inne odpowiedzi
-      const isCurrentlySelected = currentQuestion.answers.find(
-        (a: Answer) => a.id === answerId,
-      )?.selected;
-      console.log("Is currently selected:", isCurrentlySelected);
-      currentQuestion.answers = currentQuestion.answers.map(
-        (answer: Answer) => ({
-          ...answer,
-          selected: answer.id === answerId ? !isCurrentlySelected : false,
-        }),
+      if (quiz.isMultipleChoice) {
+        // Dla multiple choice możemy zaznaczyć wiele odpowiedzi
+        const answerIndex = currentQuestion.answers.findIndex(
+          (a: Answer) => a.id === answerId,
+        );
+        console.log("Answer index:", answerIndex);
+        currentQuestion.answers[answerIndex].selected =
+          !currentQuestion.answers[answerIndex].selected;
+        console.log("Updated answer:", currentQuestion.answers[answerIndex]);
+      } else {
+        // Dla single choice odznaczamy wszystkie inne odpowiedzi
+        const isCurrentlySelected = currentQuestion.answers.find(
+          (a: Answer) => a.id === answerId,
+        )?.selected;
+        console.log("Is currently selected:", isCurrentlySelected);
+        currentQuestion.answers = currentQuestion.answers.map(
+          (answer: Answer) => ({
+            ...answer,
+            selected: answer.id === answerId ? !isCurrentlySelected : false,
+          }),
+        );
+        console.log("Updated answers:", currentQuestion.answers);
+      }
+
+      // Oznacz pytanie jako odpowiedziane, jeśli jakakolwiek odpowiedź jest zaznaczona
+      currentQuestion.answered = currentQuestion.answers.some(
+        (answer: Answer) => answer.selected,
       );
-      console.log("Updated answers:", currentQuestion.answers);
+      console.log("Updated question:", currentQuestion);
+
+      setQuestions(updatedQuestions);
     }
-
-    // Oznacz pytanie jako odpowiedziane, jeśli jakakolwiek odpowiedź jest zaznaczona
-    currentQuestion.isAnswered = currentQuestion.answers.some(
-      (answer: Answer) => answer.selected,
-    );
-    console.log("Updated question:", currentQuestion);
-
-    setQuiz({ ...quiz, questions: updatedQuestions });
-    console.log("Updated quiz:", quiz);
   };
 
   const handleNavigateQuestion = (direction: "prev" | "next") => {
@@ -99,26 +138,77 @@ export function SolveQuizPage() {
     setCurrentQuestionIndex(newIndex);
   };
 
-  const handleSubmitQuiz = () => {
-    // Tutaj logika wysyłania odpowiedzi
-    const answers = quiz.questions.map((question) => ({
-      questionId: question.id,
-      selectedAnswers: question.answers
-        .filter((answer: Answer) => answer.selected)
-        .map((answer: Answer) => answer.id),
-    }));
+  async function handleSubmitQuiz() {
+    console.log("running submit quiz");
+    if (!quizId) {
+      toast.error("Quiz id not found");
+      return;
+    }
+    const solution: QuizSolution = {
+      quizId: quizId,
+      answers: questions.map((question: Question) => ({
+        questionId: question.id!,
+        selectedAnswerIds: (question.answers || [])
+          .filter((answer: Answer) => answer.selected)
+          .map((answer: Answer) => answer.id!),
+      })),
+    };
+    try {
+      const result = await submitQuiz(solution);
+      toast.success("Scored " + result + "/" + quiz.maxScore);
+      navigate("/quizzes");
+    } catch (e) {
+      toast.error("Something went wrong");
+      console.log(e);
+    }
+  }
 
-    console.log("Submitting answers:", answers);
-  };
+  const currentQuestion = questions[currentQuestionIndex];
 
-  const currentQuestion = quiz.questions[currentQuestionIndex];
+  //TODO: odkomentować jak będzie backend
+  // useEffect(() => {
+  //   getQuiz(quizId);
+  //   getQuestions(quizId);
+  //   async function getQuiz(id: string){
+  //     const data = await getQuizApi(id);
+  //     setQuiz(data)
+  //   }
+  //   async function getQuestions(id: string){
+  //     const data = await getQuizQuestions(id)
+  //     setQuestions(data)
+  //   }
+  // })
 
-  function submitQuizButton(disabled: boolean) {
+  function submitQuizButton(onSubmit: () => void, disabled: boolean) {
     return (
-      <Button variant="ghost" disabled={disabled} onClick={handleSubmitQuiz}>
-        <icons.Send />
-        Submit
-      </Button>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant={"ghost"} disabled={disabled}>
+            <icons.Send />
+            Submit
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Submit quiz</DialogTitle>
+            <DialogDescription>Are you sure?</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
+            <DialogClose className={"flex flex-row gap-4 sm:justify-center"}>
+              <Button>Cancel</Button>
+              <Button
+                variant={"outline"}
+                onClick={async () => {
+                  console.log("in button");
+                  await onSubmit();
+                }}
+              >
+                Confirm
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 
@@ -130,14 +220,17 @@ export function SolveQuizPage() {
           label={"Quiz " + quiz.name}
           labelIcon={icons.Quiz}
           customButton={() =>
-            submitQuizButton(!quiz.questions.every((q) => q.isAnswered))
+            submitQuizButton(
+              handleSubmitQuiz,
+              !questions.every((q) => q.answered),
+            )
           }
         >
           <div className="grid grid-cols-[200px_1fr] gap-6">
             {/* Lista pytań */}
             <div className="space-y-2">
               <ScrollArea className="h-[calc(100vh-200px)]">
-                {quiz.questions.map((question, index) => (
+                {questions.map((question, index) => (
                   <Button
                     key={question.id}
                     variant="ghost"
@@ -147,7 +240,7 @@ export function SolveQuizPage() {
                     )}
                     onClick={() => setCurrentQuestionIndex(index)}
                   >
-                    {question.isAnswered ? (
+                    {question.answered ? (
                       <icons.CheckCircle />
                     ) : (
                       <icons.Circle />
@@ -157,8 +250,6 @@ export function SolveQuizPage() {
                 ))}
               </ScrollArea>
             </div>
-
-            {/* Zawartość pytania */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-start">
@@ -176,52 +267,39 @@ export function SolveQuizPage() {
                   <Button
                     variant="outline"
                     onClick={() => handleNavigateQuestion("next")}
-                    disabled={
-                      currentQuestionIndex === quiz.questions.length - 1
-                    }
+                    disabled={currentQuestionIndex === questions.length - 1}
                   >
                     Next
                     <icons.ChevronRight />
                   </Button>
                 </div>
               </div>
-
               <Separator />
-
-              {/* Opis lub obrazek */}
               <div className="space-y-4">
-                {currentQuestion.description && (
-                  <p className="text-gray-600">{currentQuestion.description}</p>
-                )}
-                {currentQuestion.imageUrl && (
-                  <img
-                    src={currentQuestion.imageUrl}
-                    alt={currentQuestion.title}
-                    className="max-w-full rounded-lg"
-                  />
+                {currentQuestion.content && (
+                  <p className="text-gray-600">{currentQuestion.content}</p>
                 )}
               </div>
-
-              {/* Odpowiedzi */}
               <div className="space-y-3">
-                {currentQuestion.answers.map((answer: Answer) => (
-                  <div
-                    key={answer.id}
-                    className={cn(
-                      "flex items-center gap-3 p-4 rounded-lg border",
-                      answer.selected && "border-primary bg-primary/5",
-                    )}
-                    onClick={() => handleAnswerSelect(answer.id)}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={answer.selected}
-                      onChange={() => handleAnswerSelect(answer.id)}
-                      className="h-4 w-4"
-                    />
-                    <div>{answer.content}</div>
-                  </div>
-                ))}
+                {currentQuestion.answers &&
+                  currentQuestion.answers.map((answer: Answer) => (
+                    <div
+                      key={answer.id}
+                      className={cn(
+                        "flex items-center gap-3 p-4 rounded-lg border",
+                        answer.selected && "border-primary bg-primary/5",
+                      )}
+                      onClick={() => handleAnswerSelect(answer.id)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={answer.selected}
+                        onChange={() => handleAnswerSelect(answer.id)}
+                        className="h-4 w-4"
+                      />
+                      <div>{answer.content}</div>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

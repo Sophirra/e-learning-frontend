@@ -166,15 +166,14 @@ export type Question = {
   content: string;
   categories: QuestionCategory[];
   answers?: Answer[]; // nie zwracane przy podglądzie
-  answered?: boolean; //wysyłane przez solve
+  //answered?: boolean; //wysyłane przez solve
 };
 
 export type Answer = {
   id?: string; //id opcjonalne - jak tworzymy to nie mamy
   questionId?: string; //id opcjonalne - jak tworzymy to nie mamy??
-  correct?: boolean; //nie zwracane przy solve
+  //correct?: boolean; //nie zwracane przy solve
   content: string;
-  selected?: boolean; //wysyłane przez solve
 };
 
 export type QuestionCategory = {
@@ -182,4 +181,11 @@ export type QuestionCategory = {
   name: string;
   createdBy?: string; //person id, też do wywalenia
   description?: string; //imo do wywalenia
+};
+export type QuizSolution = {
+  quizId: string;
+  answers: {
+    questionId: string;
+    selectedAnswerIds: string[];
+  }[];
 };

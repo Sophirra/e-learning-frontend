@@ -16,6 +16,7 @@ import type {
   Answer,
   QuizBrief,
   QuestionCategory,
+  QuizSolution,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -161,7 +162,8 @@ export const getCourseLanguages = async (): Promise<string[]> => {
  * });
  * ```
  *
- * @param filters - Optional filtering parameters (categories, levels, languages, etc.).
+ * @param filters - Optional filtering parameters (categories, levels,
+ * languages, etc.).
  * @returns Promise resolving to an array of Course objects.
  */
 export const getCourses = async (filters?: {
@@ -194,7 +196,8 @@ export const getCourses = async (filters?: {
 };
 
 /**
- * Fetches all upcoming classes (within the next 14 days) for the currently authenticated user.
+ * Fetches all upcoming classes (within the next 14 days) for the currently
+ * authenticated user.
  *
  * Depending on the user's active role, this function calls the appropriate API endpoint:
  * - `/api/classes/upcoming-as-teacher`   when the user is a **teacher**.
@@ -206,8 +209,10 @@ export const getCourses = async (filters?: {
  * - `startTime`   class start date and time (converted from ISO string to `Date`).
  * - `teacherId`   identifier of the teacher assigned to the course.
  *
- * @param {Role | undefined} activeRole - The current user's role, determining which endpoint to query.
- * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming classes.
+ * @param {Role | undefined} activeRole - The current user's role, determining
+ * which endpoint to query.
+ * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming
+ * classes.
  *
  * @remarks
  * The API automatically filters data based on the user's JWT roles.
@@ -493,7 +498,8 @@ export async function getQuiz(quizId: string): Promise<Quiz> {
 }
 
 /**
- * get quiz questions with answers - for solving. Do not include data about the correctness of answers.
+ * get quiz questions with answers - for solving. Do not include data about
+ * the correctness of answers.
  * @param quizId
  */
 export async function getQuizQuestions(quizId: string): Promise<Question[]> {
@@ -502,7 +508,22 @@ export async function getQuizQuestions(quizId: string): Promise<Question[]> {
 }
 
 /**
- * get teacher question categories for filtering and editing questions. Get ALL created categories, even if unused
+ * send user solution to the quiz - based on quiz id. Answers contain question id
+ * and an array of selected answers' ids
+ * @param solution
+ */
+export async function submitQuiz(solution: QuizSolution): Promise<number> {
+  const res = await Api.post(
+    `/api/quiz/${solution.quizId}/solution`,
+    solution.answers,
+  );
+  if (res.status === 201) return res.data;
+  else throw res.data as ErrorResponse;
+}
+
+/**
+ * get teacher question categories for filtering and editing questions.
+ * Get ALL created categories, even if unused
  */
 export async function getUserCategories(): Promise<QuestionCategory[]> {
   const res = await Api.get(`/api/quiz/user/categories`);
@@ -527,7 +548,8 @@ export async function getUserQuestions(
 }
 
 /**
- * get full question with answers. Will be displayed to teacher - include correctness of answers.
+ * get full question with answers. Will be displayed to teacher - include
+ * correctness of answers.
  * @param questionId
  */
 export async function getFullQuestion(questionId: string): Promise<Question> {
@@ -573,7 +595,8 @@ export async function createQuestion(
 }
 
 /**
- * update already created question - all data is replaced - not checked was modified (but can be)
+ * update already created question - all data is replaced - not checked was
+ * modified (but can be)
  * @param questionId
  * @param content
  * @param answers
