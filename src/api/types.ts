@@ -86,7 +86,7 @@ export interface CourseVariant {
   languageName: string;
 }
 
-export interface CourseBrief {
+export interface ClassBrief {
   startTime: Date;
   courseId: string;
   courseName: string;
@@ -137,6 +137,14 @@ export type ClassWithStudentsDTO = {
   courseName: string;
   students: StudentBriefDTO[];
 };
+
+export type Student = { name: string; courses: CourseBrief[] };
+
+export type CourseBrief = {
+  id: string;
+  name: string;
+};
+
 
 export type QuizBrief = {
   id: string;

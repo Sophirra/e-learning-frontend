@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
@@ -7,7 +7,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentDetailsCard } from "@/components/complex/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type { CourseBrief } from "@/api/types.ts";
+import type { CourseBrief, Student } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
   type AnyTask,
@@ -16,6 +16,7 @@ import {
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { FileGallery } from "@/components/complex/fileGallery.tsx";
+import { getStudentData } from "@/api/apiCalls.ts";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -29,6 +30,7 @@ export function StudentsPage() {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
+  const [studentBrief, setStudentBrief] = useState<Student>();
   //courses for specific student from current teacher (user)
   const [courses, setCourses] = useState<CourseBrief[]>([]);
 
@@ -50,6 +52,22 @@ export function StudentsPage() {
 
   //TODO: get student data to display in student card. Can be here or in StudentCard component.
 
+  useEffect(() => {
+    selectedStudentId && fetchStudent(selectedStudentId);
+  }, [selectedStudentId]);
+
+  async function fetchStudent(studentId: string) {
+    try {
+      let data = await getStudentData(studentId);
+      setStudentBrief(data);
+      setCourses(data.courses);
+      console.log("Fetched student:", data, data.courses);
+      // data = await getStudentCourses(studentId);
+    } catch (err) {
+      console.log("Error geting student:", err);
+    }
+  }
+
   return (
     <div className="bg-white min-h-screen">
       <NavigationBar />
@@ -66,18 +84,14 @@ export function StudentsPage() {
           {selectedStudentId ? (
             <div className="flex flex-row gap-8">
               <div className="w-1/4 sticky top-0 align-self-flex-start h-fit">
-                {selectedStudentId && (
+                {selectedStudentId && studentBrief && (
                   <StudentDetailsCard
                     id={selectedStudentId}
-                    name={"Alice Green"}
+                    name={studentBrief.name}
                     image={
                       "https://i.pinimg.com/736x/af/f0/1c/aff01cea24b478bec034cf412406dbe5.jpg"
                     }
-                    courses={[
-                      { courseId: "1", courseName: "one" },
-                      { courseId: "2", courseName: "two" },
-                      { courseId: "3", courseName: "three" },
-                    ]}
+                    courses={courses}
                     selectedCourseId={selectedCourseId}
                     setSelectedCourseId={setSelectedCourseId}
                   />
@@ -85,13 +99,12 @@ export function StudentsPage() {
               </div>
 
               <div className="w-3/4 space-y-8">
-                <CalendarSummary courses={courses} />
+                <CalendarSummary classes={[]} />
                 <AssignmentSummary
                   student={false}
                   assignments={[sampleAssignment]}
                 />
                 <ChatSummary />
-                {/*<FilesSharedSummary student={false} />*/}
                 <Summary
                   label={"Shared files"}
                   labelIcon={icons.File}

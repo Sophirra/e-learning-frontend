@@ -1,15 +1,18 @@
 import { Button } from "@/components/ui/button.tsx";
-import type { CourseBrief } from "@/api/types.tsx";
+import type { ClassBrief } from "@/api/types.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { SetupNewClassPopup } from "@/components/complex/popups/setupNewClassPopup.tsx";
 import { useEffect, useRef, useState } from "react";
-import api, { getUserId } from "@/api/api.ts";
+import { getUserId } from "@/api/api.ts";
 import { useUser } from "@/features/user/UserContext.tsx";
 import {
-  mapParticipationToCourseBrief,
-  mapApiCourseToCourseBrief,
-} from "@/mappers/courseMappers.ts";
+  getStudentCoursesWithSpecificTeacher,
+  getStudentParticipations,
+  getTeacherCourses,
+  getTeacherStudents,
+  getTeacherStudentsWithSpecificCourse,
+} from "@/api/apiCalls.ts";
 
 type StudentBrief = { id: string; name: string; surname: string };
 
@@ -28,7 +31,7 @@ export default function CourseFilter({
   setSelectedStudentId?: (studentId: string | null) => void;
   setupClassButton?: boolean;
 }) {
-  const [courses, setCourses] = useState<CourseBrief[]>([]);
+  const [courses, setCourses] = useState<ClassBrief[]>([]);
   const [students, setStudents] = useState<StudentBrief[]>([]);
   const { user } = useUser();
   const userId = getUserId();
@@ -44,20 +47,8 @@ export default function CourseFilter({
     const fetchData = async () => {
       try {
         if (user.activeRole === "student") {
-          const res = await api.get(`/api/students/${userId}/participations`);
-          const data = res.data ?? [];
-          const mapped: CourseBrief[] = data
-            .map(mapParticipationToCourseBrief)
-            .filter((c: any): c is CourseBrief => !!c);
+          const mapped = await getStudentParticipations(userId);
 
-          // if (!canceled) {
-          //   setCourses(mapped);
-          //   setSelectedCourseId((prev: string | null) =>
-          //     mapped.some((c: CourseBrief) => c.courseId === prev)
-          //       ? prev
-          //       : null,
-          //   );
-          // }
           if (!canceled) {
             setCourses(mapped);
 
@@ -66,19 +57,9 @@ export default function CourseFilter({
             }
           }
         } else if (user.activeRole === "teacher") {
-          const [sRes, cRes] = await Promise.all([
-            api.get(`/api/teacher/${userId}/students`),
-            api.get(`/api/teacher/${userId}/courses`),
-          ]);
-
-          const studentList = sRes.data ?? [];
-          const courseList: CourseBrief[] = (cRes.data ?? [])
-            .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-            .filter((c: CourseBrief | null): c is CourseBrief => !!c);
-
           if (!canceled) {
-            setStudents(studentList);
-            setCourses(courseList);
+            setStudents(await getTeacherStudents(userId));
+            setCourses(await getTeacherCourses(userId));
           }
         }
       } catch (err) {
@@ -130,17 +111,14 @@ export default function CourseFilter({
 
     (async () => {
       try {
-        const res = await api.get(
-          `/api/teacher/${userId}/students/${selectedStudentId}/courses`,
-          { signal: ac.signal as any },
+        const courseList = await getStudentCoursesWithSpecificTeacher(
+          selectedStudentId,
+          userId,
+          ac.signal,
         );
 
         // Ignores this response if a newer request has already been issued.
         if (gen !== fetchGen.current) return;
-
-        const courseList: CourseBrief[] = (res.data ?? [])
-          .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-          .filter((c: CourseBrief | null): c is CourseBrief => !!c);
 
         setCourses(courseList);
 
@@ -186,13 +164,14 @@ export default function CourseFilter({
 
     (async () => {
       try {
-        const res = await api.get(
-          `/api/teacher/${userId}/courses/${selectedCourseId}/students`,
-          { signal: ac.signal as any },
+        const studentList = await getTeacherStudentsWithSpecificCourse(
+          userId,
+          selectedCourseId,
+          ac.signal,
         );
+
         if (gen !== fetchGen.current) return;
 
-        const studentList: StudentBrief[] = res.data ?? [];
         setStudents(studentList);
 
         // A selected student is no longer valid? Clear it.
@@ -213,24 +192,14 @@ export default function CourseFilter({
   }, [selectedCourseId, userId, user?.activeRole]);
 
   // RESET FILTERS
-  const resetFilters = () => {
+  const resetFilters = async () => {
     setSelectedCourseId(null);
     setSelectedStudentId?.(null);
     setFilterKey((prev) => prev + 1);
 
     if (user?.activeRole === "teacher" && userId) {
-      Promise.all([
-        api.get(`/api/teacher/${userId}/students`),
-        api.get(`/api/teacher/${userId}/courses`),
-      ])
-        .then(([sRes, cRes]) => {
-          setStudents(sRes.data ?? []);
-          const courseList: CourseBrief[] = (cRes.data ?? [])
-            .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-            .filter((c: any): c is CourseBrief => !!c);
-          setCourses(courseList);
-        })
-        .catch((err) => console.error("Could not reload initial lists:", err));
+      setStudents(await getTeacherStudents(userId));
+      setCourses(await getTeacherCourses(userId));
     }
   };
 
@@ -246,7 +215,7 @@ export default function CourseFilter({
           All courses
         </Button>
         {student &&
-          courses.map((course: CourseBrief) => (
+          courses.map((course: ClassBrief) => (
             <Button
               key={course.courseId}
               variant={
