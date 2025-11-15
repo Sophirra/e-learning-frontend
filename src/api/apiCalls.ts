@@ -474,7 +474,7 @@ export async function getQuizzes(
   searchQuery && params.append("searchQuery", searchQuery);
 
   const res = await Api.get(
-    `/api/quiz/${params ? `?${params.toString()}` : ""}`,
+    `/api/quizzes/${params ? `?${params.toString()}` : ""}`,
   );
   return res.data;
 }
@@ -493,7 +493,7 @@ export async function getStudentById(studentId: string) {
  * @param quizId
  */
 export async function getQuiz(quizId: string): Promise<Quiz> {
-  const res = await Api.get(`/api/quiz/${quizId}`);
+  const res = await Api.get(`/api/quizzes/${quizId}`);
   return res.data;
 }
 
@@ -503,7 +503,7 @@ export async function getQuiz(quizId: string): Promise<Quiz> {
  * @param quizId
  */
 export async function getQuizQuestions(quizId: string): Promise<Question[]> {
-  const res = await Api.get(`/api/quiz/question/${quizId}`); //TODO: ustawić link
+  const res = await Api.get(`/api/quizzes/${quizId}/question/`); //TODO: ustawić link
   return res.data;
 }
 
@@ -526,7 +526,7 @@ export async function submitQuiz(solution: QuizSolution): Promise<number> {
  * Get ALL created categories, even if unused
  */
 export async function getUserCategories(): Promise<QuestionCategory[]> {
-  const res = await Api.get(`/api/quiz/user/categories`);
+  const res = await Api.get(`/api/quizzes/user/categories`);
   return res.data;
 }
 
@@ -542,7 +542,7 @@ export async function getUserQuestions(
     params.append("categories", categoryId),
   );
   const res = await Api.get(
-    `/api/quiz/user/questions${params.toString() ? `?${params.toString()}` : ""}`,
+    `/api/quizzes/user/questions${params.toString() ? `?${params.toString()}` : ""}`,
   );
   return res.data;
 }
@@ -553,7 +553,7 @@ export async function getUserQuestions(
  * @param questionId
  */
 export async function getFullQuestion(questionId: string): Promise<Question> {
-  const res = await Api.get(`/api/quiz/question/${questionId}/full`);
+  const res = await Api.get(`/api/quizzes/question/${questionId}/full`);
   return res.data;
 }
 
@@ -564,7 +564,7 @@ export async function getFullQuestion(questionId: string): Promise<Question> {
 export async function createQuestionCategory(
   categoryName: string,
 ): Promise<QuestionCategory> {
-  const res = await Api.post("/api/quiz/question/category", {
+  const res = await Api.post("/api/quizzes/question/category", {
     categoryName,
   });
   return res.data;
