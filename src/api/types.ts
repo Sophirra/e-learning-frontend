@@ -145,7 +145,6 @@ export type CourseBrief = {
   name: string;
 };
 
-
 export type QuizBrief = {
   id: string;
   name: string;
@@ -180,7 +179,7 @@ export type Question = {
 export type Answer = {
   id?: string; //id opcjonalne - jak tworzymy to nie mamy
   questionId?: string; //id opcjonalne - jak tworzymy to nie mamy??
-  //correct?: boolean; //nie zwracane przy solve
+  correct?: boolean; //nie zwracane przy solve
   content: string;
 };
 

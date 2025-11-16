@@ -42,9 +42,9 @@ export function QuestionDetailsPopup({
   const [availableCategories, setAvailableCategories] = useState<
     QuestionCategory[]
   >([
-    { id: "1", name: "Math", description: "Mathematics" },
-    { id: "2", name: "Science", description: "Science" },
-    { id: "3", name: "History", description: "History" },
+    // { id: "1", name: "Math", description: "Mathematics" },
+    // { id: "2", name: "Science", description: "Science" },
+    // { id: "3", name: "History", description: "History" },
   ]);
 
   async function handleConfirm() {
@@ -84,7 +84,7 @@ export function QuestionDetailsPopup({
     const newAnswer: Answer = {
       id: crypto.randomUUID(), // temporary id so new answers fit structure
       content: "",
-      correct: false,
+      // correct: false,
     };
     setNewAnswers([...newAnswers, newAnswer]);
   }
@@ -138,6 +138,8 @@ export function QuestionDetailsPopup({
           setNewContent(questionData.content);
           setNewCategories(questionData.categories || []);
           setNewAnswers(questionData.answers || []);
+
+          console.log("categories: ", newCategories);
           if (!questionData.answers) {
             toast.error("No answers returned");
           }
@@ -150,10 +152,10 @@ export function QuestionDetailsPopup({
         setAvailableCategories(categoriesData);
       }
     }
+    getCategories();
     getQuestionDetails();
-    if (editing) {
-      getCategories();
-    }
+    // if (editing) {
+    // }
   }, [load]);
 
   return (

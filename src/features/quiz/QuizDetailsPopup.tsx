@@ -41,8 +41,8 @@ export function QuizDetailsPopup({ quizBrief }: { quizBrief: QuizBrief }) {
     async function getPersonDetails() {
       if (load) {
         //TODO: odkomentować jak będzie działał backend
-        // const quizData = await getQuiz(quizBrief.id);
-        // setQuiz(quizData);
+        const quizData = await getQuiz(quizBrief.id);
+        setQuiz(quizData);
         if (user?.activeRole === "teacher") {
           const studentData = await getStudentById(quiz.studentId);
           setStudent(studentData.name + " " + studentData.surname);

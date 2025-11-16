@@ -20,25 +20,6 @@ export function QuestionGallery({ enableSelect }: { enableSelect: boolean }) {
   // const [selectedQuestions, setSelectedQuestions] = useState<Question[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
 
-  const mockQuestions: Question[] = [
-    {
-      id: "1",
-      content: "question 1",
-      categories: [
-        { id: "1", name: "Category A" },
-        { id: "2", name: "Category B" },
-      ],
-    },
-    {
-      id: "2",
-      content: "question 2",
-      categories: [
-        { id: "1", name: "Category A" },
-        { id: "3", name: "Category C" },
-      ],
-    },
-  ];
-
   useEffect(() => {
     async function fetchQuestions() {
       try {
@@ -71,7 +52,7 @@ export function QuestionGallery({ enableSelect }: { enableSelect: boolean }) {
         label={"Categories"}
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {mockQuestions.map((question) => (
+        {questions.map((question) => (
           <QuestionDetailsPopup questionBrief={question} />
         ))}
       </div>
