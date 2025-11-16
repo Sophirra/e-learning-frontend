@@ -20,8 +20,9 @@ import Schedule, {
   type ClassSchedule,
   type TimeSlot,
 } from "@/components/complex/schedules/schedule.tsx";
-import api, { getUserId } from "@/api/api.ts";
+import { getUserId } from "@/api/api.ts";
 import {
+  getClassBrief,
   getTeacherAvailability,
   getTeacherUpcomingClasses,
 } from "@/api/apiCalls.ts";
@@ -42,6 +43,7 @@ export type ClassBriefDto = {
   }[];
   quizzes: {
     id: string;
+    title: string;
     score?: number;
   }[];
   files: {
@@ -96,7 +98,11 @@ export function TeacherCalendar() {
 
     // Fetch upcoming classes
     const fetchExercises = async () => {
-      const data = await getTeacherUpcomingClasses(teacherId, startParam, endParam);
+      const data = await getTeacherUpcomingClasses(
+        teacherId,
+        startParam,
+        endParam,
+      );
       setAllScheduledClasses(data);
       setScheduledClasses(data);
     };
@@ -113,75 +119,74 @@ export function TeacherCalendar() {
       return;
     }
 
-    api
-      .get<ClassBriefDto>(`/api/classes/${selectedClassId}`)
-      .then((res) => {
-        const cls = res.data;
-        const now = new Date();
-        const start = new Date(cls.startTime);
-        const isMeetingActive =
-          !!cls.linkToMeeting &&
-          Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
+    const fetchUnsolvedExercises = async () => {
+      const data = await getClassBrief(selectedClassId);
 
-        // LINKS
-        const allLinks = [...(cls.links ?? [])];
-        if (isMeetingActive && cls.linkToMeeting) {
-          allLinks.unshift(cls.linkToMeeting);
-        }
+      const cls = data;
+      const now = new Date();
+      const start = new Date(cls.startTime);
+      const isMeetingActive =
+        !!cls.linkToMeeting &&
+        Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
 
-        const mappedLinks: LinkProps[] = allLinks.map((link) => ({
-          path: link,
-          isMeeting: link === cls.linkToMeeting,
-          courseName: cls.courseName,
-          className: `[${cls.startTime.toString().slice(0, 10)}]`,
-        }));
+      // LINKS
+      const allLinks = [...(cls.links ?? [])];
+      if (isMeetingActive && cls.linkToMeeting) {
+        allLinks.unshift(cls.linkToMeeting);
+      }
 
-        // ASSIGNMENTS
-        const courseName = cls.courseName;
-        const className = `Class ${cls.id.toString().slice(0, 4)}`;
-        const classDate = cls.startTime.toString().slice(0, 10);
+      const mappedLinks: LinkProps[] = allLinks.map((link) => ({
+        path: link,
+        isMeeting: link === cls.linkToMeeting,
+        courseName: cls.courseName,
+        className: `[${cls.startTime.toString().slice(0, 10)}]`,
+      }));
 
-        const exercises = (cls.exercises ?? []).map((ex) => ({
-          id: ex.id,
-          name: `Exercise ${courseName} [${classDate}]`,
-          className,
-          courseName,
-          completed: !!ex.grade,
-          type: "assignment" as const,
-          status: ex.exerciseStatus === "completed" ? "good" : "behind",
-          graded: ex.grade !== undefined,
-          grade: ex.grade ?? null,
-        }));
+      // ASSIGNMENTS
+      const courseName = cls.courseName;
+      const className = `Class ${cls.id.toString().slice(0, 4)}`;
+      const classDate = cls.startTime.toString().slice(0, 10);
 
-        const quizzes = (cls.quizzes ?? []).map((qz) => ({
-          id: qz.id,
-          name: `Quiz ${courseName} [${classDate}]`,
-          className,
-          courseName,
-          completed: !!qz.score,
-          type: "quiz" as const,
-          graded: qz.score !== undefined,
-          grade: qz.score ?? null,
-        }));
+      const exercises = (cls.exercises ?? []).map((ex) => ({
+        id: ex.id,
+        name: `Exercise ${courseName} [${classDate}]`,
+        className,
+        courseName,
+        completed: !!ex.grade,
+        type: "assignment" as const,
+        status: ex.exerciseStatus === "completed" ? "good" : "behind",
+        graded: ex.grade !== undefined,
+        grade: ex.grade ?? null,
+      }));
 
-        const mappedAssignments: AnyTask[] = [...exercises, ...quizzes];
+      const quizzes = (cls.quizzes ?? []).map((qz) => ({
+        id: qz.id,
+        name: `Quiz ${courseName} [${classDate}]`,
+        className,
+        courseName,
+        completed: !!qz.score,
+        type: "quiz" as const,
+        graded: qz.score !== undefined,
+        grade: qz.score ?? null,
+      }));
 
-        // FILES
-        const mappedFiles: FileProps[] = (cls.files ?? []).map((f) => ({
-          id: f.id,
-          name: f.name,
-          filePath: f.path,
-          associatedCourseName: cls.courseName,
-          associatedClassDate: cls.startTime.toString().slice(0, 10),
-        }));
+      const mappedAssignments: AnyTask[] = [...exercises, ...quizzes];
 
-        setLinks(mappedLinks);
-        setAssignments(mappedAssignments);
-        setFiles(mappedFiles);
-      })
-      .catch((err) => {
-        console.error("Class details could not be retrieved:", err);
-      });
+      // FILES
+      const mappedFiles: FileProps[] = (cls.files ?? []).map((f) => ({
+        id: f.id,
+        name: f.name,
+        filePath: f.path,
+        associatedCourseName: cls.courseName,
+        associatedClassDate: cls.startTime.toString().slice(0, 10),
+      }));
+
+      setLinks(mappedLinks);
+      setAssignments(mappedAssignments);
+      setFiles(mappedFiles);
+    };
+
+    fetchUnsolvedExercises();
   }, [selectedClassId]);
 
   // Filter scheduled classes when filter changes
@@ -224,6 +229,7 @@ export function TeacherCalendar() {
           setSelectedClassId(null);
         }}
         selectedCourseId={selectedCourseId}
+        selectedStudentId={selectedStudentId}
         setupClassButton={false}
       />
       <div className="flex flex-row gap-8 p-4">
