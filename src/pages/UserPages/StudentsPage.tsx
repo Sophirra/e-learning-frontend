@@ -16,7 +16,7 @@ import {
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { FileGallery } from "@/components/complex/fileGallery.tsx";
-import { getStudentData } from "@/api/apiCalls.ts";
+import { getStudentCourses, getStudentData } from "@/api/apiCalls.ts";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -60,6 +60,7 @@ export function StudentsPage() {
     try {
       let data = await getStudentData(studentId);
       setStudentBrief(data);
+      let coursesData = await getStudentCourses(studentId);
       setCourses(data.courses);
       console.log("Fetched student:", data, data.courses);
       // data = await getStudentCourses(studentId);
@@ -88,9 +89,9 @@ export function StudentsPage() {
                   <StudentDetailsCard
                     id={selectedStudentId}
                     name={studentBrief.name}
-                    image={
-                      "https://i.pinimg.com/736x/af/f0/1c/aff01cea24b478bec034cf412406dbe5.jpg"
-                    }
+                    // image={
+                    //   "https://i.pinimg.com/736x/af/f0/1c/aff01cea24b478bec034cf412406dbe5.jpg"
+                    // }
                     courses={courses}
                     selectedCourseId={selectedCourseId}
                     setSelectedCourseId={setSelectedCourseId}
@@ -119,7 +120,9 @@ export function StudentsPage() {
               </div>
             </div>
           ) : (
-            <Label className={"text-xl"}>Please select student</Label>
+            <div className="gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-base">
+              Choose a student to view their details.
+            </div>
           )}
         </div>
       </Content>
