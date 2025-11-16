@@ -48,11 +48,7 @@ export function HomePage() {
 
     const run = async () => {
       try {
-        if (!activeRole) {
-          // brak roli   nie fetchujemy nic
-          return;
-        }
-        const data = await getClassBriefs(activeRole);
+        const data = await getClassBriefs(user?.activeRole);
         // jeśli w międzyczasie rola się zmieniła, ignorujemy tę odpowiedź
         if (currentReqId !== requestIdRef.current) return;
         setClasses(data);
@@ -71,12 +67,14 @@ export function HomePage() {
   }, [activeRole]);
 
   // Pobranie zadań raz (jeśli mają zależeć od użytkownika/roli, dodaj zależność)
+  // TODO:  Komentarz czatu nie został dostosowany do naszej apki!!!!!
+  //    dla nauczyciela powinna być analogiczna końcówka getTeacherUngradedExercises
   useEffect(() => {
-    const studentId = getUserId();
-    if (!studentId) return;
+    const userId = getUserId();
+    if (!userId) return;
 
     const fetchUnsolvedExercises = async () => {
-      const data = await getStudentUnsolvedExercises(studentId)
+      const data = await getStudentUnsolvedExercises(userId);
       setAssignmentsRaw(data);
     };
 

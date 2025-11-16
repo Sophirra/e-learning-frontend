@@ -496,7 +496,7 @@ export async function getStudentUnsolvedExercises(
 }
 
 export async function getExercises(
-  userId: string,
+  userId: string | null,
   activeRole: string | null,
   preferredCourseId: string | null,
   preferredStudentId?: string | null,

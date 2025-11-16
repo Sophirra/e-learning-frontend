@@ -7,7 +7,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentDetailsCard } from "@/components/complex/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type { CourseBrief, Student } from "@/api/types.ts";
+import type { ClassBrief, CourseBrief, Student } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
   type AnyTask,
@@ -17,10 +17,15 @@ import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { FileGallery } from "@/components/complex/fileGallery.tsx";
 import {
+  getClassBriefs, getExercises,
   getStudentCourses,
   getStudentCoursesWithSpecificTeacher,
   getStudentData,
+  getTeacherClassesWithStudents,
 } from "@/api/apiCalls.ts";
+import { toast } from "sonner";
+import {getUserId} from "@/api/api.ts";
+import type {AssignmentBrief} from "@/pages/UserPages/AssignmentPage.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -37,6 +42,8 @@ export function StudentsPage() {
   const [studentBrief, setStudentBrief] = useState<Student>();
   //courses for specific student from current teacher (user)
   const [courses, setCourses] = useState<CourseBrief[]>([]);
+  const [upcomingClasses, setUpcomingClasses] = useState<ClassBrief[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentBrief[]>([]);
 
   const sampleAssignment: AnyTask = {
     id: "1",
@@ -58,6 +65,9 @@ export function StudentsPage() {
 
   useEffect(() => {
     selectedStudentId && fetchStudent(selectedStudentId);
+    if (upcomingClasses.length === 0) {
+      fetchStudentUpcomingClasses();
+    }
   }, [selectedStudentId]);
 
   async function fetchStudent(studentId: string) {
@@ -73,6 +83,24 @@ export function StudentsPage() {
       setStudentBrief(undefined);
       setCourses([]);
     }
+  }
+
+  async function fetchStudentUpcomingClasses() {
+    try {
+      const data = await getClassBriefs(user?.activeRole);
+      setUpcomingClasses(data);
+    } catch (err) {
+      toast.error("Failed to load upcoming classes.");
+      console.error("Error fetching upcoming classes:", err);
+      setUpcomingClasses([]);
+    }
+  }
+  async function fetchStudentAssignments() {
+      try {
+          const userId = getUserId();
+          const data = await getExercises(userId, user?.activeRole || null, selectedCourseId, selectedStudentId);
+          // set
+      }
   }
 
   return (
@@ -106,7 +134,13 @@ export function StudentsPage() {
               </div>
 
               <div className="w-3/4 space-y-8">
-                <CalendarSummary classes={[]} />
+                <CalendarSummary
+                  classes={upcomingClasses.filter(
+                    (c) =>
+                      c.studentId === selectedStudentId &&
+                      c.courseId === selectedCourseId,
+                  )}
+                />
                 <AssignmentSummary
                   student={false}
                   assignments={[sampleAssignment]}

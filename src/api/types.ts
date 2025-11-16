@@ -32,7 +32,7 @@ export interface Teacher {
   name: string;
   surname: string;
   description: string;
-  coursesBrief?: ClassBrief[];
+  coursesBrief?: CourseBrief[];
   teacherProfilePictureUrl: string;
 }
 
@@ -90,7 +90,8 @@ export interface ClassBrief {
   startTime: Date;
   courseId: string;
   courseName: string;
-  teacherId: string;
+  teacherId?: string;
+  studentId?: string;
 }
 export interface FileData {
   id: string;
