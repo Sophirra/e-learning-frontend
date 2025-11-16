@@ -1,5 +1,5 @@
 // src/utils/mappers/courseMappers.ts
-import type { ClassBrief } from "@/api/types.tsx";
+import type { CourseBrief } from "@/api/types.tsx";
 
 export function toDateOrNow(value: unknown): Date {
   try {
@@ -11,35 +11,26 @@ export function toDateOrNow(value: unknown): Date {
   }
 }
 
-export function mapParticipationToCourseBrief(p: any): ClassBrief | null {
-  const courseId = p?.courseId ?? p?.CourseId ?? "";
-  const courseName = p?.courseName ?? p?.CourseName ?? "";
-  const teacherId = p?.teacherId ?? p?.TeacherId ?? "";
+export function mapParticipationToCourseBrief(p: any): CourseBrief | null {
+  const id = p?.courseId ?? p?.CourseId ?? "";
+  const name = p?.courseName ?? p?.CourseName ?? "";
 
-  if (!courseId || !courseName) return null;
+  if (!id || !name) return null;
 
   return {
-    courseId,
-    courseName,
-    teacherId,
-    startTime: toDateOrNow(p?.startTime),
+    id,
+    name,
   };
 }
 
-export function mapApiCourseToCourseBrief(
-  c: any,
-  fallbackTeacherId?: string,
-): ClassBrief | null {
-  const courseId = c?.id ?? c?.courseId ?? "";
-  const courseName = c?.name ?? c?.courseName ?? "";
-  const teacherId = c?.teacherId ?? fallbackTeacherId ?? "";
+export function mapApiCourseToCourseBrief(c: any): CourseBrief | null {
+  const id = c?.id ?? c?.courseId ?? "";
+  const name = c?.name ?? c?.courseName ?? "";
 
-  if (!courseId || !courseName) return null;
+  if (!id || !name) return null;
 
   return {
-    courseId,
-    courseName,
-    teacherId,
-    startTime: toDateOrNow(c?.startTime),
+    id,
+    name,
   };
 }

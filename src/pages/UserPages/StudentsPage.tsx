@@ -16,7 +16,11 @@ import {
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { FileGallery } from "@/components/complex/fileGallery.tsx";
-import { getStudentCourses, getStudentData } from "@/api/apiCalls.ts";
+import {
+  getStudentCourses,
+  getStudentCoursesWithSpecificTeacher,
+  getStudentData,
+} from "@/api/apiCalls.ts";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -60,12 +64,14 @@ export function StudentsPage() {
     try {
       let data = await getStudentData(studentId);
       setStudentBrief(data);
-      let coursesData = await getStudentCourses(studentId);
-      setCourses(data.courses);
+      let coursesData = await getStudentCoursesWithSpecificTeacher(studentId);
+      setCourses(coursesData);
       console.log("Fetched student:", data, data.courses);
       // data = await getStudentCourses(studentId);
     } catch (err) {
-      console.log("Error geting student:", err);
+      console.log("Error getting student:", err);
+      setStudentBrief(undefined);
+      setCourses([]);
     }
   }
 

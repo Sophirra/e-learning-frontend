@@ -1,4 +1,4 @@
-import Api from "@/api/api.ts";
+import Api, { getUserId } from "@/api/api.ts";
 import type { ApiDayAvailability } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import type {
   ClassBrief,
@@ -12,7 +12,7 @@ import type {
   Student,
   Teacher,
   TeacherAvailability,
-  TeacherReview
+  TeacherReview,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -21,7 +21,10 @@ import type { AssignmentBrief } from "@/pages/UserPages/AssignmentPage.tsx";
 import type { ClassSchedule } from "@/components/complex/schedules/schedule.tsx";
 import type { ClassBriefDto } from "@/features/calendar/teacherCalendar.tsx";
 import type { StudentBrief } from "@/components/complex/courseFilter.tsx";
-import { mapApiCourseToCourseBrief, mapParticipationToCourseBrief } from "@/mappers/courseMappers.ts";
+import {
+  mapApiCourseToCourseBrief,
+  mapParticipationToCourseBrief,
+} from "@/mappers/courseMappers.ts";
 
 /**
  * Fetches detailed course data by courseID.
@@ -470,7 +473,7 @@ export async function getStudentData(studentId: string): Promise<Student> {
 export async function getStudentCourses(
   studentId: string | null,
 ): Promise<CourseBrief[]> {
-  if(!studentId) {
+  if (!studentId) {
     return [];
   }
 
@@ -478,8 +481,10 @@ export async function getStudentCourses(
   return res.data;
 }
 
-export async function getStudentUnsolvedExercises(studentId: string): Promise<ExerciseBrief[]> {
-  if(!studentId) {
+export async function getStudentUnsolvedExercises(
+  studentId: string,
+): Promise<ExerciseBrief[]> {
+  if (!studentId) {
     return [];
   }
 
@@ -490,8 +495,13 @@ export async function getStudentUnsolvedExercises(studentId: string): Promise<Ex
   return data;
 }
 
-export async function getExercises(userId: string, activeRole: string | null, preferredCourseId: string | null, preferredStudentId?: string | null): Promise<AssignmentBrief[]> {
-  if(!userId) {
+export async function getExercises(
+  userId: string,
+  activeRole: string | null,
+  preferredCourseId: string | null,
+  preferredStudentId?: string | null,
+): Promise<AssignmentBrief[]> {
+  if (!userId) {
     return [];
   }
 
@@ -505,34 +515,43 @@ export async function getExercises(userId: string, activeRole: string | null, pr
     return [];
   }
 
-  const { data } = await Api
-    .get<AssignmentBrief[]>(endpoint, {
-      params: {
-        courseId: preferredCourseId,
-        studentId: preferredStudentId ?? undefined,
-      },
-    })
+  const { data } = await Api.get<AssignmentBrief[]>(endpoint, {
+    params: {
+      courseId: preferredCourseId,
+      studentId: preferredStudentId ?? undefined,
+    },
+  });
 
   return data;
 }
 
-export async function getTeacherUpcomingClasses(teacherId: string, startParam: string, endParam: string): Promise<ClassSchedule[]> {
-  if(!teacherId) {
+export async function getTeacherUpcomingClasses(
+  teacherId: string,
+  startParam: string,
+  endParam: string,
+): Promise<ClassSchedule[]> {
+  if (!teacherId) {
     return [];
   }
 
-  const { data } = await Api.get<ClassSchedule[]>(`/api/teacher/${teacherId}/upcoming-classes`, {
-    params: {
-      start: startParam,
-      end: endParam,
+  const { data } = await Api.get<ClassSchedule[]>(
+    `/api/teacher/${teacherId}/upcoming-classes`,
+    {
+      params: {
+        start: startParam,
+        end: endParam,
+      },
     },
-  })
+  );
 
   return data;
 }
 
-export async function getStudentTimeline(studentId: string, preferredCourseId: string | null): Promise<ClassBriefDto[]> {
-  if(!studentId) {
+export async function getStudentTimeline(
+  studentId: string,
+  preferredCourseId: string | null,
+): Promise<ClassBriefDto[]> {
+  if (!studentId) {
     return [];
   }
 
@@ -549,72 +568,91 @@ export async function getStudentTimeline(studentId: string, preferredCourseId: s
     params.participationIds = preferredCourseId;
   }
 
-  const { data } = await Api.get<ClassBriefDto[]>(`/api/students/${studentId}/timeline`, { params });
+  const { data } = await Api.get<ClassBriefDto[]>(
+    `/api/students/${studentId}/timeline`,
+    { params },
+  );
 
   return data;
 }
 
-export async function getTeacherStudents(teacherId: string): Promise<StudentBrief[]> {
-  if(!teacherId) {
-    return [];
-  }
-
-  const { data } = await Api.get<StudentBrief[]>(`/api/teacher/${teacherId}/students`);
-
-  return data ?? [];
-}
-
-export async function getTeacherCourses(teacherId: string): Promise<ClassBrief[]> {
+export async function getTeacherStudents(
+  teacherId: string,
+): Promise<StudentBrief[]> {
   if (!teacherId) {
     return [];
   }
 
-  const { data } = await Api.get<ClassBrief[]>(
+  const { data } = await Api.get<StudentBrief[]>(
+    `/api/teacher/${teacherId}/students`,
+  );
+
+  return data ?? [];
+}
+
+export async function getTeacherCourses(
+  teacherId: string,
+): Promise<CourseBrief[]> {
+  if (!teacherId) {
+    return [];
+  }
+
+  const { data } = await Api.get<CourseBrief[]>(
     `/api/teacher/${teacherId}/courses`,
   );
 
   return (data ?? [])
-    .map((c: any) => mapApiCourseToCourseBrief(c, teacherId))
-    .filter((c: ClassBrief | null): c is ClassBrief => !!c);
+    .map((c: any) => mapApiCourseToCourseBrief(c))
+    .filter((c: CourseBrief | null): c is CourseBrief => !!c);
 }
 
-export async function getStudentParticipations(studentId: string): Promise<ClassBrief[]> {
+export async function getStudentParticipations(
+  studentId: string,
+): Promise<CourseBrief[]> {
   if (!studentId) {
     return [];
   }
 
-  const { data } = await Api.get<ClassBrief[]>(
+  const { data } = await Api.get<CourseBrief[]>(
     `/api/students/${studentId}/participations`,
   );
 
   return data
     .map(mapParticipationToCourseBrief)
-    .filter((c: any): c is ClassBrief => !!c);
+    .filter((c: any): c is CourseBrief => !!c);
 }
 
-export async function getStudentCoursesWithSpecificTeacher(studentId: string, teacherId: string, signal?: AbortSignal): Promise<ClassBrief[]> {
+export async function getStudentCoursesWithSpecificTeacher(
+  studentId: string,
+  signal?: AbortSignal,
+): Promise<CourseBrief[]> {
+  const teacherId = getUserId();
   if (!studentId || !teacherId) {
     return [];
   }
 
-  const { data } = await Api.get<ClassBrief[]>(
+  const { data } = await Api.get<CourseBrief[]>(
     `/api/teacher/${teacherId}/students/${studentId}/courses`,
-    { signal }
+    { signal },
   );
 
   return (data ?? [])
-    .map((c: any) => mapApiCourseToCourseBrief(c, teacherId))
-    .filter((c: ClassBrief | null): c is ClassBrief => !!c);
+    .map((c: any) => mapApiCourseToCourseBrief(c))
+    .filter((c: CourseBrief | null): c is CourseBrief => !!c);
 }
 
-export async function getTeacherStudentsWithSpecificCourse(teacherId: string, courseId: string, signal?: AbortSignal): Promise<StudentBrief[]> {
+export async function getTeacherStudentsWithSpecificCourse(
+  teacherId: string,
+  courseId: string,
+  signal?: AbortSignal,
+): Promise<StudentBrief[]> {
   if (!teacherId || !courseId) {
     return [];
   }
 
   const { data } = await Api.get<StudentBrief[]>(
     `/api/teacher/${teacherId}/courses/${courseId}/students`,
-    { signal }
+    { signal },
   );
 
   return data;
@@ -625,9 +663,7 @@ export async function getClassBrief(classId: string): Promise<ClassBriefDto> {
     return Promise.reject("No classId provided");
   }
 
-  const { data } = await Api.get<ClassBriefDto>(
-    `/api/classes/${classId}`
-  );
+  const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}`);
 
   return data;
 }
