@@ -86,7 +86,7 @@ export interface CourseVariant {
   languageName: string;
 }
 
-export interface CourseBrief {
+export interface ClassBrief {
   startTime: Date;
   courseId: string;
   courseName: string;
@@ -136,4 +136,62 @@ export type ClassWithStudentsDTO = {
   classId: string;
   courseName: string;
   students: StudentBriefDTO[];
+};
+
+export type Student = { name: string; courses: CourseBrief[] };
+
+export type CourseBrief = {
+  id: string;
+  name: string;
+};
+
+export type QuizBrief = {
+  id: string;
+  name: string;
+  courseId: string;
+  courseName: string;
+  questionNumber: number;
+  completed: boolean;
+};
+
+export type Quiz = {
+  id: string;
+  name: string;
+  classId: string;
+  courseId: string;
+  courseName: string;
+  teacherId: string;
+  studentId: string;
+  // questions: Question[];
+  isMultipleChoice: boolean;
+  score?: number;
+  maxScore: number;
+};
+
+export type Question = {
+  id?: string; //id opcjonalne - jak tworzymy to nie mamy
+  content: string;
+  categories: QuestionCategory[];
+  answers?: Answer[]; // nie zwracane przy podglądzie
+  //answered?: boolean; //wysyłane przez solve
+};
+
+export type Answer = {
+  id?: string; //id opcjonalne - jak tworzymy to nie mamy
+  questionId?: string; //id opcjonalne - jak tworzymy to nie mamy??
+  correct?: boolean; //nie zwracane przy solve
+  content: string;
+};
+
+export type QuestionCategory = {
+  id?: string;
+  name: string;
+  description?: string; //imo do wywalenia
+};
+export type QuizSolution = {
+  quizId: string;
+  answers: {
+    questionId: string;
+    selectedAnswerIds: string[];
+  }[];
 };

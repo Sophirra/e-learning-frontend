@@ -1,19 +1,38 @@
 import Api, { getUserId } from "@/api/api.ts";
 import type { ApiDayAvailability } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import type {
+  ClassBrief,
   ClassWithStudentsDTO,
   Course,
   CourseBrief,
   CourseWidget,
-  Teacher,
-  TeacherAvailability,
-  TeacherReview,
   FileData,
   FileFilter,
   FileTag,
+  Question,
+  Quiz,
+  Answer,
+  QuizBrief,
+  QuestionCategory,
+  QuizSolution,
+  Student,
+  Teacher,
+  TeacherAvailability,
+  TeacherReview,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
+import type { ExerciseBrief } from "@/pages/UserPages/HomePage.tsx";
+import type { AssignmentBrief } from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ClassSchedule } from "@/components/complex/schedules/schedule.tsx";
+import type { ClassBriefDto } from "@/features/calendar/teacherCalendar.tsx";
+import type { StudentBrief } from "@/components/complex/courseFilter.tsx";
+import {
+  mapApiCourseToCourseBrief,
+  mapParticipationToCourseBrief,
+} from "@/mappers/courseMappers.ts";
+import type { ErrorResponse } from "react-router-dom";
+import { useUser } from "@/features/user/UserContext.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -96,6 +115,15 @@ export const getTeacherAvailability = async (
   const { data } = await Api.get<TeacherAvailability[]>(
     `/api/teacher/${teacherId}/availability`,
   );
+
+  /*const mapped: ApiDayAvailability[] = res.data.map((day) => ({
+    day: day.day,
+    timeslots: day.timeslots.map((slot) => ({
+      timeFrom: slot.timeFrom.slice(0, 5),
+      timeUntil: slot.timeUntil.slice(0, 5),
+    })),
+  }));*/
+
   return data ?? [];
 };
 
@@ -155,7 +183,8 @@ export const getCourseLanguages = async (): Promise<string[]> => {
  * });
  * ```
  *
- * @param filters - Optional filtering parameters (categories, levels, languages, etc.).
+ * @param filters - Optional filtering parameters (categories, levels,
+ * languages, etc.).
  * @returns Promise resolving to an array of Course objects.
  */
 export const getCourses = async (filters?: {
@@ -188,7 +217,8 @@ export const getCourses = async (filters?: {
 };
 
 /**
- * Fetches all upcoming classes (within the next 14 days) for the currently authenticated user.
+ * Fetches all upcoming classes (within the next 14 days) for the currently
+ * authenticated user.
  *
  * Depending on the user's active role, this function calls the appropriate API endpoint:
  * - `/api/classes/upcoming-as-teacher`   when the user is a **teacher**.
@@ -201,16 +231,20 @@ export const getCourses = async (filters?: {
  * - `teacherId`   identifier of the teacher assigned to the course.
  *
  * @param {Role | undefined} activeRole - The current user's role, determining which endpoint to query.
- * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming classes.
+ * @returns {Promise<ClassBrief[]>} A promise resolving to a list of upcoming classes.
+ * @param {Role | undefined} activeRole - The current user's role, determining
+ * which endpoint to query.
+ * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming
+ * classes.
  *
  * @remarks
  * The API automatically filters data based on the user's JWT roles.
  * The `startTime` field is converted from an ISO 8601 string into a native JavaScript `Date`
  * for easier handling of dates and times on the frontend.
  */
-export const getCourseBriefs = async (
+export const getClassBriefs = async (
   activeRole: Role | undefined,
-): Promise<CourseBrief[]> => {
+): Promise<ClassBrief[]> => {
   if (!activeRole) return [];
 
   const url =
@@ -218,7 +252,7 @@ export const getCourseBriefs = async (
       ? `/api/classes/upcoming-as-teacher`
       : `/api/classes/upcoming-as-student`;
 
-  const resp = await Api.get<CourseBrief[]>(url);
+  const resp = await Api.get<ClassBrief[]>(url);
 
   // Jeśli API wrapper zwraca AxiosResponse   sprawdzamy status
   const status = (resp as any)?.status;
@@ -399,8 +433,17 @@ export function updateFileData(
  * @returns {Promise<FileTag[]>} A promise that resolves to an array of available tags.
  */
 export async function getAvailableTags(): Promise<FileTag[]> {
-  const { data } = await Api.get(`/api/user/files/tags`); //TODO?? robione na czuja
+  const userId = getUserId();
+  const { data } = await Api.get(`/api/tags/by-user/${userId}`); //TODO?? robione na czuja
   return data;
+}
+
+export async function createNewTag(name: string) {
+  console.log("creating new tag");
+  const res = await Api.post("/api/tags", { name });
+  console.log(res);
+  if (res.status === 201) return res.data;
+  else return res.data as ErrorResponse;
 }
 
 export async function deleteFile(fileId: string) {
@@ -413,7 +456,7 @@ export async function deleteFile(fileId: string) {
  * along with students enrolled to those classes/courses.
  *
  * Server endpoint:
- *   GET /api/teachers/classes-with-students
+ *   GET /api/teacher/classes-with-students
  *
  * Auth:
  *   Requires a valid JWT with the "Teacher" role. The teacher ID is resolved
@@ -444,6 +487,375 @@ export async function addAssignmentGrade( //TODO: check
 ): Promise<void> {
   await Api.post("/api/assignments/grade", { assignmentId, grade, comments });
 }
+/**
+ * Gets all teacher/student quizzes to display in the gallery
+ * @param studentId
+ * @param courseId
+ * @param searchQuery
+ */
+export async function getQuizzes(
+  studentId?: string,
+  courseId?: string,
+  // multichoice?: boolean,
+  searchQuery?: string,
+): Promise<QuizBrief[]> {
+  const params = new URLSearchParams();
+  studentId && params.append("studentId", studentId);
+  courseId && params.append("courseId", courseId);
+  // multichoice && params.append("multichoice", String(multichoice));
+  searchQuery && params.append("searchQuery", searchQuery);
+
+  const res = await Api.get(
+    `/api/quizzes/${params ? `?${params.toString()}` : ""}`,
+  );
+  return res.data;
+}
+
+/**
+ * get student data - fill in details based on id
+ * @param studentId
+ */
+export async function getStudentById(studentId: string) {
+  const res = await Api.get(`/api/students/${studentId}`);
+  return res.data;
+}
+
+/**
+ * get quiz data without questions to display in details
+ * @param quizId
+ */
+export async function getQuiz(quizId: string): Promise<Quiz> {
+  const res = await Api.get(`/api/quizzes/${quizId}`);
+  return res.data;
+}
+
+/**
+ * get quiz questions with answers - for solving. Do not include data about
+ * the correctness of answers.
+ * @param quizId
+ */
+export async function getQuizQuestions(quizId: string): Promise<Question[]> {
+  const res = await Api.get(`/api/quizzes/${quizId}/question/`); //TODO: ustawić link
+  return res.data;
+}
+
+/**
+ * send user solution to the quiz - based on quiz id. Answers contain question id
+ * and an array of selected answers' ids
+ * @param solution
+ */
+export async function submitQuiz(solution: QuizSolution): Promise<number> {
+  const res = await Api.post(
+    `/api/quiz/${solution.quizId}/solution`,
+    solution.answers,
+  );
+  if (res.status === 201) return res.data;
+  else throw res.data as ErrorResponse;
+}
+
+/**
+ * get teacher question categories for filtering and editing questions.
+ * Get ALL created categories, even if unused
+ */
+export async function getUserCategories(): Promise<QuestionCategory[]> {
+  const res = await Api.get(`/api/quizzes/user/categories`);
+  return res.data;
+}
+
+/**
+ * get teacher's questions to display in the gallery. Do not include answers
+ * @param categoryIds
+ */
+export async function getUserQuestions(
+  categoryIds?: string[],
+): Promise<Question[]> {
+  const params = new URLSearchParams();
+  categoryIds?.forEach((categoryId: string) =>
+    params.append("categories", categoryId),
+  );
+  const res = await Api.get(
+    `/api/quizzes/user/questions${params.toString() ? `?${params.toString()}` : ""}`,
+  );
+  return res.data;
+}
+
+/**
+ * get full question with answers. Will be displayed to teacher - include
+ * correctness of answers.
+ * @param questionId
+ */
+export async function getFullQuestion(questionId: string): Promise<Question> {
+  const res = await Api.get(`/api/quizzes/question/${questionId}/full`);
+  return res.data;
+}
+
+/**
+ * create a new category (while editing/creating a question)
+ * @param categoryName
+ */
+export async function createQuestionCategory(
+  categoryName: string,
+): Promise<QuestionCategory> {
+  const res = await Api.post("/api/quizzes/question/category", {
+    categoryName,
+  });
+  return res.data;
+}
+/**
+ * Create new question.
+ * @param content
+ * @param answers
+ * @param categoryIds
+ */
+export async function createQuestion(
+  content: string,
+  answers: Answer[],
+  categoryIds: string[],
+): Promise<Question> {
+  //TODO: jeszcze chyba trzeba zrobić posty na odpowiedzi
+  // albo najpierw zrobić post bez odpowiedzi a potem zrobić posty
+  // odpowiedzi z id pytania (jak tworzymy odpowiedzi to nie mamy id pytania)
+  const res = await Api.post("/api/quiz/question", {
+    content,
+    answers,
+    categoryIds,
+  });
+  if (res.status === 201) {
+    return res.data;
+  }
+  throw res.data as ErrorResponse;
+}
+
+/**
+ * update already created question - all data is replaced - not checked was
+ * modified (but can be)
+ * @param questionId
+ * @param content
+ * @param answers
+ * @param categoryIds
+ */
+export async function updateQuestion(
+  questionId: string,
+  content: string,
+  answers: Answer[],
+  categoryIds: string[],
+): Promise<Question> {
+  //TODO: jeszcze chyba trzeba zrobić posty na odpowiedzi
+  // albo najpierw zrobić post bez odpowiedzi a potem zrobić posty
+  // odpowiedzi z id pytania (jak tworzymy odpowiedzi to nie mamy id pytania)
+  const res = await Api.post(`/api/quiz/question/${questionId}`, {
+    content,
+    answers,
+    categoryIds,
+  });
+  if (res.status === 201) {
+    return res.data;
+  }
+  throw res.data as ErrorResponse;
+}
+
+export async function getStudentData(studentId: string): Promise<Student> {
+  const res = await Api.get(`/api/students/${studentId}`);
+  return { name: res.data.name, courses: res.data.coursesBrief };
+}
+
+export async function getStudentCourses(
+  studentId: string | null,
+): Promise<CourseBrief[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const res = await Api.get(`/api/students/${studentId}/courses`);
+  return res.data;
+}
+
+export async function getStudentUnsolvedExercises(
+  studentId: string,
+): Promise<ExerciseBrief[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const { data } = await Api.get<ExerciseBrief[]>(
+    `/api/exercises/unsolved-by-user/${studentId}`,
+  );
+
+  return data;
+}
+
+export async function getExercises(
+  userId: string,
+  activeRole: string | null,
+  preferredCourseId: string | null,
+  preferredStudentId?: string | null,
+): Promise<AssignmentBrief[]> {
+  if (!userId) {
+    return [];
+  }
+
+  let endpoint = "";
+
+  if (activeRole === "student") {
+    endpoint = `/api/students/${userId}/exercises`;
+  } else if (activeRole === "teacher") {
+    endpoint = `/api/teacher/${userId}/exercises`;
+  } else {
+    return [];
+  }
+
+  const { data } = await Api.get<AssignmentBrief[]>(endpoint, {
+    params: {
+      courseId: preferredCourseId,
+      studentId: preferredStudentId ?? undefined,
+    },
+  });
+
+  return data;
+}
+
+export async function getTeacherUpcomingClasses(
+  teacherId: string,
+  startParam: string,
+  endParam: string,
+): Promise<ClassSchedule[]> {
+  if (!teacherId) {
+    return [];
+  }
+
+  const { data } = await Api.get<ClassSchedule[]>(
+    `/api/teacher/${teacherId}/upcoming-classes`,
+    {
+      params: {
+        start: startParam,
+        end: endParam,
+      },
+    },
+  );
+
+  return data;
+}
+
+export async function getStudentTimeline(
+  studentId: string,
+  preferredCourseId: string | null,
+): Promise<ClassBriefDto[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const from = new Date();
+  from.setDate(from.getDate() - 30);
+  const to = new Date();
+
+  const params: any = {
+    from: from.toISOString(),
+    to: to.toISOString(),
+  };
+
+  if (preferredCourseId) {
+    params.participationIds = preferredCourseId;
+  }
+
+  const { data } = await Api.get<ClassBriefDto[]>(
+    `/api/students/${studentId}/timeline`,
+    { params },
+  );
+
+  return data;
+}
+
+export async function getTeacherStudents(
+  teacherId: string,
+): Promise<StudentBrief[]> {
+  if (!teacherId) {
+    return [];
+  }
+
+  const { data } = await Api.get<StudentBrief[]>(
+    `/api/teacher/${teacherId}/students`,
+  );
+
+  return data ?? [];
+}
+
+export async function getTeacherCourses(
+  teacherId: string,
+): Promise<ClassBrief[]> {
+  if (!teacherId) {
+    return [];
+  }
+
+  const { data } = await Api.get<ClassBrief[]>(
+    `/api/teacher/${teacherId}/courses`,
+  );
+
+  return (data ?? [])
+    .map((c: any) => mapApiCourseToCourseBrief(c, teacherId))
+    .filter((c: ClassBrief | null): c is ClassBrief => !!c);
+}
+
+export async function getStudentParticipations(
+  studentId: string,
+): Promise<ClassBrief[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const { data } = await Api.get<ClassBrief[]>(
+    `/api/students/${studentId}/participations`,
+  );
+
+  return data
+    .map(mapParticipationToCourseBrief)
+    .filter((c: any): c is ClassBrief => !!c);
+}
+
+export async function getStudentCoursesWithSpecificTeacher(
+  studentId: string,
+  teacherId: string,
+  signal?: AbortSignal,
+): Promise<ClassBrief[]> {
+  if (!studentId || !teacherId) {
+    return [];
+  }
+
+  const { data } = await Api.get<ClassBrief[]>(
+    `/api/teacher/${teacherId}/students/${studentId}/courses`,
+    { signal },
+  );
+
+  return (data ?? [])
+    .map((c: any) => mapApiCourseToCourseBrief(c, teacherId))
+    .filter((c: ClassBrief | null): c is ClassBrief => !!c);
+}
+
+export async function getTeacherStudentsWithSpecificCourse(
+  teacherId: string,
+  courseId: string,
+  signal?: AbortSignal,
+): Promise<StudentBrief[]> {
+  if (!teacherId || !courseId) {
+    return [];
+  }
+
+  const { data } = await Api.get<StudentBrief[]>(
+    `/api/teacher/${teacherId}/courses/${courseId}/students`,
+    { signal },
+  );
+
+  return data;
+}
+
+export async function getClassBrief(classId: string): Promise<ClassBriefDto> {
+  if (!classId) {
+    return Promise.reject("No classId provided");
+  }
+
+  const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}`);
+
+  return data;
+}
 
 export async function createTag(tagName: string): Promise<FileTag> {
   await Api.post(`/api/files/tags/`, { tagName });
@@ -452,6 +864,7 @@ export async function createTag(tagName: string): Promise<FileTag> {
   return tag;
 }
 
+//do wywalenia - obsługujemy błędy przy próbach utworzenia
 export async function checkTagName(tagName: string): Promise<boolean> {
   const res = await Api.get(`/api/files/tags/${tagName}`);
   return res.status === 200;
