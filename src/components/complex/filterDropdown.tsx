@@ -61,6 +61,8 @@ export function FilterDropdown({
 }: FilterDropdownProps) {
   const [selectedValues, setSelectedValues] = useState<SelectableItem[]>(() => {
     if (defaultValues) {
+      console.log("defaultValues", defaultValues);
+      console.log("items", items);
       return items.filter((item) => defaultValues.includes(item.value));
     }
     return [];
