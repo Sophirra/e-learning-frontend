@@ -30,20 +30,9 @@ export function QuizGallery() {
     setSelectedCourseId(null);
   };
 
-  const mockQuizzes: QuizBrief[] = [
-    {
-      id: "1",
-      name: "test",
-      courseId: "1",
-      courseName: "test course",
-      questionNumber: 10,
-      completed: false,
-    },
-  ];
-
-  // useEffect(() => {
-  //   fetchQuizzes();
-  // }, [selectedStudentId, selectedCourseId]);
+  useEffect(() => {
+    fetchQuizzes();
+  }, [selectedStudentId, selectedCourseId]);
 
   async function fetchQuizzes() {
     try {
@@ -54,6 +43,7 @@ export function QuizGallery() {
         searchQuery,
       );
       setQuizzes(data);
+      console.log("set quizzes: ", data);
     } catch (e) {
       console.error("Error fetching quizzes:", e);
     }
@@ -113,7 +103,7 @@ export function QuizGallery() {
         canHide={user?.activeRole === "teacher"}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockQuizzes.map((quiz) => (
+          {quizzes.map((quiz) => (
             <QuizDetailsPopup quizBrief={quiz} />
           ))}
         </div>

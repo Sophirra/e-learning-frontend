@@ -535,7 +535,7 @@ export async function getQuiz(quizId: string): Promise<Quiz> {
  * @param quizId
  */
 export async function getQuizQuestions(quizId: string): Promise<Question[]> {
-  const res = await Api.get(`/api/quizzes/${quizId}/question/`); //TODO: ustawić link
+  const res = await Api.get(`/api/quizzes/${quizId}/questions`); //TODO: ustawić link
   return res.data;
 }
 
@@ -599,7 +599,9 @@ export async function createQuestionCategory(
   const res = await Api.post("/api/quizzes/question/category", {
     categoryName,
   });
-  return res.data;
+  if (res.status === 201) {
+    return res.data;
+  } else throw res.data as ErrorResponse;
 }
 /**
  * Create new question.
