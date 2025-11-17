@@ -5,8 +5,6 @@ import type {
   AuthResponse,
   aboutUser,
 } from "./types";
-import {clearPersistedRole} from "@/features/user/RolePersistence.ts";
-
 
 export let registerUser = async (userData: RegisterUserDto): Promise<void> => {
   await api.post<void>("/api/security/register", userData);
@@ -25,7 +23,6 @@ export let loginUser = async (
 export let logoutUser = async (): Promise<void> => {
   await api.post("/api/security/logout");
   setAccessToken(null);
-  clearPersistedRole();
 };
 
 //might be optional since api wrapper already refreshes when access is denied
