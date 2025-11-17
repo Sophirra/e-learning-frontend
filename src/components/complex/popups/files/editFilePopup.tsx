@@ -17,7 +17,8 @@ import { getUserId } from "@/api/api.ts";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { getAvailableTags, updateFileData } from "@/api/apiCalls.ts";
 import { NewTagPopup } from "@/components/complex/popups/files/newTagPopup.tsx";
-// import { toast } from "sonner";
+import { toast } from "sonner";
+import {Label} from "@/components/ui/label.tsx";
 
 export function EditFilePopup({ file }: { file: FileData }) {
   const [load, setLoad] = useState<boolean>(false);
@@ -75,12 +76,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          variant={"ghost"}
-          onClick={() => {
-            setLoad(true);
-          }}
-        >
+        <Button variant={"ghost"} onClick={() => setLoad(true)}>
           <icons.Edit />
           Edit
         </Button>
@@ -90,6 +86,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
           <DialogTitle>Edit file {file.fileName}</DialogTitle>
         </DialogHeader>
         <div className={"flex flex-col gap-4"}>
+          <Label>File name</Label>
           <Input
             id={"filename"}
             defaultValue={file.fileName}
@@ -133,6 +130,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
                   selectedIds.includes(tag.id),
                 );
                 setNewTags(updatedTags);
+                console.log("new tags:", newTags);
               }}
               defaultValues={tags.map((tag) => tag.id)}
               className={"w-1/1"}
