@@ -5,17 +5,34 @@ import type {
   ClassWithStudentsDTO,
   Course,
   CourseBrief,
-  CourseWidget, PagedResult,
+  CourseWidget,
+  FileData,
+  FileFilter,
+  FileTag,
+  Question,
+  Quiz,
+  Answer,
+  QuizBrief,
+  QuestionCategory,
+  QuizSolution,
+  Student,
   Teacher,
   TeacherAvailability,
   TeacherReview,
-  FileData,
-  FileFilter,
-  FileTag, FileOwner,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
-import type {Role} from "@/features/user/user.ts";
-import {readPersistedRole} from "@/features/user/RolePersistence.ts";
+import type { Role } from "@/features/user/user.ts";
+import type { ExerciseBrief } from "@/pages/UserPages/HomePage.tsx";
+import type { AssignmentBrief } from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ClassSchedule } from "@/components/complex/schedules/schedule.tsx";
+import type { ClassBriefDto } from "@/features/calendar/teacherCalendar.tsx";
+import type { StudentBrief } from "@/components/complex/courseFilter.tsx";
+import {
+  mapApiCourseToCourseBrief,
+  mapParticipationToCourseBrief,
+} from "@/mappers/courseMappers.ts";
+import type { ErrorResponse } from "react-router-dom";
+import { useUser } from "@/features/user/UserContext.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -148,31 +165,28 @@ export const getCourseLanguages = async (): Promise<string[]> => {
 };
 
 /**
- * Fetches a paginated and optionally filtered list of courses from the backend.
+ * Fetches a filtered list of courses from the backend.
  *
  * Supports multiple optional filters such as category, level, language,
- * price range, teacher, and search query. Pagination parameters (`pageNumber`, `pageSize`)
- * can also be provided to control which subset of results is returned.
- *
- * Each provided filter will be serialized into query parameters and appended to the request URL.
+ * price range, teacher, and search query. Each provided filter
+ * will be converted into a query parameter and appended to the request URL.
  *
  * Example usage:
  * ```ts
- * const result = await getCourses({
+ * const courses = await getCourses({
  *   categories: ["Programming", "Mathematics"],
  *   levels: ["Beginner"],
  *   languages: ["English"],
  *   priceFrom: 50,
  *   priceTo: 200,
  *   query: "React",
- *   pageNumber: 1,
- *   pageSize: 5,
  * });
+ * ```
  *
- * @param filters - Optional filtering and pagination parameters.
- * @returns A promise resolving to a {@link PagedResult} containing a list of {@link CourseWidget} items.
+ * @param filters - Optional filtering parameters (categories, levels,
+ * languages, etc.).
+ * @returns Promise resolving to an array of Course objects.
  */
-
 export const getCourses = async (filters?: {
   categories?: string[];
   levels?: string[];
@@ -181,102 +195,81 @@ export const getCourses = async (filters?: {
   priceTo?: number;
   teacherId?: string;
   query?: string;
-  pageNumber?: number;
-  pageSize?: number;
-}): Promise<PagedResult<CourseWidget>> => {
+}): Promise<CourseWidget[]> => {
   const params = new URLSearchParams();
 
-
+  // Append filters as query parameters if present
   filters?.categories?.forEach((c) => params.append("categories", c));
   filters?.levels?.forEach((l) => params.append("levels", l));
   filters?.languages?.forEach((lng) => params.append("languages", lng));
-
-  if (typeof filters?.priceFrom === "number") params.set("priceFrom", String(filters.priceFrom));
-  if (typeof filters?.priceTo === "number")   params.set("priceTo", String(filters.priceTo));
-  if (filters?.teacherId)                     params.set("teacherId", filters.teacherId);
-  if (filters?.query)                         params.set("query", filters.query);
-
-
-  if (typeof filters?.pageNumber === "number") params.set("pageNumber", String(filters.pageNumber));
-  if (typeof filters?.pageSize === "number")   params.set("pageSize", String(filters.pageSize));
+  if (typeof filters?.priceFrom === "number")
+    params.append("priceFrom", String(filters.priceFrom));
+  if (typeof filters?.priceTo === "number")
+    params.append("priceTo", String(filters.priceTo));
+  if (filters?.teacherId) params.append("teacherId", filters.teacherId);
+  if (filters?.query) params.append("query", filters.query);
 
   const queryString = params.toString();
   const url = `/api/courses${queryString ? `?${queryString}` : ""}`;
 
-  const { data } = await Api.get<PagedResult<CourseWidget>>(url);
-  return data ?? { items: [], totalCount: 0, page: 1, pageSize: 10 };
+  const { data } = await Api.get<CourseWidget[]>(url);
+  return data ?? [];
 };
-
-
 
 /**
  * Fetches all upcoming classes (within the next 14 days) for the currently
  * authenticated user.
  *
- * The user's active role is automatically read from cookies (`activeRole`) to determine
- * which API endpoint should be called:
- *
- * - `/api/classes/upcoming-as-teacher`   when the stored role is **teacher**.
- * - `/api/classes/upcoming-as-student`   when the stored role is **student**.
+ * Depending on the user's active role, this function calls the appropriate API endpoint:
+ * - `/api/classes/upcoming-as-teacher`   when the user is a **teacher**.
+ * - `/api/classes/upcoming-as-student`   when the user is a **student**.
  *
  * Each returned object includes:
  * - `courseId`   unique identifier of the course.
  * - `courseName`   name of the course.
- * - `startTime`   class start date and time (converted from an ISO string to a native `Date`).
+ * - `startTime`   class start date and time (converted from ISO string to `Date`).
  * - `teacherId`   identifier of the teacher assigned to the course.
  *
- * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming classes.
- * If no role is found in cookies or the API returns no data, an empty array is returned.
+ * @param {Role | undefined} activeRole - The current user's role, determining which endpoint to query.
+ * @returns {Promise<ClassBrief[]>} A promise resolving to a list of upcoming classes.
+ * @param {Role | undefined} activeRole - The current user's role, determining
+ * which endpoint to query.
+ * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming
+ * classes.
  *
  * @remarks
- * - The active role is persisted in cookies using the `activeRole` key.
- * - The API response is type-checked to handle both AxiosResponse and plain arrays.
- * - The `startTime` field is converted into a `Date` object for easier frontend handling.
+ * The API automatically filters data based on the user's JWT roles.
+ * The `startTime` field is converted from an ISO 8601 string into a native JavaScript `Date`
+ * for easier handling of dates and times on the frontend.
  */
-export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
-
-  const role: Role | undefined =
-      typeof window !== "undefined" ? readPersistedRole() : undefined;
-
-
-  if (!role) {
-    console.warn("getCourseBriefs: no active role found in cookies");
-    return [];
-  }
+export const getClassBriefs = async (
+  activeRole: Role | undefined,
+): Promise<ClassBrief[]> => {
+  if (!activeRole) return [];
 
   const url =
-      role === "teacher"
-          ? "/api/classes/upcoming-as-teacher"
-          : "/api/classes/upcoming-as-student";
+    activeRole === "teacher"
+      ? `/api/classes/upcoming-as-teacher`
+      : `/api/classes/upcoming-as-student`;
 
-  try {
-    const resp = await Api.get<CourseBrief[]>(url);
+  const resp = await Api.get<ClassBrief[]>(url);
 
+  // Jeśli API wrapper zwraca AxiosResponse   sprawdzamy status
+  const status = (resp as any)?.status;
+  const arr: unknown = (resp as any)?.data ?? resp;
 
-    const status = (resp as any)?.status;
-    const arr: unknown = (resp as any)?.data ?? resp;
+  if (status === 204 || !arr) return [];
 
-    if (status === 204 || !arr) return [];
-
-    if (!Array.isArray(arr)) {
-      console.warn("getCourseBriefs: unexpected response shape", resp);
-      return [];
-    }
-
-    return arr.map((c) => ({
-      ...c,
-      startTime: new Date(c.startTime),
-    }));
-  } catch (err) {
-    console.error("getCourseBriefs: error fetching data", err);
+  if (!Array.isArray(arr)) {
+    console.warn("getCourseBriefs: unexpected response shape", resp);
     return [];
   }
+
+  return arr.map((c) => ({
+    ...c,
+    startTime: new Date(c.startTime),
+  }));
 };
-
-
-
-
-
 
 /**
  * Fetches all spectators for the currently authenticated student from the API.
@@ -404,24 +397,23 @@ export const uploadUserFile = async (file: File): Promise<any> => {
  * @returns Promise resolving to an array of Course objects.
  */
 //TODO: modify according to backend (created based on getCourses)
-export const getFiles = async (filter?: FileFilter): Promise<PagedResult<FileData>> => {
+export const getFiles = async (filters?: FileFilter): Promise<FileData[]> => {
   const params = new URLSearchParams();
-  console.log("function params " + filter?.studentId);
-  if (filter?.studentId) params.append("studentId", filter.studentId);
-  if (filter?.courseId) params.append("courseId", filter.courseId);
 
-  filter?.createdBy?.forEach(id => params.append("createdBy", id));
-  filter?.type?.forEach(t => params.append("types", t));
-  filter?.tagIds?.forEach(id => params.append("tags", id));
+  // Append filters as query parameters if present
+  filters?.origin?.forEach((v) => params.append("origin", v));
+  filters?.tags?.forEach((v) => params.append("tags", v));
+  filters?.createdBy?.forEach((v) => params.append("createdBy", v));
+  filters?.type?.forEach((v) => params.append("type", v));
+  // if (filters?.userId) params.append("userId", filters.userId);
+  // if (filters?.teacherId) params.append("teacherId", filters.teacherId);
+  if (filters?.query) params.append("query", filters.query);
 
-  if (filter?.page) params.append("page", String(filter.page));
-  if (filter?.pageSize) params.append("pageSize", String(filter.pageSize));
+  const queryString = params.toString();
+  const url = `/api/user/files${queryString ? `?${queryString}` : ""}`;
 
-  const res = await Api.get<PagedResult<FileData>>(
-      `/api/user/files?${params.toString()}`,
-  );
-
-  return res.data;
+  const { data } = await Api.get<FileData[]>(url);
+  return data ?? [];
 };
 
 /**
@@ -441,7 +433,8 @@ export function updateFileData(
  * @returns {Promise<FileTag[]>} A promise that resolves to an array of available tags.
  */
 export async function getAvailableTags(): Promise<FileTag[]> {
-  const { data } = await Api.get(`/api/user/files/tags`);
+  const userId = getUserId();
+  const { data } = await Api.get(`/api/tags/by-user/${userId}`); //TODO?? robione na czuja
   return data;
 }
 
@@ -453,8 +446,8 @@ export async function createNewTag(name: string) {
 }
 
 export async function deleteFile(fileId: string) {
-
-  await Api.delete(`/api/user/files?fileId=${fileId}`);
+  //TODO: call delete file
+  await Api.delete(`/api/user/files/${fileId}`); //TODO?? check
 }
 
 /**
@@ -782,22 +775,6 @@ export async function getTeacherStudents(
     `/api/teacher/${teacherId}/students`,
   );
 
-  return data ?? [];
-}
-
-
-export async function getUserFileTags(): Promise<FileTag[]> {
-  const { data } = await Api.get<FileTag[]>("/api/user/files/tags");
-  return data ?? [];
-}
-
-export async function getUserFileExtensions(): Promise<string[]> {
-  const { data } = await Api.get<string[]>("/api/user/files/extensions");
-  return data ?? [];
-}
-
-export async function getUserFileOwners(): Promise<FileOwner[]> {
-  const { data } = await Api.get<FileOwner[]>("/api/user/files/owners");
   return data ?? [];
 }
 

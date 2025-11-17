@@ -11,8 +11,6 @@ import type { Role, User } from "@/features/user/user.ts";
 import { createContext, useContext, useEffect, useState } from "react";
 import { aboutMe } from "@/api/auth.ts";
 import { getRoles } from "@/api/api.ts";
-import Cookies from "js-cookie";
-import {clearPersistedRole, persistRole} from "@/features/user/RolePersistence.ts";
 /**
  * Interface for the user context value
  * @interface UserContextType
@@ -45,12 +43,6 @@ export let useUser = (): UserContextType => {
   return context;
 };
 
-
-const readPersistedRole = (): Role | undefined => {
-  const r = Cookies.get("activeRole");
-  return r as Role | undefined;
-};
-
 /**
  * Provider component for the user context
  * @param {Object} props - Component props
@@ -64,7 +56,7 @@ export let UserProvider = ({ children }: { children: React.ReactNode }) => {
   //effect for retaining session
   // - get user info from about me and roles from access token
   useEffect(() => {
-    const getUser = async () => {
+    let getUser = async () => {
       try {
         // let resRefresh = await refreshToken();
         // if (!resRefresh) {
@@ -72,23 +64,18 @@ export let UserProvider = ({ children }: { children: React.ReactNode }) => {
         //   setLoading(false);
         //   return;
         // }
-        const resUser = await aboutMe();
+        let resUser = await aboutMe();
         //roles are gotten from access token - hence the api method
-        const resRoles = getRoles();
-        const fromCookie = readPersistedRole();
-        const activeRole =
-            (fromCookie && resRoles.includes(fromCookie) && fromCookie) ||
-            resRoles[0];
+        let resRoles = getRoles();
         setUser({
           name: resUser.name,
           surname: resUser.surname,
           roles: resRoles,
-          activeRole,
+          activeRole: resRoles[0],
         });
         console.log(user);
       } catch {
         setUser(null);
-        clearPersistedRole();
       } finally {
         setLoading(false);
       }
@@ -97,27 +84,12 @@ export let UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   function changeRole(role: Role) {
-    setUser((prev) => {
-      if (!prev) return prev;
-      if (prev.activeRole === role) return prev; // no-op
-      // opcjonalnie: upewnij się, że rola należy do użytkownika
-      if (!prev.roles.includes(role)) return prev;
-      const updated = { ...prev, activeRole: role };
-      persistRole(role);
-      return updated;
-    });
+    setUser((prev) => (prev ? { ...prev, activeRole: role } : prev));
   }
 
-  const setUserWithCookie = (u: User | null) => {
-    setUser(u);
-    if (!u) clearPersistedRole();
-  };
-
   return (
-      <UserContext.Provider
-          value={{ user, setUser: setUserWithCookie, loading, changeRole }}
-      >
-        {children}
-      </UserContext.Provider>
+    <UserContext.Provider value={{ user, setUser, loading, changeRole }}>
+      {children}
+    </UserContext.Provider>
   );
 };
