@@ -51,6 +51,10 @@ import {
   Trash2,
   ArrowUpDown as Sort,
   Share,
+  Brain as Quiz,
+  Circle,
+  CheckCircle,
+  FileQuestion as Question,
 } from "lucide-react";
 import { cn } from "@/lib/utils.ts";
 
@@ -108,6 +112,10 @@ export let iconLibrary = {
   Trash2: wrapIcon(Trash2),
   Sort: wrapIcon(Sort),
   Share: wrapIcon(Share),
+  Quiz: wrapIcon(Quiz),
+  Circle: wrapIcon(Circle),
+  CheckCircle: wrapIcon(CheckCircle),
+  Question: wrapIcon(Question),
 };
 
 function wrapIcon(Icon: React.ComponentType<any>, defaultClass = "size-4") {
