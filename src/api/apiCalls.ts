@@ -612,15 +612,12 @@ export async function createQuestion(
   answers: Answer[],
   categoryIds: string[],
 ): Promise<Question> {
-  //TODO: jeszcze chyba trzeba zrobić posty na odpowiedzi
-  // albo najpierw zrobić post bez odpowiedzi a potem zrobić posty
-  // odpowiedzi z id pytania (jak tworzymy odpowiedzi to nie mamy id pytania)
-  const res = await Api.post("/api/quiz/question", {
+  const res = await Api.post("/api/quizzes/question", {
     content,
     answers,
     categoryIds,
   });
-  if (res.status === 201) {
+  if (res.status === 200) {
     return res.data;
   }
   throw res.data as ErrorResponse;
@@ -640,15 +637,12 @@ export async function updateQuestion(
   answers: Answer[],
   categoryIds: string[],
 ): Promise<Question> {
-  //TODO: jeszcze chyba trzeba zrobić posty na odpowiedzi
-  // albo najpierw zrobić post bez odpowiedzi a potem zrobić posty
-  // odpowiedzi z id pytania (jak tworzymy odpowiedzi to nie mamy id pytania)
-  const res = await Api.post(`/api/quiz/question/${questionId}`, {
+  const res = await Api.post(`/api/quizzes/question/${questionId}`, {
     content,
     answers,
     categoryIds,
   });
-  if (res.status === 201) {
+  if (res.status === 200) {
     return res.data;
   }
   throw res.data as ErrorResponse;
