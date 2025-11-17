@@ -137,7 +137,7 @@ export function FileGallery({
 
       const mergedFilters: FileFilter = {
         ...activeFilters,              // stan filtrów
-        ...overrideFilters,            // ewentualne nadpisania
+        ...overrideFilters,            // ewentualne nadpisaniaaaaa
         ...(studentId ? { studentId } : {}),   // <- props
         ...(courseId ? { courseId } : {}),     // <- props
         page: nextPage,
