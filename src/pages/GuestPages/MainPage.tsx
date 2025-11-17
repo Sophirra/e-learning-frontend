@@ -80,16 +80,14 @@ function MainPage() {
 
   //TODO: opisać do czego to służy i dlaczego są dwa
   useEffect(() => {
-    fetchCourses({ query: searchQuery });
+    // fetchCourses({ query: searchQuery });
   }, [searchQuery]);
 
   // Fetch courses (bez filtrów przy starcie)
   useEffect(() => {
-    fetchCourses();
+    // fetchCourses();
   }, []);
 
-  //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
-  //odp: przeniesione wszystkie calle do pliku apiCalls.ts
   useEffect(() => {
     const loadFilters = async () => {
       try {
@@ -217,32 +215,33 @@ function MainPage() {
             <p>Loading courses...</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredCourses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  title={course.name}
-                  imageUrl={
-                    course.profilePictureUrl ??
-                    "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
-                  }
-                  rating={course.rating}
-                  levels={course.levelVariants ?? []}
-                  language={course.languageVariants ?? []}
-                  price={`${course.minimumCoursePrice ?? 0}-${
-                    course.maximumCoursePrice ?? 0
-                  }$/h`}
-                  description={course.description ?? ""}
-                  teacher={{
-                    name: course.teacherName ?? "Unknown",
-                    surname: course.teacherSurname ?? "",
-                  }}
-                  onClick={() =>
-                    navigate(`/course/${course.id}`, {
-                      state: { teacherId: course.teacherId ?? "" },
-                    })
-                  }
-                />
-              ))}
+              {filteredCourses &&
+                filteredCourses.map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    title={course.name}
+                    imageUrl={
+                      course.profilePictureUrl ??
+                      "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
+                    }
+                    rating={course.rating}
+                    levels={course.levelVariants ?? []}
+                    language={course.languageVariants ?? []}
+                    price={`${course.minimumCoursePrice ?? 0}-${
+                      course.maximumCoursePrice ?? 0
+                    }$/h`}
+                    description={course.description ?? ""}
+                    teacher={{
+                      name: course.teacherName ?? "Unknown",
+                      surname: course.teacherSurname ?? "",
+                    }}
+                    onClick={() =>
+                      navigate(`/course/${course.id}`, {
+                        state: { teacherId: course.teacherId ?? "" },
+                      })
+                    }
+                  />
+                ))}
             </div>
           )}
         </div>

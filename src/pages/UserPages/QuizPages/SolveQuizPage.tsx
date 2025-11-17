@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
-import { useEffect, useState } from "react";
+import { Component, useEffect, useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import { useNavigate, useParams } from "react-router-dom";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
+import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
 
 export function SolveQuizPage() {
   const navigate = useNavigate();
@@ -194,20 +195,22 @@ export function SolveQuizPage() {
   //TODO: odkomentować jak będzie backend
   useEffect(() => {
     if (loading) {
-      getQuiz(quizId);
+      getQuiz(quizId).then;
       getQuestions(quizId);
       setLoading(false);
+      console.log("set loading", loading);
     }
     async function getQuiz(id: string) {
       const data = await getQuizApi(id);
-      console.log(data);
       setQuiz(data);
+      console.log("set quiz", quiz);
     }
     async function getQuestions(id: string) {
       const data = await getQuizQuestions(id);
       setQuestions(data);
+      console.log("set questions", questions);
     }
-  });
+  }[quizId]);
 
   function submitQuizButton(onSubmit: () => void, disabled: boolean) {
     return (
@@ -247,9 +250,7 @@ export function SolveQuizPage() {
       <NavigationBar />
       <Content>
         {loading || !quiz ? (
-          <div className="gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-base">
-            Loading..
-          </div>
+          <LoadingTile />
         ) : (
           <Summary
             label={"Quiz " + quiz.name}
@@ -261,87 +262,94 @@ export function SolveQuizPage() {
               )
             }
           >
-            <div className="grid grid-cols-[200px_1fr] gap-6">
-              {/* Lista pytań */}
-              <div className="space-y-2">
-                <ScrollArea className="h-[calc(100vh-200px)]">
-                  {questions.map((question, index) => (
-                    <Button
-                      key={question.id}
-                      variant="ghost"
-                      className={cn(
-                        "w-full justify-start",
-                        currentQuestionIndex === index && "bg-secondary",
-                      )}
-                      onClick={() => setCurrentQuestionIndex(index)}
-                    >
-                      {isQuestionAnswered(question.id) ? (
-                        <icons.CheckCircle />
-                      ) : (
-                        <icons.Circle />
-                      )}
-                      Question {index + 1}
-                    </Button>
-                  ))}
-                </ScrollArea>
-              </div>
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-start">
-                    {currentQuestionIndex + 1 + ". " + currentQuestion.content}
-                  </h2>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => handleNavigateQuestion("prev")}
-                      disabled={currentQuestionIndex === 0}
-                    >
-                      <icons.ChevronLeft />
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleNavigateQuestion("next")}
-                      disabled={currentQuestionIndex === questions.length - 1}
-                    >
-                      Next
-                      <icons.ChevronRight />
-                    </Button>
+            {loading || !questions ? (
+              <LoadingTile />
+            ) : (
+              <div className="grid grid-cols-[200px_1fr] gap-6">
+                {/* Lista pytań */}
+                <div className="space-y-2">
+                  <ScrollArea className="h-[calc(100vh-200px)]">
+                    {questions.map((question, index) => (
+                      <Button
+                        key={question.id}
+                        variant="ghost"
+                        className={cn(
+                          "w-full justify-start",
+                          currentQuestionIndex === index && "bg-secondary",
+                        )}
+                        onClick={() => setCurrentQuestionIndex(index)}
+                      >
+                        {isQuestionAnswered(question.id) ? (
+                          <icons.CheckCircle />
+                        ) : (
+                          <icons.Circle />
+                        )}
+                        Question {index + 1}
+                      </Button>
+                    ))}
+                  </ScrollArea>
+                </div>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-start">
+                      {currentQuestionIndex +
+                        1 +
+                        ". " +
+                        currentQuestion.content}
+                    </h2>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => handleNavigateQuestion("prev")}
+                        disabled={currentQuestionIndex === 0}
+                      >
+                        <icons.ChevronLeft />
+                        Previous
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleNavigateQuestion("next")}
+                        disabled={currentQuestionIndex === questions.length - 1}
+                      >
+                        Next
+                        <icons.ChevronRight />
+                      </Button>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="space-y-4">
+                    {currentQuestion.content && (
+                      <p className="text-gray-600">{currentQuestion.content}</p>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    {currentQuestion.answers &&
+                      currentQuestion.answers.map((answer: Answer) => (
+                        <div
+                          key={answer.id}
+                          className={cn(
+                            "flex items-center gap-3 p-4 rounded-lg border",
+                            isAnswerSelected(currentQuestion.id, answer.id) &&
+                              "border-primary bg-primary/5",
+                          )}
+                          onClick={() => handleAnswerSelect(answer.id)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isAnswerSelected(
+                              currentQuestion.id,
+                              answer.id,
+                            )}
+                            onChange={() => handleAnswerSelect(answer.id)}
+                            className="h-4 w-4"
+                          />
+                          <div>{answer.content}</div>
+                        </div>
+                      ))}
                   </div>
                 </div>
-                <Separator />
-                <div className="space-y-4">
-                  {currentQuestion.content && (
-                    <p className="text-gray-600">{currentQuestion.content}</p>
-                  )}
-                </div>
-                <div className="space-y-3">
-                  {currentQuestion.answers &&
-                    currentQuestion.answers.map((answer: Answer) => (
-                      <div
-                        key={answer.id}
-                        className={cn(
-                          "flex items-center gap-3 p-4 rounded-lg border",
-                          isAnswerSelected(currentQuestion.id, answer.id) &&
-                            "border-primary bg-primary/5",
-                        )}
-                        onClick={() => handleAnswerSelect(answer.id)}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isAnswerSelected(
-                            currentQuestion.id,
-                            answer.id,
-                          )}
-                          onChange={() => handleAnswerSelect(answer.id)}
-                          className="h-4 w-4"
-                        />
-                        <div>{answer.content}</div>
-                      </div>
-                    ))}
-                </div>
               </div>
-            </div>
+            )}
           </Summary>
         )}
       </Content>
