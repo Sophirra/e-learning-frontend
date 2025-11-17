@@ -18,7 +18,7 @@ import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { getAvailableTags, updateFileData } from "@/api/apiCalls.ts";
 import { NewTagPopup } from "@/components/complex/popups/files/newTagPopup.tsx";
 import { toast } from "sonner";
-import {Label} from "@/components/ui/label.tsx";
+import { Label } from "@/components/ui/label.tsx";
 
 export function EditFilePopup({ file }: { file: FileData }) {
   const [load, setLoad] = useState<boolean>(false);
@@ -35,14 +35,14 @@ export function EditFilePopup({ file }: { file: FileData }) {
   ]);
 
   async function updateFile() {
-    const res = await updateFileData(file.id, {
-      fileName: newFileName,
-      tags: newTags,
-    });
-    if (res.status == 200) {
+    try {
+      await updateFileData(file.id, {
+        fileName: newFileName,
+        tags: newTags,
+      });
       toast.success("File updated successfully");
       setOpen(false);
-    } else {
+    } catch (error: any) {
       toast.error("Failed to update file");
     }
   }

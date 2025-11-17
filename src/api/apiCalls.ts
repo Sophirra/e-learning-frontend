@@ -440,7 +440,8 @@ export async function getAvailableTags(): Promise<FileTag[]> {
 
 export async function createNewTag(name: string) {
   const res = await Api.post("/api/tags", { name });
-  if (res.status === 201) return res.data;
+  if (res.status === 201 || res.status === 200 || res.status === 204)
+    return res.data;
   else return res.data as ErrorResponse;
 }
 
@@ -853,17 +854,4 @@ export async function getClassBrief(classId: string): Promise<ClassBriefDto> {
   const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}`);
 
   return data;
-}
-
-export async function createTag(tagName: string): Promise<FileTag> {
-  await Api.post(`/api/files/tags/`, { tagName });
-  let res = await Api.get(`/api/files/tags/${tagName}`);
-  const tag: FileTag = res.data; //TODO: not sure if ok
-  return tag;
-}
-
-//do wywalenia - obsługujemy błędy przy próbach utworzenia
-export async function checkTagName(tagName: string): Promise<boolean> {
-  const res = await Api.get(`/api/files/tags/${tagName}`);
-  return res.status === 200;
 }

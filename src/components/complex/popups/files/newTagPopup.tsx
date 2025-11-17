@@ -15,19 +15,21 @@ import { useState } from "react";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { toast } from "sonner";
 import { createNewTag } from "@/api/apiCalls.ts";
+import type { ErrorResponse } from "react-router-dom";
 
 export function NewTagPopup({ resetLoading }: { resetLoading: () => void }) {
   const [name, setName] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
 
   async function apiAddTag(name: string) {
-    const res = await createNewTag(name);
-    if (res.success) {
+    try {
+      const res = await createNewTag(name);
       toast.success("Tag created successfully");
       resetLoading();
       setOpen(false);
-    } else {
-      toast.error("Failed to create tag: " + res.message);
+    } catch (e: any) {
+      if (e.message.includes("409")) toast.error("Tag already exists");
+      else toast.error("Failed to create tag: " + e.message);
     }
   }
 
