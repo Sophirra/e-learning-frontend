@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import type { FileData } from "@/api/types.ts";
 import { deleteFile } from "@/api/apiCalls.ts";
+import {toast} from "sonner";
 
 export function DeleteFilePopup({ file }: { file: FileData }) {
   return (
@@ -35,9 +36,14 @@ export function DeleteFilePopup({ file }: { file: FileData }) {
           </DialogClose>
           <Button
             variant={"outline"}
-            onSelect={() => {
-              deleteFile(file.id);
-              //TODO: add toast?
+            onClick={async () => {
+              try {
+                await deleteFile(file.id);
+
+                 toast.success("Plik usunięty");
+              } catch (err) {
+                 toast.error("Nie udało się usunąć pliku");
+              }
             }}
           >
             Confirm

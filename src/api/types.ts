@@ -55,6 +55,16 @@ export interface TeacherAvailability {
   timeslots: { timeFrom: string; timeUntil: string }[];
 }
 
+/**
+ * Generic interface representing a paginated API response.
+ **/
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
 // Course Section
 export interface CourseWidget {
   id: string;
@@ -98,9 +108,14 @@ export interface FileData {
   relativePath: string;
   uploadedAt: string;
   uploadedBy: string;
-  courseId?: string;
-  courseName?: string;
+  courses: CourseShortVersion[];
   tags: FileTag[];
+  ownerInfo: FileOwner;
+}
+
+export interface CourseShortVersion{
+  id: string;
+  name: string;
 }
 export interface FileFilter {
   query?: string;
@@ -110,6 +125,8 @@ export interface FileFilter {
   tagIds?: string[];
   createdBy?: string[];
   type?: string[];
+  page?: number;
+  pageSize?: number;
   //optional: dates (can be added)
 }
 
@@ -118,6 +135,13 @@ export interface FileTag {
   name: string;
   ownerId: string;
 }
+
+export interface FileOwner {
+  id: string;
+  name: string;
+  surname: string;
+}
+
 
 /**
  * Represents a brief student view used in selection lists.
