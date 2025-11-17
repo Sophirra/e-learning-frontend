@@ -14,19 +14,13 @@ import type {
   Teacher,
   TeacherAvailability,
   TeacherReview,
-  FileData,
-  FileFilter,
-  FileTag, 
   FileOwner,
   Quiz,
   Answer,
   QuizBrief,
   QuestionCategory,
   QuizSolution,
-  Student,
-  Teacher,
-  TeacherAvailability,
-  TeacherReview,
+  Student
 } from "@/api/types.ts";
 import {readPersistedRole} from "@/features/user/RolePersistence.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
@@ -309,12 +303,12 @@ export const getClassBriefs = async (
     return arr.map((c) => ({
       ...c,
       startTime: new Date(c.startTime),
-    }));
-  } catch (err) {
-    console.error("getCourseBriefs: error fetching data", err);
-    return [];
-  }
-};
+    }));}
+//   } catch (err) {
+//     console.error("getCourseBriefs: error fetching data", err);
+//     return [];
+//   }
+// };
 
 
 
@@ -449,7 +443,6 @@ export const uploadUserFile = async (file: File): Promise<any> => {
 //TODO: modify according to backend (created based on getCourses)
 export const getFiles = async (filter?: FileFilter): Promise<PagedResult<FileData>> => {
   const params = new URLSearchParams();
-  console.log("function params " + filter?.studentId);
   if (filter?.studentId) params.append("studentId", filter.studentId);
   if (filter?.courseId) params.append("courseId", filter.courseId);
 
