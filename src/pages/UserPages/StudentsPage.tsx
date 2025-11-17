@@ -10,13 +10,19 @@ import CourseFilter from "@/components/complex/courseFilter.tsx";
 import type { CourseBrief, Student } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
-  type AnyTask,
-  AssignmentSummary,
+    type AnyTask,
+    AssignmentSummary, type AssignmentTask,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { FileGallery } from "@/components/complex/fileGallery.tsx";
-import { getStudentData } from "@/api/apiCalls.ts";
+import {
+    getStudentData,
+    getStudentUnsolvedExercises,
+    getStudentWithTeacherExercises
+} from "@/api/apiCalls.ts";
+import {getUserId} from "@/api/api.ts";
+import type {ExerciseBrief} from "@/pages/UserPages/HomePage.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -33,17 +39,8 @@ export function StudentsPage() {
   const [studentBrief, setStudentBrief] = useState<Student>();
   //courses for specific student from current teacher (user)
   const [courses, setCourses] = useState<CourseBrief[]>([]);
+    const [assignments, setAssignments] = useState<AssignmentTask[]>([]);
 
-  const sampleAssignment: AnyTask = {
-    id: "1",
-    name: "task 1",
-    completed: true,
-    courseName: "Course A",
-    className: "Class 1",
-    type: "assignment",
-    status: "to be graded",
-    graded: false,
-  };
   /** The course.tsx identifier extracted from the URL parameters */
   let { courseId } = useParams();
   /** To be downloaded from backend*/
@@ -55,6 +52,20 @@ export function StudentsPage() {
   useEffect(() => {
     selectedStudentId && fetchStudent(selectedStudentId);
   }, [selectedStudentId]);
+
+    useEffect(() => {
+        const teacherId = getUserId();
+        if (!teacherId) return;
+
+        if (!selectedStudentId) return;
+
+        const fetchExercises = async () => {
+            const data = await getStudentWithTeacherExercises(teacherId, selectedStudentId, selectedCourseId ? selectedCourseId : undefined);
+            setAssignments(data);
+        };
+
+        fetchExercises();
+    }, [selectedStudentId, selectedCourseId]);
 
   async function fetchStudent(studentId: string) {
     try {
@@ -102,7 +113,7 @@ export function StudentsPage() {
                 <CalendarSummary classes={[]} />
                 <AssignmentSummary
                   student={false}
-                  assignments={[sampleAssignment]}
+                  assignments={assignments}
                 />
                 <ChatSummary />
                 <Summary

@@ -19,7 +19,7 @@ interface QuizTask extends TaskProps {
   type: "quiz";
 }
 
-interface AssignmentTask extends TaskProps {
+export interface AssignmentTask extends TaskProps {
   type: "assignment";
   status: string;
   graded: boolean;

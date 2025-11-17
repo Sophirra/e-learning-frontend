@@ -33,6 +33,7 @@ import {
 } from "@/mappers/courseMappers.ts";
 import type { ErrorResponse } from "react-router-dom";
 import { useUser } from "@/features/user/UserContext.tsx";
+import type {AssignmentTask} from "@/components/complex/summaries/assignmentSummary.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -681,6 +682,27 @@ export async function getStudentUnsolvedExercises(
   );
 
   return data;
+}
+
+export async function getStudentWithTeacherExercises(
+    teacherId: string,
+    studentId: string,
+    courseId?: string
+): Promise<AssignmentTask[]> {
+    if (!studentId) {
+        return [];
+    }
+
+    const { data } = await Api.get<AssignmentTask[]>(
+        `/api/teacher/${teacherId}/students/${studentId}/exercises`,
+        {
+            params: {
+                courseId: courseId ?? undefined,
+            },
+        }
+    );
+
+    return data;
 }
 
 export async function getExercises(
