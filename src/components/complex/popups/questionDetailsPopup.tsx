@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
+import { CreateQuestionCategoryPopup } from "@/components/complex/popups/createQuestionCategoryPopup.tsx";
 
 export function QuestionDetailsPopup({
   questionBrief,
@@ -138,6 +139,7 @@ export function QuestionDetailsPopup({
           setNewContent(questionData.content);
           setNewCategories(questionData.categories || []);
           setNewAnswers(questionData.answers || []);
+          setLoad(false);
 
           console.log("categories: ", newCategories);
           if (!questionData.answers) {
@@ -229,30 +231,39 @@ export function QuestionDetailsPopup({
             )}
           </div>
           {editing && (
-            <FilterDropdown
-              placeholder={"Question categories"}
-              emptyMessage={"Add to category"}
-              label={"Add to category:"}
-              reset={false}
-              items={availableCategories.map((category) => {
-                return { name: category.name, value: category.id };
-              })}
-              onSelectionChange={(selectedCategories) => {
-                const updatedCategories = [...newCategories];
-                for (const cat of selectedCategories) {
-                  if (!updatedCategories.some((c) => c.id === cat.value)) {
-                    const fullCategory = availableCategories.find(
-                      (c) => c.id === cat.value,
-                    );
-                    if (fullCategory) {
-                      updatedCategories.push(fullCategory);
-                    }
-                  }
-                }
-                setNewCategories(updatedCategories);
-              }}
-              defaultValues={newCategories.map((cat) => cat.id)}
-            />
+            <div className={"flex flex-row gap-2 text-right"}>
+              <FilterDropdown
+                // className={"w-1/1"}
+                placeholder={"Question categories"}
+                emptyMessage={"Add to category"}
+                label={"Add to category:"}
+                reset={false}
+                items={availableCategories.map((category) => {
+                  return { name: category.name, value: category.id };
+                })}
+                onSelectionChange={(selectedCategories) => {
+                  const selectedIds = selectedCategories.map((c) => c.value);
+                  const updatedCategories = availableCategories.filter((c) =>
+                    selectedIds.includes(c.id),
+                  );
+                  setNewCategories(updatedCategories);
+                }}
+                // const updatedCategories = [...newCategories];
+                // for (const cat of selectedCategories) {
+                //   if (!updatedCategories.some((c) => c.id === cat.value)) {
+                //     const fullCategory = availableCategories.find(
+                //       (c) => c.id === cat.value,
+                //     );
+                //     if (fullCategory) {
+                //       updatedCategories.push(fullCategory);
+                //     }
+                //   }
+                // }
+                // setNewCategories(updatedCategories);
+                defaultValues={newCategories.map((cat) => cat.id)}
+              />
+              <CreateQuestionCategoryPopup resetLoading={() => setLoad(true)} />
+            </div>
           )}
 
           <Label>Answers:</Label>
