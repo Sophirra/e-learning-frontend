@@ -393,23 +393,24 @@ export const uploadUserFile = async (file: File): Promise<any> => {
  * @returns Promise resolving to an array of Course objects.
  */
 //TODO: modify according to backend (created based on getCourses)
-export const getFiles = async (filters?: FileFilter): Promise<FileData[]> => {
+export const getFiles = async (filter?: FileFilter): Promise<PagedResult<FileData>> => {
   const params = new URLSearchParams();
+  console.log("function params " + filter?.studentId);
+  if (filter?.studentId) params.append("studentId", filter.studentId);
+  if (filter?.courseId) params.append("courseId", filter.courseId);
 
-  // Append filters as query parameters if present
-  // filters?.origin?.forEach((v) => params.append("origin", v));
-  filters?.tags?.forEach((v) => params.append("tags", v));
-  filters?.createdBy?.forEach((v) => params.append("createdBy", v));
-  filters?.type?.forEach((v) => params.append("type", v));
-  // if (filters?.userId) params.append("userId", filters.userId);
-  // if (filters?.teacherId) params.append("teacherId", filters.teacherId);
-  if (filters?.query) params.append("query", filters.query);
+  filter?.createdBy?.forEach(id => params.append("createdBy", id));
+  filter?.type?.forEach(t => params.append("types", t));
+  filter?.tagIds?.forEach(id => params.append("tags", id));
 
-  const queryString = params.toString();
-  const url = `/api/user/files${queryString ? `?${queryString}` : ""}`;
+  if (filter?.page) params.append("page", String(filter.page));
+  if (filter?.pageSize) params.append("pageSize", String(filter.pageSize));
 
-  const { data } = await Api.get<FileData[]>(url);
-  return data ?? [];
+  const res = await Api.get<PagedResult<FileData>>(
+      `/api/user/files?${params.toString()}`,
+  );
+
+  return res.data;
 };
 
 /**

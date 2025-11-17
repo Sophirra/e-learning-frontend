@@ -108,10 +108,14 @@ export interface FileData {
   relativePath: string;
   uploadedAt: string;
   uploadedBy: string;
-  courseId?: string; //TODO: przedyskutować z Zosią, no bo plik może być w wielu kursach
-  courseName?: string;
+  courses: CourseShortVersion[];
   tags: FileTag[];
   ownerInfo: FileOwner;
+}
+
+export interface CourseShortVersion{
+  id: string;
+  name: string;
 }
 export interface FileFilter {
   query?: string;
@@ -121,6 +125,8 @@ export interface FileFilter {
   tagIds?: string[];
   createdBy?: string[];
   type?: string[];
+  page?: number;
+  pageSize?: number;
   //optional: dates (can be added)
 }
 

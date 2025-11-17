@@ -23,16 +23,22 @@ import {
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
 import { getFiles } from "@/api/apiCalls.ts";
-import type { FileData, FileFilter } from "@/api/types.ts";
+import type { FileData, FileFilter, PagedResult } from "@/api/types.ts";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { formatDate } from "date-fns";
 import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";
 import { Edit } from "lucide-react";
 import { DeleteFilePopup } from "@/components/complex/popups/files/deleteFilePopup.tsx";
-import { getUserFileOwners, getUserFileExtensions, getUserFileTags } from "@/api/apiCalls.ts";
+import {
+  getUserFileOwners,
+  getUserFileExtensions,
+  getUserFileTags,
+} from "@/api/apiCalls.ts";
 
 type SortField = "title" | "dateCreated" | "sharedBy" | "course";
 type SortOrder = "none" | "asc" | "desc";
+
+const DEFAULT_PAGE_SIZE = 7;
 
 export function FileGallery({
   courseId,
@@ -55,32 +61,40 @@ export function FileGallery({
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<FileData[]>([]);
   const [selectedOrigin, setSelectedOrigin] = useState<SelectableItem[]>([]);
-  const [selectedSharedBy, setSelectedSharedBy] = useState<SelectableItem[]>(
+  const [selectedCreatedBy, setSelectedCreatedBy] = useState<SelectableItem[]>(
     [],
   );
   const [selectedType, setSelectedType] = useState<SelectableItem[]>([]);
   const [selectedTags, setSelectedTags] = useState<SelectableItem[]>([]);
 
   const [availableOwners, setAvailableOwners] = useState<SelectableItem[]>([]);
-  const [availableExtensions, setAvailableExtensions] = useState<SelectableItem[]>([]);
+  const [availableExtensions, setAvailableExtensions] = useState<
+    SelectableItem[]
+  >([]);
   const [availableTags, setAvailableTags] = useState<SelectableItem[]>([]);
+
+  // stan paginacji
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     async function loadFilters() {
       try {
         const owners = await getUserFileOwners();
         setAvailableOwners(
-            owners.map(o => ({ name: `${o.name} ${o.surname}`, value: o.id }))
+          owners.map((o) => ({ name: `${o.name} ${o.surname}`, value: o.id })),
         );
 
         const extensions = await getUserFileExtensions();
         setAvailableExtensions(
-            extensions.map(ext => ({ name: ext, value: ext.toLowerCase() }))
+          extensions.map((ext) => ({ name: ext, value: ext.toLowerCase() })),
         );
 
         const tags = await getUserFileTags();
         setAvailableTags(
-            tags.map(t => ({ name: t.name, value: t.id })) // zakładam że masz FileTag { id, name }
+          tags.map((t) => ({ name: t.name, value: t.id })), // zakładam że masz FileTag { id, name }
         );
       } catch (err) {
         console.error("Error loading filters:", err);
@@ -90,30 +104,13 @@ export function FileGallery({
     loadFilters();
   }, []);
 
-
-  const [filters, setFilters] = useState<FileFilter>({
-    studentId: studentId ? studentId : "",
-    courseId: courseId ? courseId : "",
-    origin: [],
+  const [activeFilters, setActiveFilters] = useState<FileFilter>({
     createdBy: [],
     type: [],
     tags: [],
-  });
-
-  // Przykładowe dane
-  const mockFiles: FileData[] = [
-    {
-      id: "1",
-      fileName: "Wykład 1",
-      uploadedAt: "12/09/2025",
-      uploadedBy: "Jane Doe",
-      relativePath: "https://example.com/file1.pdf",
-      courseId: "1",
-      courseName: "Mathematics",
-      tags: ["lecture", "pdf"],
-    },
-    // Dodaj więcej przykładowych plików
-  ];
+    page: 1,
+    pageSize: DEFAULT_PAGE_SIZE,
+  } as FileFilter);
 
   const handleSort = (field: SortField) => {
     setSortConfig((current) => {
@@ -124,31 +121,42 @@ export function FileGallery({
     });
   };
 
-  // const sortedFiles = useMemo(() => {
-  //   if (!sortConfig.field || sortConfig.order === "none") return mockFiles;
-  //
-  //   return [...mockFiles].sort((a, b) => {
-  //     const aValue = a[sortConfig.field!];
-  //     const bValue = b[sortConfig.field!];
-  //     const modifier = sortConfig.order === "asc" ? 1 : -1;
-  //
-  //     if (aValue === null) return 1;
-  //     if (bValue === null) return -1;
-  //     if (aValue < bValue) return -1 * modifier;
-  //     if (aValue > bValue) return 1 * modifier;
-  //     return 0;
-  //   });
-  // }, [mockFiles, sortConfig]);
-
   useEffect(() => {
     fetchFiles();
   }, []);
 
-  async function fetchFiles(filters?: Parameters<typeof getFiles>[0]) {
+  async function fetchFiles(
+      overrideFilters?: Partial<FileFilter>,
+      overridePage?: number,
+  ) {
     setLoading(true);
     try {
-      const data = await getFiles(filters);
-      setFiles(data);
+      console.log("function fetchFiles (props studentId):", studentId);
+
+      const nextPage = overridePage ?? page;
+
+      const mergedFilters: FileFilter = {
+        ...activeFilters,              // stan filtrów
+        ...overrideFilters,            // ewentualne nadpisania
+        ...(studentId ? { studentId } : {}),   // <- props
+        ...(courseId ? { courseId } : {}),     // <- props
+        page: nextPage,
+        pageSize,
+      };
+
+      const data = await getFiles(mergedFilters);
+
+      setFiles(data.items);
+      setTotalCount(data.totalCount);
+      setTotalPages(Math.ceil(data.totalCount / data.pageSize));
+      setPage(data.page);
+
+      setActiveFilters((prev) => ({
+        ...prev,
+        ...overrideFilters,
+      }));
+
+      console.log("function after setActiveFilters (props studentId):", studentId);
     } catch (e) {
       console.error("Error fetching files:", e);
     } finally {
@@ -157,32 +165,36 @@ export function FileGallery({
   }
 
   const handleApplyFilters = () => {
-    const newFilters = {
-      student: studentId || "",
-      course: courseId || "",
-      ...(selectedOrigin.length && {
-        origin: selectedOrigin.map((item) => item.value),
+    const newFilters: FileFilter = {
+      ...(studentId && { studentId }),
+      ...(courseId && { courseId }),
+      ...(selectedCreatedBy.length && {
+        createdBy: selectedCreatedBy.map((i) => i.value),
       }),
-      ...(selectedSharedBy.length && {
-        createdBy: selectedSharedBy.map((item) => item.value),
-      }),
-      ...(selectedType.length && {
-        type: selectedType.map((item) => item.value),
-      }),
-      ...(selectedTags.length && {
-        tags: selectedTags.map((item) => item.name),
-      }),
+      ...(selectedType.length && { type: selectedType.map((i) => i.value) }),
+      ...(selectedTags.length && { tags: selectedTags.map((i) => i.value) }),
     };
-
-    fetchFiles(newFilters);
+    fetchFiles(newFilters, 1);
   };
 
   function resetFilters() {
     setSelectedOrigin([]);
-    setSelectedSharedBy([]);
+    setSelectedCreatedBy([]);
     setSelectedType([]);
     setSelectedTags([]);
+
+    fetchFiles({}, 1);
   }
+
+
+  const handlePageChange = (direction: "prev" | "next") => {
+    if (direction === "prev" && page > 1) {
+      fetchFiles(undefined, page - 1);
+    } else if (direction === "next" && page < totalPages) {
+      fetchFiles(undefined, page + 1);
+    }
+  };
+
   const SortableTableHead = ({
     field,
     children,
@@ -218,11 +230,11 @@ export function FileGallery({
         {/*/>*/}
         <FilterDropdown
           reset={true}
-          label={"Shared by"}
+          label={"Created by"}
           placeholder={"Who shared the file"}
           emptyMessage={"empty"}
           items={availableOwners}
-          onSelectionChange={setSelectedSharedBy}
+          onSelectionChange={setSelectedCreatedBy}
         />
         <FilterDropdown
           reset={true}
@@ -289,8 +301,12 @@ export function FileGallery({
               <TableCell>
                 {formatDate(file.uploadedAt, "hh:mm E dd/MM/yyyy")}
               </TableCell>
-              <TableCell>{file.ownerInfo.name + " " + file.ownerInfo.surname}</TableCell>
-              <TableCell>{file.courseName}</TableCell>
+              <TableCell>
+                {file.ownerInfo.name + " " + file.ownerInfo.surname}
+              </TableCell>
+              <TableCell>
+                {file.courses.map((c) => c.name).join(", ")}
+              </TableCell>
               <TableCell>
                 <ScrollArea className="w-[200px]">
                   <div className="flex gap-2 whitespace-nowrap">
@@ -344,6 +360,30 @@ export function FileGallery({
           ))}
         </TableBody>
       </Table>
+      <div className="flex justify-center items-center gap-4 mt-6">
+        <Button
+          disabled={page <= 1 || loading}
+          onClick={() => handlePageChange("prev")}
+        >
+          Previous
+        </Button>
+
+        <span>
+          Page {page} of {totalPages}{" "}
+          {totalCount > 0 && (
+            <>
+              ({totalCount} file{totalCount === 1 ? "" : "s"})
+            </>
+          )}
+        </span>
+
+        <Button
+          disabled={page >= totalPages || loading}
+          onClick={() => handlePageChange("next")}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 }

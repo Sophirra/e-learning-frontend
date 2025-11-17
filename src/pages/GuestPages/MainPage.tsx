@@ -42,7 +42,7 @@ type Filters = {
 };
 
 
-
+const DEFAULT_PAGE_SIZE = 20;
 
 function MainPage() {
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ function MainPage() {
     pageSize: 10,
   });
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const pageSize = 12;
+
   const [loading, setLoading] = useState<boolean>(true);
   const [activeFilters, setActiveFilters] = useState<Filters>({});
 
@@ -139,7 +139,7 @@ function MainPage() {
       }
     };
     loadFilters();
-  }, [currentPage,activeFilters,pageSize]);
+  }, [currentPage,activeFilters,DEFAULT_PAGE_SIZE]);
 
   const fetchCourses = async (filters?: Parameters<typeof getCourses>[0]) => {
     setLoading(true);
@@ -147,7 +147,7 @@ function MainPage() {
       const data = await getCourses({
         ...filters,
         pageNumber: currentPage,
-        pageSize,
+        DEFAULT_PAGE_SIZE,
       });
       setPagedCourses(data);
       setFilteredCourses(data.items);
@@ -186,7 +186,7 @@ function MainPage() {
       }),
       ...(priceFrom !== undefined && { priceFrom }),
       ...(priceTo !== undefined && { priceTo }),
-      ...(pageSize !== undefined && { pageSize }),
+      ...(DEFAULT_PAGE_SIZE !== undefined && { DEFAULT_PAGE_SIZE }),
       ...(searchQuery && { query: searchQuery }),
     };
     setActiveFilters(filters);
