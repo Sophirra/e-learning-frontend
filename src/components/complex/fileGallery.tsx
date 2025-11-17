@@ -116,8 +116,32 @@ export function FileGallery({
   async function fetchFiles(filters?: Parameters<typeof getFiles>[0]) {
     setLoading(true);
     try {
-      const data = await getFiles(filters);
-      setFiles(data);
+      console.log("function fetchFiles (props studentId):", studentId);
+
+      const nextPage = overridePage ?? page;
+
+      const mergedFilters: FileFilter = {
+        ...activeFilters,              // stan filtrów
+        ...overrideFilters,            // ewentualne nadpisaniaaaaa
+        ...(studentId ? { studentId } : {}),   // <- props
+        ...(courseId ? { courseId } : {}),     // <- props
+        page: nextPage,
+        pageSize,
+      };
+
+      const data = await getFiles(mergedFilters);
+
+      setFiles(data.items);
+      setTotalCount(data.totalCount);
+      setTotalPages(Math.ceil(data.totalCount / data.pageSize));
+      setPage(data.page);
+
+      setActiveFilters((prev) => ({
+        ...prev,
+        ...overrideFilters,
+      }));
+
+      console.log("function after setActiveFilters (props studentId):", studentId);
     } catch (e) {
       console.error("Error fetching files:", e);
     } finally {
