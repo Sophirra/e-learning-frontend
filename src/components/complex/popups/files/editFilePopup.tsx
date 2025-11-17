@@ -17,10 +17,9 @@ import { getUserId } from "@/api/api.ts";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { getAvailableTags, updateFileData } from "@/api/apiCalls.ts";
 import { NewTagPopup } from "@/components/complex/popups/files/newTagPopup.tsx";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 export function EditFilePopup({ file }: { file: FileData }) {
-  const userId = getUserId();
   const [load, setLoad] = useState<boolean>(false);
   const [tags] = useState<FileTag[]>(file.tags ? file.tags : []);
   const [nameError, setNameError] = useState<boolean>(false);
@@ -69,12 +68,19 @@ export function EditFilePopup({ file }: { file: FileData }) {
       open={open}
       onOpenChange={(open) => {
         setOpen(open);
-        setLoad(false);
-        resetChanges();
+        if (open) {
+          // setLoad(false);
+          resetChanges();
+        }
       }}
     >
       <DialogTrigger asChild>
-        <Button variant={"ghost"} onClick={() => setLoad(true)}>
+        <Button
+          variant={"ghost"}
+          onClick={() => {
+            setLoad(true);
+          }}
+        >
           <icons.Edit />
           Edit
         </Button>
@@ -127,7 +133,6 @@ export function EditFilePopup({ file }: { file: FileData }) {
                   selectedIds.includes(tag.id),
                 );
                 setNewTags(updatedTags);
-                console.log("new tags:", newTags);
               }}
               defaultValues={tags.map((tag) => tag.id)}
               className={"w-1/1"}

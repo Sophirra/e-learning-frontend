@@ -439,9 +439,7 @@ export async function getAvailableTags(): Promise<FileTag[]> {
 }
 
 export async function createNewTag(name: string) {
-  console.log("creating new tag");
   const res = await Api.post("/api/tags", { name });
-  console.log(res);
   if (res.status === 201) return res.data;
   else return res.data as ErrorResponse;
 }
