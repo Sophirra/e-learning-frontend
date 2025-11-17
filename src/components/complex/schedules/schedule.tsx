@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { DaySchedule } from "./daySchedule.tsx";
@@ -14,11 +14,12 @@ export interface TimeSlot {
   classId?: string;
 }
 
-//TODO: dodać studentId i courseId i dostosować końcówkę na api
-//type that is downloaded from backend - can be moved
+//type downloaded from backend - can be moved
 export interface ClassSchedule {
   classId: string;
+  studentId: string;
   studentName: string;
+  courseId: string;
   courseName: string;
   classDate: Date;
   classStartTime: string;
@@ -38,6 +39,7 @@ interface ScheduleProps {
   classes?: ClassSchedule[];
   displayMode: "time" | "class";
   onSelect: (slot: TimeSlot) => void;
+  selectedClassId?: string;
 }
 
 export default function Schedule({
@@ -48,9 +50,19 @@ export default function Schedule({
   displayMode,
   classes,
   onSelect,
+  selectedClassId,
 }: ScheduleProps) {
   const [intervalOffset, setIntervalOffset] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+
+  useEffect(() => {
+    if (
+      selectedClassId === null ||
+      (selectedSlot && selectedSlot.classId !== selectedClassId)
+    ) {
+      setSelectedSlot(null);
+    }
+  }, [selectedClassId]);
 
   if (!endDate) {
     endDate = addMonths(startDate, 1);
@@ -136,7 +148,9 @@ export default function Schedule({
     //then look into booked classes:
     if (classes) {
       const dayData = classes.filter(
-        (d) => d.classDate.toDateString() === date.toDateString(),
+        (d) =>
+          new Date(d.classDate).toDateString() ===
+          new Date(date).toDateString(),
       );
       if (dayData) {
         slots = [
@@ -194,7 +208,7 @@ export default function Schedule({
           size="icon"
           onClick={() => {
             setIntervalOffset(intervalOffset - 1);
-            console.log(intervalOffset);
+            // console.log(intervalOffset);
           }}
           disabled={!canGoBack}
         >
@@ -211,7 +225,7 @@ export default function Schedule({
           size="icon"
           onClick={() => {
             setIntervalOffset(intervalOffset + 1);
-            console.log(intervalOffset);
+            // console.log(intervalOffset);
           }}
           disabled={!canGoForward}
         >
