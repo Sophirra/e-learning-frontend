@@ -263,24 +263,24 @@ export const getCourses = async (filters?: {
  * - The API response is type-checked to handle both AxiosResponse and plain arrays.
  * - The `startTime` field is converted into a `Date` object for easier frontend handling.
  */
-/*export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
-
-  const role: Role | undefined =
-      typeof window !== "undefined" ? readPersistedRole() : undefined;
-
-
-  if (!role) {
-    console.warn("getCourseBriefs: no active role found in cookies");
-    return [];
-  }
-
-  const url =
-      role === "teacher"
-          ? "/api/classes/upcoming-as-teacher"
-          : "/api/classes/upcoming-as-student";
-
-  try {
-    const resp = await Api.get<CourseBrief[]>(url);*/
+// export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
+//
+//   const role: Role | undefined =
+//       typeof window !== "undefined" ? readPersistedRole() : undefined;
+//
+//
+//   if (!role) {
+//     console.warn("getCourseBriefs: no active role found in cookies");
+//     return [];
+//   }
+//
+//   const url =
+//       role === "teacher"
+//           ? "/api/classes/upcoming-as-teacher"
+//           : "/api/classes/upcoming-as-student";
+//
+//   try {
+//     const resp = await Api.get<CourseBrief[]>(url);
 
 export const getClassBriefs = async (
   activeRole: Role | undefined,

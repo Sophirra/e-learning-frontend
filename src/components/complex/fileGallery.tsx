@@ -27,13 +27,14 @@ import type { FileData, FileFilter, PagedResult } from "@/api/types.ts";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { formatDate } from "date-fns";
 import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";
-import { Edit } from "lucide-react";
+import {DownloadCloud, Edit} from "lucide-react";
 import { DeleteFilePopup } from "@/components/complex/popups/files/deleteFilePopup.tsx";
 import {
   getUserFileOwners,
   getUserFileExtensions,
   getUserFileTags,
 } from "@/api/apiCalls.ts";
+import {DownloadButton} from "@/components/ui/downloadButton.tsx";
 
 type SortField = "title" | "dateCreated" | "sharedBy" | "course";
 type SortOrder = "none" | "asc" | "desc";
@@ -326,6 +327,7 @@ export function FileGallery({
                   <div className={"flex flex-row align-right"}>
                     <EditFilePopup file={selectedFile} />
                     <DeleteFilePopup file={selectedFile} />
+                    <DownloadButton file = {selectedFile} />
                   </div>
                 ) : (
                   // <DropdownMenu>

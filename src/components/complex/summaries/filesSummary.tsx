@@ -60,9 +60,16 @@ export function FilesSummary({
                 {file.associatedCourseName} [
                 {file.associatedClassDate.substring(0, 10)}]
               </Label>
-              <a href={file.filePath} target="_blank" rel="noopener noreferrer">
+              <a
+                  href={`${import.meta.env.VITE_API_URL}/${file.filePath}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+              >
                 <Button variant="link">{file.name}</Button>
               </a>
+              {/*<a href={file.filePath} target="_blank" rel="noopener noreferrer">*/}
+              {/*  <Button variant="link">{file.name}</Button>*/}
+              {/*</a>*/}
             </div>
           ))
         )}

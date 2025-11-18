@@ -65,9 +65,16 @@ export function AssignmentAttachedFiles({
           contentFiles?.map((file) => (
             <div className="flex flex-row gap-0 pl-2" key={file.id}>
               <Label>{convertFileNameToConvenientName(file.name)}</Label>
-              <a href={file.path} target="_blank" rel="noopener noreferrer">
+              <a
+                  href={`${import.meta.env.VITE_API_URL}/${file.name}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+              >
                 <Button variant="link">{file.name}</Button>
               </a>
+              {/*<a href={file.path} target="_blank" rel="noopener noreferrer">*/}
+              {/*  <Button variant="link">{file.name}</Button>*/}
+              {/*</a>*/}
               {user?.activeRole === "teacher" && pageMode === "edit" && (
                 <Button>
                   <icons.Trash2></icons.Trash2>

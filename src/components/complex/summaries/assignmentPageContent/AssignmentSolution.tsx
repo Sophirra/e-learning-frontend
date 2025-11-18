@@ -45,11 +45,18 @@ export function AssignmentSolution({
         ) : (
           solutionFiles?.map((file) => (
             <div className="flex flex-row gap-0 pl-2" key={file.id}>
-              <a href={file.path} target="_blank" rel="noopener noreferrer">
-                <Button variant="link" className="pl-0">
-                  {file.name}
-                </Button>
-              </a>
+                <a
+                    href={`${import.meta.env.VITE_API_URL}/${file.path}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <Button variant="link">{file.name}</Button>
+                </a>
+                {/*<a href={file.path} target="_blank" rel="noopener noreferrer">*/}
+              {/*  <Button variant="link" className="pl-0">*/}
+              {/*    {file.name}*/}
+              {/*  </Button>*/}
+              {/*</a>*/}
               <Label className="font-light">
                 uploaded{" "}
                 {file?.uploadDate &&
