@@ -244,6 +244,10 @@ export function TeacherCalendar() {
     setSelectedStudentId(studentId);
   }
 
+  function resetFilters() {
+    setQuizzes([]);
+  }
+
   return (
     <Content>
       <CourseFilter
@@ -256,6 +260,7 @@ export function TeacherCalendar() {
         selectedCourseId={selectedCourseId}
         selectedStudentId={selectedStudentId}
         setupClassButton={false}
+        resetExternal={resetFilters}
       />
       <div className="flex flex-row gap-8 p-4">
         <div className="w-3/5 sticky top-0 self-start h-fit space-y-2">
