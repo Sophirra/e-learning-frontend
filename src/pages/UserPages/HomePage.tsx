@@ -8,11 +8,17 @@ import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.
 import {
   type AnyTask,
   AssignmentSummary,
+  type QuizTask,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
-import { getClassBriefs, getStudentUnsolvedExercises } from "@/api/apiCalls.ts";
+import {
+  getClassBriefs,
+  getQuizzes,
+  getStudentUnsolvedExercises,
+} from "@/api/apiCalls.ts";
 import { toast } from "sonner";
 import { getUserId } from "@/api/api.ts";
+import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 
 export type ExerciseBrief = {
   id: string;
@@ -32,6 +38,7 @@ export function HomePage() {
     null,
   );
   const [assignmentsRaw, setAssignmentsRaw] = useState<ExerciseBrief[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
 
   // Unieważnianie starych odpowiedzi (race condition guard)
@@ -82,6 +89,35 @@ export function HomePage() {
 
     fetchUnsolvedExercises();
   }, []);
+
+  useEffect(() => {
+    let studentId = getUserId();
+
+
+    if(activeRole == "teacher") {
+      studentId = selectedStudentId;
+    }
+
+    if (!studentId) return;
+
+    const fetchQuizzes = async () => {
+      const data = await getQuizzes(studentId, selectedCourseId ?? undefined);
+
+      const mapped = data.map(q => ({
+        id: q.id,
+        name: q.name,
+        courseName: q.courseName,
+        className: undefined,
+        completed: q.completed,
+        type: "quiz",
+      } satisfies QuizTask));
+
+      setQuizzes(mapped);
+    };
+
+    fetchQuizzes();
+  }, [selectedCourseId, selectedStudentId]);
+
 
   const filteredClasses = useMemo(() => {
     if (!selectedCourseId) return classes;
@@ -137,6 +173,12 @@ export function HomePage() {
             assignments={visibleAssignments}
             student={activeRole === "student" || false}
           />
+
+          <QuizSummary
+              quizzes={quizzes}
+              student={activeRole === "student" || false}
+          />
+
           <ChatSummary />
         </div>
       </Content>

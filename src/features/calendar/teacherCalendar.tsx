@@ -10,6 +10,7 @@ import {
 import {
   type AnyTask,
   AssignmentSummary,
+  type QuizTask,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import {
   type FileProps,
@@ -23,9 +24,11 @@ import Schedule, {
 import { getUserId } from "@/api/api.ts";
 import {
   getClassBrief,
+  getQuizzes,
   getTeacherAvailability,
   getTeacherUpcomingClasses,
 } from "@/api/apiCalls.ts";
+import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 
 export type ClassBriefDto = {
   id: string;
@@ -75,6 +78,7 @@ export function TeacherCalendar() {
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
   const [assignments, setAssignments] = useState<AnyTask[]>([]);
+  const [quizzes, setQuizzes] = useState<AnyTask[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
   useEffect(() => {
@@ -208,6 +212,27 @@ export function TeacherCalendar() {
     );
   }, [selectedStudentId, selectedCourseId]);
 
+  useEffect(() => {
+    if (!selectedClassId) return;
+
+    const fetchQuizzes = async () => {
+      const data = await getQuizzes(undefined, undefined, undefined, selectedClassId);
+
+      const mapped = data.map(q => ({
+        id: q.id,
+        name: q.name,
+        courseName: q.courseName,
+        className: undefined,
+        completed: q.completed,
+        type: "quiz",
+      } satisfies QuizTask));
+
+      setQuizzes(mapped);
+    };
+
+    fetchQuizzes();
+  }, [selectedClassId]);
+
   function handleSelect(slot: TimeSlot) {
     if (slot.classId) {
       setSelectedClassId(slot.classId);
@@ -252,6 +277,11 @@ export function TeacherCalendar() {
           />
           <AssignmentSummary
             assignments={assignments}
+            student={false}
+            classId={selectedClassId ? selectedClassId : undefined}
+          />
+          <QuizSummary
+            quizzes={quizzes}
             student={false}
             classId={selectedClassId ? selectedClassId : undefined}
           />

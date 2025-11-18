@@ -6,7 +6,7 @@ import { AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPop
 
 export type AnyTask = QuizTask | AssignmentTask;
 
-interface TaskProps {
+export interface TaskProps {
   id: string;
   name: string;
   completed: boolean;
@@ -15,7 +15,7 @@ interface TaskProps {
   className?: string;
 }
 
-interface QuizTask extends TaskProps {
+export interface QuizTask extends TaskProps {
   type: "quiz";
 }
 
@@ -57,7 +57,7 @@ export function AssignmentSummary({
 
   return (
     <Summary
-      label={"Assignments"}
+      label={"Exercises"}
       labelIcon={icons.ClipboardList}
       canHide={true}
       customButton={
@@ -68,7 +68,7 @@ export function AssignmentSummary({
       <div className="flex flex-col gap-2">
         {assignments === null || assignments?.length === 0 ? (
           <Label className="mt-2 ml-4">
-            No assignments available for the selected courses/classes
+            No exercises available for the selected courses/classes
           </Label>
         ) : (
           assignments?.map((task: AnyTask) => (

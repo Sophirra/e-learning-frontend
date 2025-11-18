@@ -10,19 +10,23 @@ import CourseFilter from "@/components/complex/courseFilter.tsx";
 import type { CourseBrief, Student } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
-    type AnyTask,
-    AssignmentSummary, type AssignmentTask,
+  type AnyTask,
+  AssignmentSummary,
+  type AssignmentTask,
+  type QuizTask,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { FileGallery } from "@/components/complex/fileGallery.tsx";
 import {
-    getStudentData,
-    getStudentUnsolvedExercises,
-    getStudentWithTeacherExercises
+  getStudentData,
+  getStudentUnsolvedExercises,
+  getStudentWithTeacherExercises,
+  getStudentWithTeacherQuizzes,
 } from "@/api/apiCalls.ts";
 import {getUserId} from "@/api/api.ts";
 import type {ExerciseBrief} from "@/pages/UserPages/HomePage.tsx";
+import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -40,6 +44,7 @@ export function StudentsPage() {
   //courses for specific student from current teacher (user)
   const [courses, setCourses] = useState<CourseBrief[]>([]);
     const [assignments, setAssignments] = useState<AssignmentTask[]>([]);
+    const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
 
   /** The course.tsx identifier extracted from the URL parameters */
   let { courseId } = useParams();
@@ -66,6 +71,20 @@ export function StudentsPage() {
 
         fetchExercises();
     }, [selectedStudentId, selectedCourseId]);
+
+  useEffect(() => {
+    const teacherId = getUserId();
+    if (!teacherId) return;
+
+    if (!selectedStudentId) return;
+
+    const fetchQuizzes = async () => {
+      const data = await getStudentWithTeacherQuizzes(teacherId, selectedStudentId, selectedCourseId ? selectedCourseId : undefined);
+      setQuizzes(data);
+    };
+
+    fetchQuizzes();
+  }, [selectedStudentId, selectedCourseId]);
 
   async function fetchStudent(studentId: string) {
     try {
@@ -115,6 +134,7 @@ export function StudentsPage() {
                   student={false}
                   assignments={assignments}
                 />
+                <QuizSummary quizzes={quizzes} student={false} />
                 <ChatSummary />
                 <Summary
                   label={"Shared files"}
