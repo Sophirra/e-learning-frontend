@@ -78,7 +78,7 @@ export function TeacherCalendar() {
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
   const [assignments, setAssignments] = useState<AnyTask[]>([]);
-  const [quizzes, setQuizzes] = useState<AnyTask[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export function TeacherCalendar() {
 
     const today = new Date();
     const end = new Date();
-    end.setDate(today.getDate() + 6);
+    end.setDate(today.getDate() + 20);
 
     const startParam = today.toISOString().slice(0, 10);
     const endParam = end.toISOString().slice(0, 10);

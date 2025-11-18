@@ -74,7 +74,7 @@ export function StudentCalendar() {
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
   const [assignments, setAssignments] = useState<AnyTask[]>([]);
-  const [quizzes, setQuizzes] = useState<AnyTask[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
   // Sync with ?courseId & ?classId in URL

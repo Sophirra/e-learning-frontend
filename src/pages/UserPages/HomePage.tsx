@@ -83,7 +83,7 @@ export function HomePage() {
     if (!studentId) return;
 
     const fetchUnsolvedExercises = async () => {
-      const data = await getStudentUnsolvedExercises(studentId)
+      const data = await getStudentUnsolvedExercises(studentId);
       setAssignmentsRaw(data);
     };
 
@@ -93,8 +93,7 @@ export function HomePage() {
   useEffect(() => {
     let studentId = getUserId();
 
-
-    if(activeRole == "teacher") {
+    if (activeRole === "teacher") {
       studentId = selectedStudentId;
     }
 
@@ -103,21 +102,23 @@ export function HomePage() {
     const fetchQuizzes = async () => {
       const data = await getQuizzes(studentId, selectedCourseId ?? undefined);
 
-      const mapped = data.map(q => ({
-        id: q.id,
-        name: q.name,
-        courseName: q.courseName,
-        className: undefined,
-        completed: q.completed,
-        type: "quiz",
-      } satisfies QuizTask));
+      const mapped = data.map(
+        (q) =>
+          ({
+            id: q.id,
+            name: q.name,
+            courseName: q.courseName,
+            className: undefined,
+            completed: q.completed,
+            type: "quiz",
+          }) satisfies QuizTask,
+      );
 
       setQuizzes(mapped);
     };
 
     fetchQuizzes();
   }, [selectedCourseId, selectedStudentId]);
-
 
   const filteredClasses = useMemo(() => {
     if (!selectedCourseId) return classes;
@@ -175,8 +176,8 @@ export function HomePage() {
           />
 
           <QuizSummary
-              quizzes={quizzes}
-              student={activeRole === "student" || false}
+            quizzes={quizzes}
+            student={activeRole === "student" || false}
           />
 
           <ChatSummary />

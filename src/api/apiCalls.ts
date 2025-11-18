@@ -501,7 +501,7 @@ export async function getQuizzes(
   courseId?: string,
   // multichoice?: boolean,
   searchQuery?: string,
-  classId?: string
+  classId?: string,
 ): Promise<QuizBrief[]> {
   const params = new URLSearchParams();
   studentId && params.append("studentId", studentId);
@@ -693,30 +693,30 @@ export async function getStudentUnsolvedExercises(
 }
 
 export async function getStudentWithTeacherExercises(
-    teacherId: string,
-    studentId: string,
-    courseId?: string
+  teacherId: string,
+  studentId: string,
+  courseId?: string,
 ): Promise<AssignmentTask[]> {
-    if (!studentId) {
-        return [];
-    }
+  if (!studentId) {
+    return [];
+  }
 
-    const { data } = await Api.get<AssignmentTask[]>(
-        `/api/teacher/${teacherId}/students/${studentId}/exercises`,
-        {
-            params: {
-                courseId: courseId ?? undefined,
-            },
-        }
-    );
+  const { data } = await Api.get<AssignmentTask[]>(
+    `/api/teacher/${teacherId}/students/${studentId}/exercises`,
+    {
+      params: {
+        courseId: courseId ?? undefined,
+      },
+    },
+  );
 
-    return data;
+  return data;
 }
 
 export async function getStudentWithTeacherQuizzes(
   teacherId: string,
   studentId: string,
-  courseId?: string
+  courseId?: string,
 ): Promise<QuizTask[]> {
   if (!studentId) {
     return [];
@@ -728,7 +728,7 @@ export async function getStudentWithTeacherQuizzes(
       params: {
         courseId: courseId ?? undefined,
       },
-    }
+    },
   );
 
   return data;
