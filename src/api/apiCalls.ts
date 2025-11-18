@@ -36,6 +36,10 @@ import {
 } from "@/mappers/courseMappers.ts";
 import type { ErrorResponse } from "react-router-dom";
 import { useUser } from "@/features/user/UserContext.tsx";
+import type {
+  AssignmentTask,
+  QuizTask,
+} from "@/components/complex/summaries/assignmentSummary.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -541,16 +545,21 @@ export async function getQuizzes(
   courseId?: string,
   // multichoice?: boolean,
   searchQuery?: string,
+  classId?: string,
 ): Promise<QuizBrief[]> {
   const params = new URLSearchParams();
   studentId && params.append("studentId", studentId);
   courseId && params.append("courseId", courseId);
   // multichoice && params.append("multichoice", String(multichoice));
   searchQuery && params.append("searchQuery", searchQuery);
+  classId && params.append("classId", classId);
 
   const res = await Api.get(
     `/api/quizzes/${params ? `?${params.toString()}` : ""}`,
   );
+
+  if (res.status === 204 || !res.data) return [];
+
   return res.data;
 }
 
@@ -727,6 +736,48 @@ export async function getStudentUnsolvedExercises(
   return data;
 }
 
+export async function getStudentWithTeacherExercises(
+  teacherId: string,
+  studentId: string,
+  courseId?: string,
+): Promise<AssignmentTask[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const { data } = await Api.get<AssignmentTask[]>(
+    `/api/teacher/${teacherId}/students/${studentId}/exercises`,
+    {
+      params: {
+        courseId: courseId ?? undefined,
+      },
+    },
+  );
+
+  return data;
+}
+
+export async function getStudentWithTeacherQuizzes(
+  teacherId: string,
+  studentId: string,
+  courseId?: string,
+): Promise<QuizTask[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const { data } = await Api.get<QuizTask[]>(
+    `/api/teacher/${teacherId}/students/${studentId}/quizzes`,
+    {
+      params: {
+        courseId: courseId ?? undefined,
+      },
+    },
+  );
+
+  return data;
+}
+
 export async function getExercises(
   userId: string,
   activeRole: string | null,
@@ -790,6 +841,7 @@ export async function getStudentTimeline(
   const from = new Date();
   from.setDate(from.getDate() - 30);
   const to = new Date();
+  to.setDate(to.getDate() + 30);
 
   const params: any = {
     from: from.toISOString(),

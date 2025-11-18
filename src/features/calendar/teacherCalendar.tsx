@@ -10,6 +10,7 @@ import {
 import {
   type AnyTask,
   AssignmentSummary,
+  type QuizTask,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import {
   type FileProps,
@@ -23,9 +24,11 @@ import Schedule, {
 import { getUserId } from "@/api/api.ts";
 import {
   getClassBrief,
+  getQuizzes,
   getTeacherAvailability,
   getTeacherUpcomingClasses,
 } from "@/api/apiCalls.ts";
+import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 
 export type ClassBriefDto = {
   id: string;
@@ -75,6 +78,7 @@ export function TeacherCalendar() {
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
   const [assignments, setAssignments] = useState<AnyTask[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
   useEffect(() => {
@@ -83,7 +87,7 @@ export function TeacherCalendar() {
 
     const today = new Date();
     const end = new Date();
-    end.setDate(today.getDate() + 6);
+    end.setDate(today.getDate() + 20);
 
     const startParam = today.toISOString().slice(0, 10);
     const endParam = end.toISOString().slice(0, 10);
@@ -208,6 +212,27 @@ export function TeacherCalendar() {
     );
   }, [selectedStudentId, selectedCourseId]);
 
+  useEffect(() => {
+    if (!selectedClassId) return;
+
+    const fetchQuizzes = async () => {
+      const data = await getQuizzes(undefined, undefined, undefined, selectedClassId);
+
+      const mapped = data.map(q => ({
+        id: q.id,
+        name: q.name,
+        courseName: q.courseName,
+        className: undefined,
+        completed: q.completed,
+        type: "quiz",
+      } satisfies QuizTask));
+
+      setQuizzes(mapped);
+    };
+
+    fetchQuizzes();
+  }, [selectedClassId]);
+
   function handleSelect(slot: TimeSlot) {
     if (slot.classId) {
       setSelectedClassId(slot.classId);
@@ -217,6 +242,10 @@ export function TeacherCalendar() {
 
   function handleStudentSelect(studentId: string | null) {
     setSelectedStudentId(studentId);
+  }
+
+  function resetFilters() {
+    setQuizzes([]);
   }
 
   return (
@@ -231,6 +260,7 @@ export function TeacherCalendar() {
         selectedCourseId={selectedCourseId}
         selectedStudentId={selectedStudentId}
         setupClassButton={false}
+        resetExternal={resetFilters}
       />
       <div className="flex flex-row gap-8 p-4">
         <div className="w-3/5 sticky top-0 self-start h-fit space-y-2">
@@ -252,6 +282,11 @@ export function TeacherCalendar() {
           />
           <AssignmentSummary
             assignments={assignments}
+            student={false}
+            classId={selectedClassId ? selectedClassId : undefined}
+          />
+          <QuizSummary
+            quizzes={quizzes}
             student={false}
             classId={selectedClassId ? selectedClassId : undefined}
           />

@@ -10,13 +10,20 @@ import CourseFilter from "@/components/complex/courseFilter.tsx";
 import type { CourseBrief, Student } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
-  type AnyTask,
   AssignmentSummary,
+  type AssignmentTask,
+  type QuizTask,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { FileGallery } from "@/components/complex/fileGallery.tsx";
-import { getStudentData } from "@/api/apiCalls.ts";
+import {
+  getStudentData,
+  getStudentWithTeacherExercises,
+  getStudentWithTeacherQuizzes,
+} from "@/api/apiCalls.ts";
+import { getUserId } from "@/api/api.ts";
+import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.
@@ -33,17 +40,9 @@ export function StudentsPage() {
   const [studentBrief, setStudentBrief] = useState<Student>();
   //courses for specific student from current teacher (user)
   const [courses, setCourses] = useState<CourseBrief[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentTask[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
 
-  const sampleAssignment: AnyTask = {
-    id: "1",
-    name: "task 1",
-    completed: true,
-    courseName: "Course A",
-    className: "Class 1",
-    type: "assignment",
-    status: "to be graded",
-    graded: false,
-  };
   /** The course.tsx identifier extracted from the URL parameters */
   let { courseId } = useParams();
   /** To be downloaded from backend*/
@@ -56,9 +55,45 @@ export function StudentsPage() {
     selectedStudentId && fetchStudent(selectedStudentId);
   }, [selectedStudentId]);
 
+  useEffect(() => {
+    const teacherId = getUserId();
+    if (!teacherId) return;
+
+    if (!selectedStudentId) return;
+
+    const fetchExercises = async () => {
+      const data = await getStudentWithTeacherExercises(
+        teacherId,
+        selectedStudentId,
+        selectedCourseId ?? undefined,
+      );
+      setAssignments(data);
+    };
+
+    fetchExercises();
+  }, [selectedStudentId, selectedCourseId]);
+
+  useEffect(() => {
+    const teacherId = getUserId();
+    if (!teacherId) return;
+
+    if (!selectedStudentId) return;
+
+    const fetchQuizzes = async () => {
+      const data = await getStudentWithTeacherQuizzes(
+        teacherId,
+        selectedStudentId,
+        selectedCourseId ?? undefined,
+      );
+      setQuizzes(data);
+    };
+
+    fetchQuizzes();
+  }, [selectedStudentId, selectedCourseId]);
+
   async function fetchStudent(studentId: string) {
     try {
-      let data = await getStudentData(studentId);
+      const data = await getStudentData(studentId);
       setStudentBrief(data);
       setCourses(data.courses);
       console.log("Fetched student:", data, data.courses);
@@ -100,10 +135,8 @@ export function StudentsPage() {
 
               <div className="w-3/4 space-y-8">
                 <CalendarSummary classes={[]} />
-                <AssignmentSummary
-                  student={false}
-                  assignments={[sampleAssignment]}
-                />
+                <AssignmentSummary student={false} assignments={assignments} />
+                <QuizSummary quizzes={quizzes} student={false} />
                 <ChatSummary />
                 <Summary
                   label={"Shared files"}

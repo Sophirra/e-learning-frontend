@@ -13,6 +13,7 @@ import {
 import {
   type AnyTask,
   AssignmentSummary,
+  type QuizTask,
 } from "@/components/complex/summaries/assignmentSummary.tsx";
 import { getUserId } from "@/api/api.ts";
 import {
@@ -20,7 +21,8 @@ import {
   FilesSummary,
 } from "@/components/complex/summaries/filesSummary.tsx";
 import { useSearchParams } from "react-router-dom";
-import { getStudentTimeline } from "@/api/apiCalls.ts";
+import { getQuizzes, getStudentTimeline } from "@/api/apiCalls.ts";
+import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 
 type ClassBriefDto = {
   id: string;
@@ -72,6 +74,7 @@ export function StudentCalendar() {
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
   const [assignments, setAssignments] = useState<AnyTask[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
   // Sync with ?courseId & ?classId in URL
@@ -228,6 +231,29 @@ export function StudentCalendar() {
     setFiles(mappedFiles);
   }, [selectedClassId, timeline]);
 
+  useEffect(() => {
+    const studentId = getUserId();
+    if (!studentId) return;
+
+    const fetchQuizzes = async () => {
+      const data = await getQuizzes(studentId, selectedCourseId ?? undefined, undefined, selectedClassId ?? undefined);
+
+      const mapped = data.map(q => ({
+        id: q.id,
+        name: q.name,
+        courseName: q.courseName,
+        className: undefined,
+        completed: q.completed,
+        type: "quiz",
+      } satisfies QuizTask));
+
+      setQuizzes(mapped);
+    };
+
+    fetchQuizzes();
+  }, [selectedCourseId, selectedClassId]);
+
+
   // Auto-scroll do wybranej kafelki (gdy przyszło z URL lub po kliknięciu)
   useEffect(() => {
     if (!selectedClassId) return;
@@ -289,6 +315,7 @@ export function StudentCalendar() {
         <div className="w-3/4 space-y-8">
           <LinksSummary links={links} student={true} />
           <AssignmentSummary assignments={assignments} student={true} />
+          <QuizSummary quizzes={quizzes} student={true} />
           <FilesSummary files={files} lastCount={5} student={true} />
         </div>
       </div>

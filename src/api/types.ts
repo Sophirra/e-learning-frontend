@@ -101,6 +101,7 @@ export interface ClassBrief {
   courseId: string;
   courseName: string;
   teacherId: string;
+  studentId: string;
 }
 export interface FileData {
   id: string;

@@ -23,6 +23,7 @@ export default function CourseFilter({
   selectedStudentId,
   setSelectedStudentId,
   setupClassButton = false,
+  resetExternal
 }: {
   student: boolean;
   selectedCourseId: string | null;
@@ -30,6 +31,7 @@ export default function CourseFilter({
   selectedStudentId?: string | null;
   setSelectedStudentId?: (studentId: string | null) => void;
   setupClassButton?: boolean;
+  resetExternal?: () => void;
 }) {
   const [courses, setCourses] = useState<ClassBrief[]>([]);
   const [students, setStudents] = useState<StudentBrief[]>([]);
@@ -201,6 +203,8 @@ export default function CourseFilter({
       setStudents(await getTeacherStudents(userId));
       setCourses(await getTeacherCourses(userId));
     }
+
+    resetExternal?.();
   };
 
   return (

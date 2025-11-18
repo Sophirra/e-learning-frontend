@@ -21,7 +21,7 @@ export function NavigationBar() {
             {
               to: "/assignments",
               icon: icons.ClipboardList,
-              label: "Assignments",
+              label: "Exercises",
             },
             { to: "/chats", icon: icons.MessageSquare, label: "Chats" },
             { to: "/quizzes", icon: icons.Brain, label: "Quizzes" },
