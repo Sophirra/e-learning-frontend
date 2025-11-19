@@ -10,6 +10,7 @@ import { AssignmentSolution } from "@/components/complex/summaries/assignmentPag
 import { AssignmentGrade } from "@/components/complex/summaries/assignmentPageContent/AssignmentGrade.tsx";
 import { getUserId } from "@/api/api.ts";
 import { getExercises } from "@/api/apiCalls.ts";
+import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
 
 export type AssignmentBrief = {
   id?: string;
@@ -54,7 +55,12 @@ export function AssignmentPage() {
     if (!userId) return;
 
     const fetchExercises = async () => {
-      const data = await getExercises(userId, activeRole, selectedCourseId, selectedStudentId);
+      const data = await getExercises(
+        userId,
+        activeRole,
+        selectedCourseId,
+        selectedStudentId,
+      );
       setAssignments(data);
     };
 
@@ -83,9 +89,9 @@ export function AssignmentPage() {
             {assignments === null ||
             assignments === undefined ||
             assignments.length === 0 ? (
-              <div className="gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-base">
-                No assignments available for the selected course.
-              </div>
+              <LoadingTile
+                text={"No assignments available for the selected course."}
+              />
             ) : (
               assignments.map((assignment) => (
                 <AssignmentTile
@@ -131,9 +137,7 @@ export function AssignmentPage() {
                 />
               </>
             ) : (
-              <div className="gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-base">
-                Select an assignment to view its details.
-              </div>
+              <LoadingTile text={"Select an assignment to view its details."} />
             )}
           </div>
         </div>

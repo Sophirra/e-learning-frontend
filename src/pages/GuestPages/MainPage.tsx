@@ -105,6 +105,11 @@ function MainPage() {
   //TODO: opisać do czego to służy i dlaczego są dwa
 // przy starcie (opcjonalnie)
   useEffect(() => {
+    // fetchCourses({ query: searchQuery });
+  }, [searchQuery]);
+
+  // Fetch courses (bez filtrów przy starcie)
+  useEffect(() => {
     fetchCourses();
   }, []);
 
@@ -193,126 +198,133 @@ function MainPage() {
   };
 
   return (
-      <div>
-        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-        <Content>
-          <div className="p-8 w-full z-1 shadow-lg left-0 flex flex-col gap-4">
-            <Label className="text-2xl font-bold">Our courses</Label>
-            <div className="flex flex-row gap-4 items-end">
-              <FilterDropdown
-                  label="Category"
-                  placeholder="Select category"
-                  searchPlaceholder="Search category..."
-                  emptyMessage="No category found."
-                  items={categories.map((c) => ({ name: c, value: c }))}
-                  multiselect={true}
-                  onSelectionChange={setSelectedCategory}
-              />
-              <FilterDropdown
-                  label="Level"
-                  placeholder="Select level"
-                  searchPlaceholder="Search level..."
-                  emptyMessage="No level found."
-                  items={levels.map((l) => ({ name: l, value: l }))}
-                  multiselect={false}
-                  onSelectionChange={setSelectedLevel}
-              />
-              <FilterDropdown
-                  label="Price"
-                  placeholder="Select price range"
-                  searchPlaceholder="Search price..."
-                  emptyMessage="No price range found."
-                  items={PRICE_OPTIONS.map((p) => ({
-                    name: p.label,
-                    value: p.label,
-                  }))}
-                  multiselect={false}
-                  onSelectionChange={setSelectedPrice}
-              />
-              <FilterDropdown
-                  label="Language"
-                  placeholder="Select language"
-                  searchPlaceholder="Search language..."
-                  emptyMessage="No language found."
-                  items={languages.map((l) => ({ name: l, value: l }))}
-                  multiselect={false}
-                  onSelectionChange={setSelectedLanguage}
-              />
-              <Button onClick={handleApplyFilters}>Apply filters</Button>
-            </div>
+    <div>
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <Content>
+        <div className="p-8 w-full z-1 shadow-lg left-0 flex flex-col gap-4">
+          <Label className="text-2xl font-bold">Our courses</Label>
+          <div className="flex flex-row gap-4 items-end">
+            <FilterDropdown
+              label="Category"
+              placeholder="Select category"
+              searchPlaceholder="Search category..."
+              emptyMessage="No category found."
+              items={categories.map((c) => {
+                return { name: c, value: c };
+              })}
+              multiselect={true}
+              onSelectionChange={setSelectedCategory}
+            />
+            <FilterDropdown
+              label="Level"
+              placeholder="Select level"
+              searchPlaceholder="Search level..."
+              emptyMessage="No level found."
+              items={levels.map((l) => {
+                return { name: l, value: l };
+              })}
+              multiselect={false}
+              onSelectionChange={setSelectedLevel}
+            />
+            <FilterDropdown
+              label="Price"
+              placeholder="Select price range"
+              searchPlaceholder="Search price..."
+              emptyMessage="No price range found."
+              items={PRICE_OPTIONS.map((p) => {
+                return {
+                  name: p.label,
+                  value: p.label,
+                };
+              })}
+              multiselect={false}
+              onSelectionChange={setSelectedPrice}
+            />
+            <FilterDropdown
+              label="Language"
+              placeholder="Select language"
+              searchPlaceholder="Search language..."
+              emptyMessage="No language found."
+              items={languages.map((l) => {
+                return { name: l, value: l };
+              })}
+              multiselect={false}
+              onSelectionChange={setSelectedLanguage}
+            />
+            <Button onClick={handleApplyFilters}>Apply filters</Button>
           </div>
+        </div>
+        <div className="flex flex-col gap-8 p-8">
+          {loading ? (
+            <p>Loading courses...</p>
+          ) : (
+            <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredCourses &&
+                filteredCourses.map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    title={course.name}
+                    imageUrl={
+                      course.profilePictureUrl ??
+                      "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
+                    }
+                    rating={course.rating}
+                    levels={course.levelVariants ?? []}
+                    language={course.languageVariants ?? []}
+                    price={`${course.minimumCoursePrice ?? 0}-${
+                      course.maximumCoursePrice ?? 0
+                    }$/h`}
+                    description={course.description ?? ""}
+                    teacher={{
+                      name: course.teacherName ?? "Unknown",
+                      surname: course.teacherSurname ?? "",
+                    }}
+                    onClick={() =>
+                      navigate(`/course/${course.id}`, {
+                        state: { teacherId: course.teacherId ?? "" },
+                      })
+                    }
+                  />
+                ))}
+            </div>
+            <div className="flex justify-center items-center gap-4 mt-6">
+            <Button
+            disabled={currentPage <= 1}
+          onClick={() =>
+            setCurrentPage((prev) => Math.max(1, prev - 1))
+          }
+        >
+          Previous
+        </Button>
 
-          <div className="flex flex-col gap-8 p-8">
-            {loading ? (
-                <p>Loading courses...</p>
-            ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredCourses.map((course) => (
-                        <CourseCard
-                            key={course.id}
-                            title={course.name}
-                            imageUrl={
-                                course.profilePictureUrl ??
-                                "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
-                            }
-                            rating={course.rating}
-                            levels={course.levelVariants ?? []}
-                            language={course.languageVariants ?? []}
-                            price={`${course.minimumCoursePrice ?? 0}-${
-                                course.maximumCoursePrice ?? 0
-                            }$/h`}
-                            description={course.description ?? ""}
-                            teacher={{
-                              name: course.teacherName ?? "Unknown",
-                              surname: course.teacherSurname ?? "",
-                            }}
-                            onClick={() =>
-                                navigate(`/course/${course.id}`, {
-                                  state: { teacherId: course.teacherId ?? "" },
-                                })
-                            }
-                        />
-                    ))}
-                  </div>
-
-                  <div className="flex justify-center items-center gap-4 mt-6">
-                    <Button
-                        disabled={currentPage <= 1}
-                        onClick={() =>
-                            setCurrentPage((prev) => Math.max(1, prev - 1))
-                        }
-                    >
-                      Previous
-                    </Button>
-
-                    <span>
+        <span>
                   Page {pagedCourses.page} of{" "}
-                      {Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)}
+          {Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)}
                 </span>
 
-                    <Button
-                        disabled={
-                            currentPage >=
-                            Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)
-                        }
-                        onClick={() =>
-                            setCurrentPage((prev) =>
-                                prev + 1 <=
-                                Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)
-                                    ? prev + 1
-                                    : prev,
-                            )
-                        }
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </>
-            )}
-          </div>
-        </Content>
-      </div>
+        <Button
+          disabled={
+            currentPage >=
+            Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)
+          }
+          onClick={() =>
+            setCurrentPage((prev) =>
+              prev + 1 <=
+              Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)
+                ? prev + 1
+                : prev,
+            )
+          }
+        >
+          Next
+        </Button>
+    </div>
+</>
+)}
+</div>
+</Content>
+</div>
   );
 }
 

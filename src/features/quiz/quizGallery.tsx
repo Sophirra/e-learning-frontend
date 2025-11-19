@@ -30,30 +30,19 @@ export function QuizGallery() {
     setSelectedCourseId(null);
   };
 
-  const mockQuizzes: QuizBrief[] = [
-    {
-      id: "1",
-      name: "test",
-      courseId: "1",
-      courseName: "test course",
-      questionNumber: 10,
-      completed: false,
-    },
-  ];
-
-  // useEffect(() => {
-  //   fetchQuizzes();
-  // }, [selectedStudentId, selectedCourseId]);
+  useEffect(() => {
+    fetchQuizzes();
+  }, [selectedStudentId, selectedCourseId]);
 
   async function fetchQuizzes() {
     try {
       const data = await getQuizzes(
         selectedStudentId ? selectedStudentId : undefined,
         selectedCourseId ? selectedCourseId : undefined,
-        // multiChoice ? multiChoice[0].value == "multi" : undefined,
         searchQuery,
       );
       setQuizzes(data);
+      console.log("set quizzes: ", data);
     } catch (e) {
       console.error("Error fetching quizzes:", e);
     }
@@ -78,42 +67,16 @@ export function QuizGallery() {
         selectedCourseId={selectedCourseId}
         setupClassButton={false}
       />
-      {/*<div className={"flex flex-row gap-2"}>*/}
-      {/*  <FilterDropdown*/}
-      {/*    reset={true}*/}
-      {/*    label={"Created by"}*/}
-      {/*    placeholder={"Who created the quiz"}*/}
-      {/*    emptyMessage={"Origin"}*/}
-      {/*    items={[*/}
-      {/*      { name: "Uploaded", value: "uploaded" },*/}
-      {/*      { name: "Generated", value: "generated" },*/}
-      {/*    ]}*/}
-      {/*    onSelectionChange={setSelectedCreatedBy}*/}
-      {/*  />*/}
-      {/*  <FilterDropdown*/}
-      {/*    reset={true}*/}
-      {/*    label={"Multi-choice?"}*/}
-      {/*    placeholder={"Multi-choice?"}*/}
-      {/*    emptyMessage={"Multi-choice?"}*/}
-      {/*    multiselect={false}*/}
-      {/*    items={[*/}
-      {/*      { name: "single choice", value: "single" },*/}
-      {/*      { name: "multi choice", value: "multi" },*/}
-      {/*    ]}*/}
-      {/*    onSelectionChange={setMultiChoice}*/}
-      {/*  />*/}
-      {/*  <Button>*/}
-      {/*    <icons.Check /> Filter*/}
-      {/*  </Button>*/}
-      {/*</div>*/}
       <Summary
         label={"Quizzes"}
         labelIcon={icons.Quiz}
-        customButton={() => addNewQuizButton()}
+        // customButton={
+        //   user?.activeRole === "teacher" ? () => addNewQuizButton() : undefined
+        // }
         canHide={user?.activeRole === "teacher"}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockQuizzes.map((quiz) => (
+          {quizzes.map((quiz) => (
             <QuizDetailsPopup quizBrief={quiz} />
           ))}
         </div>
