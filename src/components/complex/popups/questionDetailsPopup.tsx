@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { Answer, Question, QuestionCategory } from "@/api/types.ts";
 import {
+  createQuestion,
   getFullQuestion,
   getUserCategories,
   updateQuestion,
@@ -27,26 +28,29 @@ import { CreateQuestionCategoryPopup } from "@/components/complex/popups/createQ
 export function QuestionDetailsPopup({
   questionBrief,
 }: {
-  questionBrief: Question;
+  questionBrief?: Question;
 }) {
   const { user } = useUser();
   const [load, setLoad] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [question, setQuestion] = useState<Question>(questionBrief);
-  const [newContent, setNewContent] = useState<string>(questionBrief.content);
+  const [open, setOpen] = useState<boolean>(false);
+  const [question, setQuestion] = useState<Question>(
+    questionBrief
+      ? questionBrief
+      : { content: "", categories: [], answers: [] },
+  );
+  const [newContent, setNewContent] = useState<string>(
+    questionBrief ? questionBrief.content : "",
+  );
   const [newCategories, setNewCategories] = useState<QuestionCategory[]>(
-    questionBrief.categories || [],
+    questionBrief ? questionBrief.categories || [] : [],
   );
   const [newAnswers, setNewAnswers] = useState<Answer[]>(
-    questionBrief.answers || [],
+    questionBrief ? questionBrief.answers || [] : [],
   );
   const [availableCategories, setAvailableCategories] = useState<
     QuestionCategory[]
-  >([
-    // { id: "1", name: "Math", description: "Mathematics" },
-    // { id: "2", name: "Science", description: "Science" },
-    // { id: "3", name: "History", description: "History" },
-  ]);
+  >([]);
 
   async function handleConfirm() {
     if (newContent.trim() === "") {
@@ -62,7 +66,21 @@ export function QuestionDetailsPopup({
       return;
     }
     // TODO: Wysłać zaktualizowane pytanie do backendu
-    if (!question.id) {
+    if (!questionBrief) {
+      //send post
+      try {
+        const output = await createQuestion(
+          newContent,
+          newAnswers,
+          newCategories.map((category) => category.id),
+        );
+        setQuestion(output);
+        setEditing(false);
+        toast.success("Question created");
+      } catch (Error: any) {
+        toast.error("Error while creating question");
+      }
+    } else if (!question.id) {
       toast.error("Question id missing");
     } else {
       try {
@@ -74,7 +92,7 @@ export function QuestionDetailsPopup({
         );
         setQuestion(output);
         setEditing(false);
-        toast.success("Pytanie zostało zaktualizowane");
+        toast.success("Question updated");
       } catch (Error: any) {
         toast.error("Error while updating question");
       }
@@ -111,29 +129,32 @@ export function QuestionDetailsPopup({
     setNewAnswers(updatedAnswers);
   }
   async function resetQuestion() {
-    if (!question.id) {
-      toast.error("no question id, should close dialog instead");
-      return;
-    }
-    try {
-      const freshQuestionData = await getFullQuestion(question.id);
-      setQuestion(freshQuestionData);
-      setNewContent(freshQuestionData.content);
-      setNewCategories(freshQuestionData.categories || []);
-      setNewAnswers(freshQuestionData.answers || []);
-      setEditing(false);
-    } catch (error) {
-      toast.error("Error resetting question.");
+    if (!questionBrief) {
+      setOpen(false);
+    } else {
+      if (!question.id) {
+        toast.error("no question id, could not revert");
+        return;
+      }
+      try {
+        const questionData = await getFullQuestion(question.id);
+        setQuestion(questionData);
+        setNewContent(questionData.content);
+        setNewCategories(questionData.categories || []);
+        setNewAnswers(questionData.answers || []);
+        setEditing(false);
+      } catch (error) {
+        toast.error("Error resetting question.");
+      }
     }
   }
 
   useEffect(() => {
     async function getQuestionDetails() {
-      if (load) {
+      if (load && question) {
         if (!question.id)
           toast.error("No question id found. Cannot download data.");
         else {
-          //TODO: odkomentować jak będzie działał backend
           const questionData = await getFullQuestion(question.id);
           setQuestion(questionData);
           setNewContent(questionData.content);
@@ -155,17 +176,30 @@ export function QuestionDetailsPopup({
       }
     }
     getCategories();
-    getQuestionDetails();
+    if (questionBrief) {
+      getQuestionDetails();
+    }
     // if (editing) {
     // }
   }, [load]);
 
   return (
     <Dialog
+      open={open}
       onOpenChange={() => {
-        setLoad(false);
+        setLoad(true);
+        setOpen(!open);
         if (!open) {
-          setEditing(false);
+          if (!questionBrief) {
+            setQuestion({
+              content: "",
+              categories: [],
+              answers: [],
+            });
+            setEditing(true);
+          } else {
+            setEditing(false);
+          }
           setNewContent(question.content);
           setNewCategories(question.categories || []);
           setNewAnswers(question.answers || []);
@@ -173,22 +207,41 @@ export function QuestionDetailsPopup({
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          //tylko nauczyciele mogą przeglądać pytania
-          disabled={user?.activeRole !== "teacher"}
-          variant={"ghost"}
-          className="shadow-md flex flex-col gap-1 h-1/1 items-start "
-          onClick={() => setLoad(true)}
-        >
-          <h3 className="text-lg font-bold truncate">{question.content}</h3>
-          <div className={"flex flex-row gap-2 "}>
-            {question.categories.map((category) => (
-              <p key={category.id} className="text-m text-gray-500 font-medium">
-                {category.name}
-              </p>
-            ))}
-          </div>
-        </Button>
+        {questionBrief ? (
+          <Button
+            disabled={user?.activeRole !== "teacher"}
+            variant={"ghost"}
+            className="shadow-md flex flex-col gap-1 h-1/1 items-start "
+            onClick={() => {
+              setLoad(true);
+              setOpen(true);
+            }}
+          >
+            <h3 className="text-lg font-bold truncate">{question.content}</h3>
+            <div className={"flex flex-row gap-2 "}>
+              {question.categories.map((category) => (
+                <p
+                  key={category.id}
+                  className="text-m text-gray-500 font-medium"
+                >
+                  {category.name}
+                </p>
+              ))}
+            </div>
+          </Button>
+        ) : (
+          <Button
+            disabled={user?.activeRole !== "teacher"}
+            variant={"ghost"}
+            onClick={() => {
+              setLoad(true);
+              setOpen(true);
+            }}
+          >
+            <icons.Plus />
+            Create new
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -214,16 +267,8 @@ export function QuestionDetailsPopup({
                   variant={"default"}
                   size="sm"
                   disabled={!editing}
-                  onClick={() => {
-                    if (editing) {
-                      setNewCategories(
-                        newCategories.filter((c) => c.id !== category.id),
-                      );
-                    }
-                  }}
                 >
                   {category.name}
-                  {editing && <icons.X />}
                 </Button>
               ))
             ) : (
@@ -233,7 +278,6 @@ export function QuestionDetailsPopup({
           {editing && (
             <div className={"flex flex-row gap-2 text-right"}>
               <FilterDropdown
-                // className={"w-1/1"}
                 placeholder={"Question categories"}
                 emptyMessage={"Add to category"}
                 label={"Add to category:"}
@@ -335,7 +379,7 @@ export function QuestionDetailsPopup({
             }}
             disabled={user?.activeRole !== "teacher"}
           >
-            {editing ? "Save" : "Edit"}
+            {editing ? (questionBrief ? "Create" : "Save") : "Edit"}
           </Button>
         </DialogFooter>
       </DialogContent>

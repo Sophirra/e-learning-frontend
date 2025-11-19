@@ -39,7 +39,6 @@ export function QuizGallery() {
       const data = await getQuizzes(
         selectedStudentId ? selectedStudentId : undefined,
         selectedCourseId ? selectedCourseId : undefined,
-        // multiChoice ? multiChoice[0].value == "multi" : undefined,
         searchQuery,
       );
       setQuizzes(data);
@@ -71,9 +70,9 @@ export function QuizGallery() {
       <Summary
         label={"Quizzes"}
         labelIcon={icons.Quiz}
-        customButton={
-          user?.activeRole === "teacher" ? () => addNewQuizButton() : undefined
-        }
+        // customButton={
+        //   user?.activeRole === "teacher" ? () => addNewQuizButton() : undefined
+        // }
         canHide={user?.activeRole === "teacher"}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

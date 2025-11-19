@@ -597,9 +597,9 @@ export async function createQuestionCategory(
   categoryName: string,
 ): Promise<QuestionCategory> {
   const res = await Api.post("/api/quizzes/question/category", {
-    categoryName,
+    name: categoryName,
   });
-  if (res.status === 201) {
+  if (res.status === 200) {
     return res.data;
   } else throw res.data as ErrorResponse;
 }
@@ -639,7 +639,7 @@ export async function updateQuestion(
   answers: Answer[],
   categoryIds: string[],
 ): Promise<Question> {
-  const res = await Api.post(`/api/quizzes/question/${questionId}`, {
+  const res = await Api.put(`/api/quizzes/question/${questionId}`, {
     content,
     answers,
     categoryIds,

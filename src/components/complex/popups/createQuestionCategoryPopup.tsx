@@ -26,13 +26,11 @@ export function CreateQuestionCategoryPopup({
 
   async function apiAddCategory(name: string) {
     try {
-      const res = await createQuestionCategory(name);
-      if (res) {
-        toast.success("Category created successfully");
-        resetLoading();
-        setOpen(false);
-      }
-    } catch (error) {
+      await createQuestionCategory(name);
+      toast.success("Category created successfully");
+      resetLoading();
+      setOpen(false);
+    } catch (error: any) {
       toast.error("Failed to create category: ", error.message);
     }
   }
@@ -40,7 +38,7 @@ export function CreateQuestionCategoryPopup({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"outline"}>
+        <Button variant={"outline"} className={"text-right"}>
           <icons.Plus />
           Create new
         </Button>

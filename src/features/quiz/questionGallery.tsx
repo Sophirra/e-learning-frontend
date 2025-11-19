@@ -7,9 +7,10 @@ import {
 } from "@/components/complex/filterDropdown.tsx";
 import type { Question } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { getUserQuestions } from "@/api/apiCalls.ts";
+import { getUserCategories, getUserQuestions } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuestionDetailsPopup } from "@/components/complex/popups/questionDetailsPopup.tsx";
+import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
 
 export function QuestionGallery({ enableSelect }: { enableSelect: boolean }) {
   const { user } = useUser();
@@ -17,6 +18,9 @@ export function QuestionGallery({ enableSelect }: { enableSelect: boolean }) {
   const [questionCategories, setQuestionCategories] = useState<
     SelectableItem[]
   >([]);
+  const [selectedCategory, setSelectedCategory] = useState<SelectableItem[]>(
+    [],
+  );
   // const [selectedQuestions, setSelectedQuestions] = useState<Question[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
 
@@ -25,37 +29,55 @@ export function QuestionGallery({ enableSelect }: { enableSelect: boolean }) {
       try {
         if (user?.activeRole !== "teacher") return;
         const data = await getUserQuestions(
-          questionCategories.map((c) => c.value),
+          selectedCategory.map((c) => c.value),
         );
         setQuestions(data);
+        console.log("set questions: ", data);
       } catch (e) {
         console.error("Error fetching questions:", e);
       }
     }
     fetchQuestions();
-  }, [questionCategories]);
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const categoriesData = await getUserCategories();
+      setQuestionCategories(
+        categoriesData.map((c) => {
+          return { value: c.id, name: c.name };
+        }),
+      );
+    }
+    fetchCategories();
+  }, []);
 
   return (
     <Summary
       label={"Questions"}
       labelIcon={icons.Question}
-      // customButton={() =>QuestionDetailsPopup(true)}
+      customButton={() => <QuestionDetailsPopup />}
       canHide={true}
     >
       <FilterDropdown
         items={questionCategories}
-        onSelectionChange={setQuestionCategories}
+        onSelectionChange={setSelectedCategory}
         placeholder={"Categories"}
         emptyMessage={"Categories"}
         multiselect={true}
         reset={true}
         label={"Categories"}
+        className={"w-80"}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {questions.map((question) => (
-          <QuestionDetailsPopup questionBrief={question} />
-        ))}
-      </div>
+      {questions.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {questions.map((question) => (
+            <QuestionDetailsPopup key={question.id} questionBrief={question} />
+          ))}
+        </div>
+      ) : (
+        <LoadingTile text={"No questions found"} />
+      )}
     </Summary>
   );
 }
