@@ -547,7 +547,7 @@ export async function getQuizQuestions(quizId: string): Promise<Question[]> {
 export async function submitQuiz(solution: QuizSolution): Promise<number> {
   const res = await Api.post(
     `/api/quizzes/${solution.quizId}/solution`,
-    solution.answers,
+    solution,
   );
   if (res.status === 201) return res.data;
   else throw res.data as ErrorResponse;

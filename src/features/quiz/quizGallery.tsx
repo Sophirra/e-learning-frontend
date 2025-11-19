@@ -68,38 +68,12 @@ export function QuizGallery() {
         selectedCourseId={selectedCourseId}
         setupClassButton={false}
       />
-      {/*<div className={"flex flex-row gap-2"}>*/}
-      {/*  <FilterDropdown*/}
-      {/*    reset={true}*/}
-      {/*    label={"Created by"}*/}
-      {/*    placeholder={"Who created the quiz"}*/}
-      {/*    emptyMessage={"Origin"}*/}
-      {/*    items={[*/}
-      {/*      { name: "Uploaded", value: "uploaded" },*/}
-      {/*      { name: "Generated", value: "generated" },*/}
-      {/*    ]}*/}
-      {/*    onSelectionChange={setSelectedCreatedBy}*/}
-      {/*  />*/}
-      {/*  <FilterDropdown*/}
-      {/*    reset={true}*/}
-      {/*    label={"Multi-choice?"}*/}
-      {/*    placeholder={"Multi-choice?"}*/}
-      {/*    emptyMessage={"Multi-choice?"}*/}
-      {/*    multiselect={false}*/}
-      {/*    items={[*/}
-      {/*      { name: "single choice", value: "single" },*/}
-      {/*      { name: "multi choice", value: "multi" },*/}
-      {/*    ]}*/}
-      {/*    onSelectionChange={setMultiChoice}*/}
-      {/*  />*/}
-      {/*  <Button>*/}
-      {/*    <icons.Check /> Filter*/}
-      {/*  </Button>*/}
-      {/*</div>*/}
       <Summary
         label={"Quizzes"}
         labelIcon={icons.Quiz}
-        customButton={() => addNewQuizButton()}
+        customButton={
+          user?.activeRole === "teacher" ? () => addNewQuizButton() : undefined
+        }
         canHide={user?.activeRole === "teacher"}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -36,59 +36,7 @@ export function SolveQuizPage() {
   }
   const [loading, setLoading] = useState(true);
   const [quiz, setQuiz] = useState<Quiz>();
-  // {
-  // id: quizId || "",
-  // name: "Sample Quiz",
-  // classId: "1",
-  // courseId: "1",
-  // courseName: "Test course",
-  // teacherId: "1",
-  // studentId: "1",
-  // isMultipleChoice: false,
-  // maxScore: 10,
-  // }
-  const [questions, setQuestions] = useState<Question[]>([
-    // {
-    //   id: "1",
-    //   content: "This is a sample question",
-    //   categories: [
-    //     {
-    //       id: "1",
-    //       name: "Category A",
-    //     },
-    //     {
-    //       id: "2",
-    //       name: "Category B",
-    //     },
-    //   ],
-    //   answers: [
-    //     { id: "1", content: "Answer 1" },
-    //     { id: "2", content: "Answer 2" },
-    //     { id: "3", content: "Answer 3" },
-    //   ],
-    // },
-    // {
-    //   id: "2",
-    //   content:
-    //     "This is a second question. A very very very loooooooooooooooooooooooooooooooooooooong question.",
-    //   categories: [
-    //     {
-    //       id: "2",
-    //       name: "Category B",
-    //     },
-    //     {
-    //       id: "3",
-    //       name: "Category C",
-    //     },
-    //   ],
-    //   answers: [
-    //     { id: "1", content: "Answer 1" },
-    //     { id: "2", content: "Answer 2" },
-    //     { id: "3", content: "Answer 3" },
-    //   ],
-    // },
-  ]);
-
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [solution, setSolution] = useState<QuizSolution>({
     quizId: quizId,
@@ -160,7 +108,7 @@ export function SolveQuizPage() {
 
   async function handleSubmitQuiz() {
     if (!quiz) return;
-    console.log("running submit quiz");
+    console.log("running submit quiz", solution);
     try {
       const result = await submitQuiz(solution);
       toast.success("Scored " + result + "/" + quiz.maxScore);
@@ -208,9 +156,10 @@ export function SolveQuizPage() {
     async function getQuestions(id: string) {
       const data = await getQuizQuestions(id);
       setQuestions(data);
+      setCurrentQuestionIndex(0);
       console.log("set questions", questions);
     }
-  }[quizId]);
+  }, [quizId]);
 
   function submitQuizButton(onSubmit: () => void, disabled: boolean) {
     return (
@@ -289,65 +238,71 @@ export function SolveQuizPage() {
                     ))}
                   </ScrollArea>
                 </div>
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-start">
-                      {currentQuestionIndex +
-                        1 +
-                        ". " +
-                        currentQuestion.content}
-                    </h2>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => handleNavigateQuestion("prev")}
-                        disabled={currentQuestionIndex === 0}
-                      >
-                        <icons.ChevronLeft />
-                        Previous
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleNavigateQuestion("next")}
-                        disabled={currentQuestionIndex === questions.length - 1}
-                      >
-                        Next
-                        <icons.ChevronRight />
-                      </Button>
+                {currentQuestion && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold text-start">
+                        {currentQuestionIndex +
+                          1 +
+                          ". " +
+                          currentQuestion.content}
+                      </h2>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => handleNavigateQuestion("prev")}
+                          disabled={currentQuestionIndex === 0}
+                        >
+                          <icons.ChevronLeft />
+                          Previous
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleNavigateQuestion("next")}
+                          disabled={
+                            currentQuestionIndex === questions.length - 1
+                          }
+                        >
+                          Next
+                          <icons.ChevronRight />
+                        </Button>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div className="space-y-4">
+                      {currentQuestion.content && (
+                        <p className="text-gray-600">
+                          {currentQuestion.content}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      {currentQuestion.answers &&
+                        currentQuestion.answers.map((answer: Answer) => (
+                          <div
+                            key={answer.id}
+                            className={cn(
+                              "flex items-center gap-3 p-4 rounded-lg border",
+                              isAnswerSelected(currentQuestion.id, answer.id) &&
+                                "border-primary bg-primary/5",
+                            )}
+                            onClick={() => handleAnswerSelect(answer.id)}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isAnswerSelected(
+                                currentQuestion.id,
+                                answer.id,
+                              )}
+                              onChange={() => handleAnswerSelect(answer.id)}
+                              className="h-4 w-4"
+                            />
+                            <div>{answer.content}</div>
+                          </div>
+                        ))}
                     </div>
                   </div>
-                  <Separator />
-                  <div className="space-y-4">
-                    {currentQuestion.content && (
-                      <p className="text-gray-600">{currentQuestion.content}</p>
-                    )}
-                  </div>
-                  <div className="space-y-3">
-                    {currentQuestion.answers &&
-                      currentQuestion.answers.map((answer: Answer) => (
-                        <div
-                          key={answer.id}
-                          className={cn(
-                            "flex items-center gap-3 p-4 rounded-lg border",
-                            isAnswerSelected(currentQuestion.id, answer.id) &&
-                              "border-primary bg-primary/5",
-                          )}
-                          onClick={() => handleAnswerSelect(answer.id)}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isAnswerSelected(
-                              currentQuestion.id,
-                              answer.id,
-                            )}
-                            onChange={() => handleAnswerSelect(answer.id)}
-                            className="h-4 w-4"
-                          />
-                          <div>{answer.content}</div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </Summary>
