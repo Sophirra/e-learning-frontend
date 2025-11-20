@@ -532,7 +532,7 @@ export async function addAssignmentGrade( //TODO: check
   grade: number,
   comments?: string,
 ): Promise<void> {
-  await Api.post("/api/assignments/grade", { assignmentId, grade, comments });
+  await Api.post("/api/exercises/grade", { assignmentId, grade, comments });
 }
 /**
  * Gets all teacher/student quizzes to display in the gallery

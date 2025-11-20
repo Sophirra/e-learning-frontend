@@ -64,22 +64,26 @@ export function GradeAssignmentPopup({
           </div>
 
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
-            <DialogClose>
+            <DialogClose asChild>
               <Button>Cancel</Button>
             </DialogClose>
-            <Button
-              variant={"outline"}
-              onSelect={() => {
-                if (grade != null) {
-                  apiAddGrade(assignmentId, grade, comments);
-                } else {
-                  toast.error("Class id is not defined");
-                }
-              }}
-              disabled={grade == null}
-            >
-              Confirm
-            </Button>
+
+            <DialogClose asChild>
+              <Button
+                  variant={"outline"}
+                  onClick={() => {
+                    if (grade != null) {
+                      apiAddGrade(assignmentId, grade, comments);
+                      toast.success("Grade added successfully.");
+                    } else {
+                      toast.error("Grade is not defined");
+                    }
+                  }}
+                  disabled={grade == null}
+              >
+                Confirm
+              </Button>
+            </DialogClose>
           </DialogFooter>
         </div>
       </DialogContent>
