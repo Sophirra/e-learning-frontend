@@ -49,7 +49,7 @@ export function CreateExercisePopup({
         </DialogHeader>
         <div className={"flex flex-col gap-4 pt-2"}>
           <Label>Title</Label>
-          <Input id={"title"} type={"text"} disabled={false} />
+          <Input id={"title"} type={"text"} />
           <Label>Description</Label>
           <Input id={"descr"} type={"text"} />
           <Label>Additional file</Label>

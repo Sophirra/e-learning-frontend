@@ -12,6 +12,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuestionDetailsPopup } from "@/components/complex/popups/quiz/questions/questionDetailsPopup.tsx";
 import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { cn } from "@/lib/utils.ts";
 
 export function QuestionGallery({
   enableSelect,
@@ -62,7 +63,7 @@ export function QuestionGallery({
 
   return (
     <Summary
-      label={"Questions"}
+      label={"Questions: (" + selectedQuestionIds.length + " selected)"}
       labelIcon={icons.Question}
       customButton={() => <QuestionDetailsPopup />}
       canHide={true}
@@ -91,7 +92,12 @@ export function QuestionGallery({
                   key={question.id}
                   disabled={user?.activeRole !== "teacher"}
                   variant={"ghost"}
-                  className="shadow-md flex flex-col gap-1 h-1/1 items-start "
+                  className={cn(
+                    "shadow-md flex flex-col gap-1 h-1/1 items-start border-1",
+                    selectedQuestionIds.some((q) => q === question.id)
+                      ? "border-slate-300"
+                      : "border-transparent",
+                  )}
                   onClick={() => {
                     if (selectedQuestionIds.some((q) => q === question.id)) {
                       console.log("remove: ", question.id);
@@ -126,11 +132,11 @@ export function QuestionGallery({
                     </div>
                   </div>
                   <div>
-                    {selectedQuestionIds.some((q) => q === question.id) ? (
-                      <icons.Check />
-                    ) : (
-                      <icons.Circle />
-                    )}
+                    {/*{selectedQuestionIds.some((q) => q === question.id) ? (*/}
+                    {/*  <icons.Check />*/}
+                    {/*) : (*/}
+                    {/*  <icons.Circle />*/}
+                    {/*)}*/}
                   </div>
                 </Button>
               ))}
