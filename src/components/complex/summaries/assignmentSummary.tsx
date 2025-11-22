@@ -2,7 +2,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
+import { AddExercisePopup } from "@/components/complex/popups/exercise/addExercisePopup.tsx";
 
 export type AnyTask = QuizTask | AssignmentTask;
 
@@ -10,7 +10,6 @@ export interface TaskProps {
   id: string;
   name: string;
   completed: boolean;
-  //TODO: tasks are downloaded by class/course, they do not point back to them
   courseName: string;
   className?: string;
 }
@@ -29,7 +28,6 @@ export interface AssignmentTask extends TaskProps {
 
 export function AssignmentSummary({
   assignments,
-  student,
   classId,
 }: {
   assignments: AnyTask[];
@@ -60,9 +58,8 @@ export function AssignmentSummary({
       label={"Exercises"}
       labelIcon={icons.ClipboardList}
       canHide={true}
-      customButton={
-        //TODO: zmodyfikować do uzupełnienia assignment type
-        student || !classId ? undefined : () => AddTaskPopup(classId)
+      customButton={() =>
+        !classId ? undefined : <AddExercisePopup classId={classId} />
       }
     >
       <div className="flex flex-col gap-2">

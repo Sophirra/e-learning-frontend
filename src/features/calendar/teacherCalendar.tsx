@@ -30,34 +30,6 @@ import {
 } from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 
-export type ClassBriefDto = {
-  id: string;
-  startTime: string;
-  status: string;
-  linkToMeeting?: string;
-  links: string[];
-  userId: string;
-  courseId: string;
-  courseName: string;
-  exercises: {
-    id: string;
-    exerciseStatus: string;
-    grade?: number;
-  }[];
-  quizzes: {
-    id: string;
-    title: string;
-    score?: number;
-  }[];
-  files: {
-    id: string;
-    name: string;
-    path: string;
-    courseName: string;
-    classDate: string;
-  }[];
-};
-
 export function TeacherCalendar() {
   // Course filter
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
@@ -216,16 +188,24 @@ export function TeacherCalendar() {
     if (!selectedClassId) return;
 
     const fetchQuizzes = async () => {
-      const data = await getQuizzes(undefined, undefined, undefined, selectedClassId);
+      const data = await getQuizzes(
+        undefined,
+        undefined,
+        undefined,
+        selectedClassId,
+      );
 
-      const mapped = data.map(q => ({
-        id: q.id,
-        name: q.name,
-        courseName: q.courseName,
-        className: undefined,
-        completed: q.completed,
-        type: "quiz",
-      } satisfies QuizTask));
+      const mapped = data.map(
+        (q) =>
+          ({
+            id: q.id,
+            name: q.name,
+            courseName: q.courseName,
+            className: undefined,
+            completed: q.completed,
+            type: "quiz",
+          }) satisfies QuizTask,
+      );
 
       setQuizzes(mapped);
     };

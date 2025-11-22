@@ -14,20 +14,20 @@ import { Input } from "@/components/ui/input.tsx";
 import { useState } from "react";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { toast } from "sonner";
-import { addAssignmentGrade } from "@/api/apiCalls.ts";
+import { addExerciseGrade } from "@/api/apiCalls.ts";
 
-export function GradeAssignmentPopup({
-  assignmentId,
+export function GradeExercisePopup({
+  exerciseId,
   readyToGrade,
 }: {
-  assignmentId: string;
+  exerciseId: string;
   readyToGrade: boolean;
 }) {
   const [grade, setGrade] = useState<number>();
   const [comments, setComments] = useState<string>("");
 
-  function apiAddGrade(assignmentId: string, grade: number, comments: string) {
-    addAssignmentGrade(assignmentId, grade, comments);
+  function apiAddGrade(exerciseId: string, grade: number, comments: string) {
+    addExerciseGrade(exerciseId, grade, comments);
   }
 
   return (
@@ -40,7 +40,7 @@ export function GradeAssignmentPopup({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Grade assignment</DialogTitle>
+          <DialogTitle>Grade exercise</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className={"flex flex-col gap-4 pt-2"}>
@@ -71,7 +71,7 @@ export function GradeAssignmentPopup({
               variant={"outline"}
               onSelect={() => {
                 if (grade != null) {
-                  apiAddGrade(assignmentId, grade, comments);
+                  apiAddGrade(exerciseId, grade, comments);
                 } else {
                   toast.error("Class id is not defined");
                 }

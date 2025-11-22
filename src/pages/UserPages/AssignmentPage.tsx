@@ -4,15 +4,15 @@ import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import AssignmentTile from "@/components/complex/AssignmentTile.tsx";
-import { AssignmentTitle } from "@/components/complex/summaries/assignmentPageContent/AssignmentTitle.tsx";
-import { AssignmentAttachedFiles } from "@/components/complex/summaries/assignmentPageContent/AssignmentAttachedFiles.tsx";
+import { ExerciseTitle } from "@/components/complex/summaries/assignmentPageContent/ExerciseTitle.tsx";
+import { ExerciseAttachedFiles } from "@/components/complex/summaries/assignmentPageContent/ExerciseAttachedFiles.tsx";
 import { AssignmentSolution } from "@/components/complex/summaries/assignmentPageContent/AssignmentSolution.tsx";
-import { AssignmentGrade } from "@/components/complex/summaries/assignmentPageContent/AssignmentGrade.tsx";
+import { ExerciseGrade } from "@/components/complex/summaries/assignmentPageContent/ExerciseGrade.tsx";
 import { getUserId } from "@/api/api.ts";
 import { getExercises } from "@/api/apiCalls.ts";
 import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
 
-export type AssignmentBrief = {
+export type ExerciseBrief = {
   id?: string;
   name: string;
   courseName: string;
@@ -47,7 +47,7 @@ export function AssignmentPage() {
     string | null
   >(null);
   const [pageMode, setAssignmentPageMode] = useState<Mode>("view");
-  const [assignments, setAssignments] = useState<AssignmentBrief[]>([]);
+  const [assignments, setAssignments] = useState<ExerciseBrief[]>([]);
   const activeRole = user?.activeRole ?? null;
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export function AssignmentPage() {
             assignments === undefined ||
             assignments.length === 0 ? (
               <LoadingTile
-                text={"No assignments available for the selected course."}
+                text={"No exercise available for the selected course."}
               />
             ) : (
               assignments.map((assignment) => (
@@ -108,16 +108,16 @@ export function AssignmentPage() {
             selectedAssignmentId &&
             assignments.some((e) => e.id === selectedAssignmentId) ? (
               <>
-                <AssignmentTitle
-                  assignment={
+                <ExerciseTitle
+                  exercise={
                     assignments.find((a) => a.id === selectedAssignmentId) ||
                     null
                   }
                   pageMode={pageMode}
                   setPageMode={setAssignmentPageMode}
                 />
-                <AssignmentAttachedFiles
-                  assignment={
+                <ExerciseAttachedFiles
+                  exercise={
                     assignments.find((a) => a.id === selectedAssignmentId) ||
                     null
                   }
@@ -129,8 +129,8 @@ export function AssignmentPage() {
                     null
                   }
                 />
-                <AssignmentGrade
-                  assignment={
+                <ExerciseGrade
+                  exercise={
                     assignments.find((a) => a.id === selectedAssignmentId) ||
                     null
                   }

@@ -1,14 +1,14 @@
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type { AssignmentBrief } from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ExerciseBrief } from "@/pages/UserPages/AssignmentPage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
-import { GradeAssignmentPopup } from "@/components/complex/popups/assignments/gradeAssignmentPopup.tsx";
+import { GradeExercisePopup } from "@/components/complex/popups/exercise/gradeExercisePopup.tsx";
 
-export function AssignmentGrade({
-  assignment,
+export function ExerciseGrade({
+  exercise,
 }: {
-  assignment: AssignmentBrief | null;
+  exercise: ExerciseBrief | null;
 }) {
   const { user } = useUser();
 
@@ -18,19 +18,19 @@ export function AssignmentGrade({
       labelIcon={icons.PenTool}
       canHide={false}
       customButton={() =>
-        user?.activeRole === "teacher" && assignment?.id ? (
-          <GradeAssignmentPopup
-            assignmentId={assignment.id}
-            readyToGrade={!assignment.graded}
+        user?.activeRole === "teacher" && exercise?.id ? (
+          <GradeExercisePopup
+            exerciseId={exercise.id}
+            readyToGrade={!exercise.graded}
           />
         ) : null
       }
     >
       <div className="flex flex-col gap-2 p-2 text-xs font-normal ml-1">
-        {assignment?.graded && assignment.grade !== undefined ? (
+        {exercise?.graded && exercise.grade !== undefined ? (
           <div className="flex flex-row gap-0 ml-2 mt-2">
-            <Label className="mr-4">{assignment.grade}</Label>
-            <Label className="font-light">{assignment?.comments}</Label>
+            <Label className="mr-4">{exercise.grade}</Label>
+            <Label className="font-light">{exercise?.comments}</Label>
           </div>
         ) : (
           <Label className="mt-2 ml-2 font-light">No grade yet.</Label>

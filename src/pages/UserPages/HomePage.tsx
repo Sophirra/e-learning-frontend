@@ -53,7 +53,7 @@ export function HomePage() {
     setSelectedCourseId(null);
     setLoadingCourses(true);
 
-    const run = async () => {
+    const fetchClasses = async () => {
       try {
         if (!activeRole) {
           // brak roli   nie fetchujemy nic
@@ -73,7 +73,7 @@ export function HomePage() {
       }
     };
 
-    run();
+    fetchClasses();
     // brak cleanupu potrzebnego   unieważnianie robi requestIdRef
   }, [activeRole]);
 

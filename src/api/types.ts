@@ -1,3 +1,6 @@
+import {useState} from "react";
+import type {ApiDayAvailability, ClassSchedule} from "@/components/complex/schedules/schedule.tsx";
+
 export interface RegisterUserDto {
   accountType: "student" | "teacher";
   email: string;
@@ -97,12 +100,40 @@ export interface CourseVariant {
 }
 
 export interface ClassBrief {
+  id: string;
   startTime: Date;
   courseId: string;
   courseName: string;
   teacherId: string;
   studentId: string;
 }
+//co to za potwór (z teacher calendar)
+export type ClassBriefDto = {
+    id: string;
+    startTime: string;
+    status: string;
+    linkToMeeting?: string;
+    links: string[];
+    userId: string;
+    courseId: string;
+    courseName: string;
+    exercises: {
+        id: string;
+        exerciseStatus: string;
+        grade?: number;
+    }[];
+    quizzes: {
+        id: string;
+        title: string;
+        score?: number;
+    }[];
+    files: {
+        id: string;
+        name: string;
+        path: string;
+        courseName: string;
+        classDate: string;
+    }[];
 export interface FileData {
   id: string;
   fileName: string;
@@ -114,7 +145,7 @@ export interface FileData {
   ownerInfo: FileOwner;
 }
 
-export interface CourseShortVersion{
+export interface CourseShortVersion {
   id: string;
   name: string;
 }
@@ -142,7 +173,6 @@ export interface FileOwner {
   name: string;
   surname: string;
 }
-
 
 /**
  * Represents a brief student view used in selection lists.
