@@ -39,7 +39,7 @@ import { useUser } from "@/features/user/UserContext.tsx";
 import type {
   AssignmentTask,
   QuizTask,
-} from "@/components/complex/summaries/assignmentSummary.tsx";
+} from "@/components/complex/summaries/exerciseSummary.tsx";
 
 /**
  * Fetches detailed course data by courseID.

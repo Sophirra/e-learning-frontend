@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
-import { CreateQuestionCategoryPopup } from "@/features/quiz/createQuestionCategoryPopup.tsx";
+import { CreateQuestionCategoryPopup } from "@/components/complex/popups/quiz/questions/createQuestionCategoryPopup.tsx";
 
 export function QuestionDetailsPopup({
   questionBrief,

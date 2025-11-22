@@ -1,34 +1,33 @@
-import { Button } from "@/components/ui/button.tsx";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
-import { type SelectableItem } from "@/components/complex/filterDropdown.tsx";
 import type { QuizBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { getQuizzes } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
-import { QuizDetailsPopup } from "@/features/quiz/QuizDetailsPopup.tsx";
-import { QuestionGallery } from "@/features/quiz/questionGallery.tsx";
+import { QuizDetailsPopup } from "@/components/complex/popups/quiz/quizDetailsPopup.tsx";
 
-export function QuizGallery() {
+export function QuizGallery({
+  enableSelect,
+  selected,
+  setSelected,
+}: {
+  enableSelect: boolean;
+  selected?: QuizBrief | null;
+  setSelected?: (quiz: QuizBrief) => void;
+}) {
   const { user } = useUser();
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
   const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
-  const [selectedCreatedBy, setSelectedCreatedBy] = useState<SelectableItem[]>(
-    [],
-  );
-  const [multiChoice, setMultiChoice] = useState<SelectableItem[]>([]); //
 
-  const resetFilters = () => {
-    setSelectedStudentId(null);
-    setSelectedCourseId(null);
-  };
+  // const resetFilters = () => {
+  //   setSelectedStudentId(null);
+  //   setSelectedCourseId(null);
+  // };
 
   useEffect(() => {
     fetchQuizzes();
@@ -39,22 +38,13 @@ export function QuizGallery() {
       const data = await getQuizzes(
         selectedStudentId ? selectedStudentId : undefined,
         selectedCourseId ? selectedCourseId : undefined,
-        searchQuery,
+        // searchQuery,
       );
       setQuizzes(data);
       console.log("set quizzes: ", data);
     } catch (e) {
       console.error("Error fetching quizzes:", e);
     }
-  }
-
-  function addNewQuizButton() {
-    return (
-      <Button onClick={() => navigate("/quizzes/create")} variant={"ghost"}>
-        <icons.Plus />
-        Create New
-      </Button>
-    );
   }
 
   return (
@@ -70,14 +60,20 @@ export function QuizGallery() {
       <Summary
         label={"Quizzes"}
         labelIcon={icons.Quiz}
-        // customButton={
-        //   user?.activeRole === "teacher" ? () => addNewQuizButton() : undefined
-        // }
         canHide={user?.activeRole === "teacher"}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-150 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
           {quizzes.map((quiz) => (
-            <QuizDetailsPopup key={quiz.id} quizBrief={quiz} />
+            <QuizDetailsPopup
+              key={quiz.id}
+              quizBrief={quiz}
+              selected={selected ? selected.id === quiz.id : undefined}
+              setSelected={
+                !enableSelect
+                  ? undefined
+                  : () => setSelected && setSelected(quiz)
+              }
+            />
           ))}
         </div>
       </Summary>

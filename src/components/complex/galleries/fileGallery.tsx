@@ -1,11 +1,6 @@
 import { Button } from "@/components/ui/button.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.tsx";
+
 import {
   Table,
   TableBody,
@@ -14,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table.tsx";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils.ts";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
@@ -23,18 +18,17 @@ import {
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
 import { getFiles } from "@/api/apiCalls.ts";
-import type { FileData, FileFilter, PagedResult } from "@/api/types.ts";
+import type { FileData, FileFilter } from "@/api/types.ts";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { formatDate } from "date-fns";
 import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";
-import {DownloadCloud, Edit} from "lucide-react";
 import { DeleteFilePopup } from "@/components/complex/popups/files/deleteFilePopup.tsx";
 import {
   getUserFileOwners,
   getUserFileExtensions,
   getUserFileTags,
 } from "@/api/apiCalls.ts";
-import {DownloadButton} from "@/components/ui/downloadButton.tsx";
+import { DownloadButton } from "@/components/ui/downloadButton.tsx";
 
 type SortField = "title" | "dateCreated" | "sharedBy" | "course";
 type SortOrder = "none" | "asc" | "desc";
@@ -127,8 +121,8 @@ export function FileGallery({
   }, []);
 
   async function fetchFiles(
-      overrideFilters?: Partial<FileFilter>,
-      overridePage?: number,
+    overrideFilters?: Partial<FileFilter>,
+    overridePage?: number,
   ) {
     setLoading(true);
     try {
@@ -137,10 +131,10 @@ export function FileGallery({
       const nextPage = overridePage ?? page;
 
       const mergedFilters: FileFilter = {
-        ...activeFilters,              // stan filtrów
-        ...overrideFilters,            // ewentualne nadpisania
-        ...(studentId ? { studentId } : {}),   // <- props
-        ...(courseId ? { courseId } : {}),     // <- props
+        ...activeFilters, // stan filtrów
+        ...overrideFilters, // ewentualne nadpisania
+        ...(studentId ? { studentId } : {}), // <- props
+        ...(courseId ? { courseId } : {}), // <- props
         page: nextPage,
         pageSize,
       };
@@ -157,7 +151,10 @@ export function FileGallery({
         ...overrideFilters,
       }));
 
-      console.log("function after setActiveFilters (props studentId):", studentId);
+      console.log(
+        "function after setActiveFilters (props studentId):",
+        studentId,
+      );
     } catch (e) {
       console.error("Error fetching files:", e);
     } finally {
@@ -186,7 +183,6 @@ export function FileGallery({
 
     fetchFiles({}, 1);
   }
-
 
   const handlePageChange = (direction: "prev" | "next") => {
     if (direction === "prev" && page > 1) {
@@ -327,7 +323,7 @@ export function FileGallery({
                   <div className={"flex flex-row align-right"}>
                     <EditFilePopup file={selectedFile} />
                     <DeleteFilePopup file={selectedFile} />
-                    <DownloadButton file = {selectedFile} />
+                    <DownloadButton file={selectedFile} />
                   </div>
                 ) : (
                   // <DropdownMenu>

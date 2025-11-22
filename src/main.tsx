@@ -48,7 +48,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               path="/calendar/course/:courseId"
               element={<CalendarPage />}
             />
-            <Route path="/assignments" element={<AssignmentPage />} />
+            <Route path="/exercise" element={<AssignmentPage />} />
             <Route path="/files" element={<FilesPage />} />
             <Route path="/chats" element={<ChatsPage />} />
           </Route>

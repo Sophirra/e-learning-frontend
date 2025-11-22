@@ -20,12 +20,12 @@ export function CopyExercisePopup({
   closeParent: (open: false) => void;
 }) {
   function addExercise() {
-    //TODO: backend magic - copy exercise to chosen class
     try {
-      toast.success("Exercise created successfully");
+      //TODO: backend magic - copy exercise to chosen class
+      toast.success("Exercise copied successfully");
       closeParent(false);
     } catch (e: any) {
-      toast.error("Failed to create exercise: " + e.message);
+      toast.error("Failed to copy exercise: " + e.message);
     }
   }
   return (
@@ -45,8 +45,8 @@ export function CopyExercisePopup({
             <DialogClose>
               <Button>Cancel</Button>
             </DialogClose>
-            <Button variant={"outline"} onSelect={() => {}}>
-              Confirm
+            <Button variant={"outline"} onClick={() => addExercise()}>
+              Copy
             </Button>
           </DialogFooter>
         </div>

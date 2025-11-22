@@ -26,11 +26,12 @@ export interface AssignmentTask extends TaskProps {
   comments?: string;
 }
 
-export function AssignmentSummary({
-  assignments,
+export function ExerciseSummary({
+  student,
+  exercises,
   classId,
 }: {
-  assignments: AnyTask[];
+  exercises: AnyTask[];
   student: boolean;
   classId?: string;
 }) {
@@ -59,16 +60,22 @@ export function AssignmentSummary({
       labelIcon={icons.ClipboardList}
       canHide={true}
       customButton={() =>
-        !classId ? undefined : <AddExercisePopup classId={classId} />
+        student ? undefined : !classId ? (
+          <Button variant={"ghost"} disabled={true}>
+            Choose class
+          </Button>
+        ) : (
+          <AddExercisePopup classId={classId} />
+        )
       }
     >
       <div className="flex flex-col gap-2">
-        {assignments === null || assignments?.length === 0 ? (
+        {exercises === null || exercises?.length === 0 ? (
           <Label className="mt-2 ml-4">
             No exercises available for the selected courses/classes
           </Label>
         ) : (
-          assignments?.map((task: AnyTask) => (
+          exercises?.map((task: AnyTask) => (
             <div
               className={"flex flex-row gap-0"}
               key={task.id}

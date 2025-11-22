@@ -9,9 +9,9 @@ import {
 } from "@/components/complex/summaries/linksSummary.tsx";
 import {
   type AnyTask,
-  AssignmentSummary,
+  ExerciseSummary,
   type QuizTask,
-} from "@/components/complex/summaries/assignmentSummary.tsx";
+} from "@/components/complex/summaries/exerciseSummary.tsx";
 import {
   type FileProps,
   FilesSummary,
@@ -260,8 +260,8 @@ export function TeacherCalendar() {
             student={false}
             classId={selectedClassId ? selectedClassId : undefined}
           />
-          <AssignmentSummary
-            assignments={assignments}
+          <ExerciseSummary
+            exercises={assignments}
             student={false}
             classId={selectedClassId ? selectedClassId : undefined}
           />

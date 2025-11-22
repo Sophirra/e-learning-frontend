@@ -9,7 +9,7 @@ import type { Question } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { getUserCategories, getUserQuestions } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
-import { QuestionDetailsPopup } from "@/features/quiz/questionDetailsPopup.tsx";
+import { QuestionDetailsPopup } from "@/components/complex/popups/quiz/questions/questionDetailsPopup.tsx";
 import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
 import { Button } from "@/components/ui/button.tsx";
 
