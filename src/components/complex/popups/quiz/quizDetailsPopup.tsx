@@ -15,8 +15,18 @@ import { useUser } from "@/features/user/UserContext.tsx";
 import type { Quiz, QuizBrief } from "@/api/types.ts";
 import { getQuiz, getStudentById, getTeacherById } from "@/api/apiCalls.ts";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils.ts";
 
-export function QuizDetailsPopup({ quizBrief }: { quizBrief: QuizBrief }) {
+export function QuizDetailsPopup({
+  quizBrief,
+  selected,
+  setSelected,
+}: {
+  quizBrief: QuizBrief;
+  selected?: boolean;
+  setSelected?: (quiz: QuizBrief | null) => void;
+}) {
   const { user } = useUser();
   const navigate = useNavigate();
   const [load, setLoad] = useState(false);
@@ -36,6 +46,7 @@ export function QuizDetailsPopup({ quizBrief }: { quizBrief: QuizBrief }) {
 
   const [teacher, setTeacher] = useState<string>("");
   const [student, setStudent] = useState<string>("");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     async function getPersonDetails() {
@@ -43,24 +54,45 @@ export function QuizDetailsPopup({ quizBrief }: { quizBrief: QuizBrief }) {
         //TODO: odkomentować jak będzie działał backend
         const quizData = await getQuiz(quizBrief.id);
         setQuiz(quizData);
-        if (user?.activeRole === "teacher") {
-          const studentData = await getStudentById(quiz.studentId);
-          setStudent(studentData.name + " " + studentData.surname);
-        } else if (user?.activeRole === "student") {
-          const teacherData = await getTeacherById(quiz.teacherId);
-          setTeacher(teacherData.name + " " + teacherData.surname);
+        if (quiz) {
+          if (user?.activeRole === "teacher") {
+            const studentData = await getStudentById(quiz.studentId);
+            setStudent(studentData.name + " " + studentData.surname);
+          } else if (user?.activeRole === "student") {
+            const teacherData = await getTeacherById(quiz.teacherId);
+            setTeacher(teacherData.name + " " + teacherData.surname);
+          }
         }
       }
     }
     getPersonDetails();
   }, [load]);
 
+  function handleSelect() {
+    if (setSelected) {
+      setSelected(quizBrief);
+      toast.success("Selected quiz: " + quizBrief.name);
+      setOpen(false);
+    } else {
+      toast.error("Couldn't select quiz");
+    }
+  }
+
   return (
-    <Dialog onOpenChange={() => setLoad(false)}>
+    <Dialog
+      onOpenChange={(open) => {
+        setLoad(false);
+        setOpen(open);
+      }}
+      open={open}
+    >
       <DialogTrigger asChild>
         <Button
           variant={"ghost"}
-          className="shadow-md flex flex-col gap-1 h-1/1 items-start "
+          className={cn(
+            "shadow-md flex flex-col gap-1 h-1/1 items-start ",
+            selected && "bg-slate-200",
+          )}
           onClick={() => setLoad(true)}
         >
           <h3 className="text-lg font-bold truncate">{quizBrief.name}</h3>
@@ -96,19 +128,25 @@ export function QuizDetailsPopup({ quizBrief }: { quizBrief: QuizBrief }) {
           <DialogClose>
             <Button>Cancel</Button>
           </DialogClose>
-          <Button
-            variant={"outline"}
-            onClick={() => {
-              navigate(
-                "/quizzes/" +
-                  quiz.id +
-                  (user?.activeRole === "student" ? "/solve" : "/edit"),
-              );
-            }}
-            disabled={user?.activeRole !== "student"}
-          >
-            {user?.activeRole === "student" ? "Solve" : "Edit"}
-          </Button>
+          {setSelected ? (
+            <Button variant={"outline"} onClick={() => handleSelect()}>
+              Choose
+            </Button>
+          ) : (
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                navigate(
+                  "/quizzes/" +
+                    quiz.id +
+                    (user?.activeRole === "student" ? "/solve" : "/edit"),
+                );
+              }}
+              disabled={user?.activeRole !== "student"}
+            >
+              {user?.activeRole === "student" ? "Solve" : "Edit"}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

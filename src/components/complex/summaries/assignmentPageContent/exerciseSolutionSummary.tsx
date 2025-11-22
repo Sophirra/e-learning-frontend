@@ -2,13 +2,13 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type { AssignmentBrief } from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ExerciseBrief } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 
-export function AssignmentSolution({
+export function ExerciseSolutionSummary({
   assignment,
 }: {
-  assignment: AssignmentBrief | null;
+  assignment: ExerciseBrief | null;
 }) {
   const solutionFiles = assignment?.files?.filter(
     (file) => file.type === "solution",
@@ -45,14 +45,14 @@ export function AssignmentSolution({
         ) : (
           solutionFiles?.map((file) => (
             <div className="flex flex-row gap-0 pl-2" key={file.id}>
-                <a
-                    href={`${import.meta.env.VITE_API_URL}/${file.path}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Button variant="link">{file.name}</Button>
-                </a>
-                {/*<a href={file.path} target="_blank" rel="noopener noreferrer">*/}
+              <a
+                href={`${import.meta.env.VITE_API_URL}/${file.path}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="link">{file.name}</Button>
+              </a>
+              {/*<a href={file.path} target="_blank" rel="noopener noreferrer">*/}
               {/*  <Button variant="link" className="pl-0">*/}
               {/*    {file.name}*/}
               {/*  </Button>*/}

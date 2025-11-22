@@ -19,7 +19,7 @@ export function NavigationBar() {
               : null,
             { to: "/calendar", icon: icons.Calendar, label: "Calendar" },
             {
-              to: "/assignments",
+              to: "/exercise",
               icon: icons.ClipboardList,
               label: "Exercises",
             },

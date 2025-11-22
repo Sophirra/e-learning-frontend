@@ -2,8 +2,8 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
-import type { AnyTask } from "@/components/complex/summaries/assignmentSummary.tsx";
+import type { AnyTask } from "@/components/complex/summaries/exerciseSummary.tsx";
+import { AddQuizPopup } from "@/components/complex/popups/quiz/addQuizPopup.tsx";
 
 export function QuizSummary({
   quizzes,
@@ -30,9 +30,15 @@ export function QuizSummary({
       label={"Quizzes"}
       labelIcon={icons.Brain}
       canHide={true}
-      customButton={
-        // TODO: Modify to support assignment type completion when adding a task
-        student || !classId ? undefined : () => AddTaskPopup(classId)
+      customButton={() =>
+        student ? undefined : !classId ? (
+          <Button variant={"ghost"} disabled={true}>
+            <icons.Plus />
+            Add
+          </Button>
+        ) : (
+          <AddQuizPopup classId={classId} />
+        )
       }
     >
       <div className="flex flex-col gap-2">

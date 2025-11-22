@@ -66,7 +66,7 @@ export function StudentDetailsCard({
             { to: "/home", icon: icons.Home, label: "Home" },
             { to: "/calendar", icon: icons.Calendar, label: "Calendar" },
             {
-              to: "/assignments",
+              to: "/exercise",
               icon: icons.ClipboardList,
               label: "Assignments",
             },

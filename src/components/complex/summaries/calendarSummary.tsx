@@ -19,7 +19,7 @@ export function CalendarSummary({ classes }: { classes: ClassBrief[] }) {
       ) : (
         classes.map((classItem) => (
           <div
-            key={`${classItem.courseId}}`}
+            key={classItem.id}
             className="flex flex-row gap-0"
             style={{ width: "100%" }}
           >

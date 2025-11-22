@@ -2,18 +2,15 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type {
-  AssignmentBrief,
-  Mode,
-} from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ExerciseBrief, Mode } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 
-export function AssignmentTitle({
-  assignment,
+export function ExerciseTitle({
+  exercise,
   pageMode,
   setPageMode,
 }: {
-  assignment: AssignmentBrief | null;
+  exercise: ExerciseBrief | null;
   pageMode: Mode;
   setPageMode: (mode: Mode) => void;
 }) {
@@ -21,7 +18,7 @@ export function AssignmentTitle({
 
   return (
     <Summary
-      label={assignment?.name || "Untitled Assignment"}
+      label={exercise?.name || "Untitled Exercise"}
       labelIcon={icons.Clipboard}
       canHide={false}
       customButton={() =>
@@ -30,7 +27,7 @@ export function AssignmentTitle({
             variant="ghost"
             className="flex items-center gap-2"
             onClick={() => {
-              console.log("Submitting assignment:", assignment?.id);
+              console.log("Submitting exercise:", exercise?.id);
             }}
           >
             Submit
@@ -41,11 +38,11 @@ export function AssignmentTitle({
             variant="ghost"
             className="flex items-center gap-2"
             onClick={() => {
-              console.log("Submitting assignment:", assignment?.id);
+              console.log("Submitting exercise:", exercise?.id);
               setPageMode("edit");
             }}
           >
-            Edit assignment
+            Edit exercise
             <icons.Pen className="w-4 h-4" />
           </Button>
         ) : (
@@ -54,7 +51,7 @@ export function AssignmentTitle({
             variant="ghost"
             className="flex items-center gap-2"
             onClick={() => {
-              console.log("Submitting assignment:", assignment?.id);
+              console.log("Submitting exercise:", exercise?.id);
               setPageMode("view");
             }}
           >
@@ -65,11 +62,11 @@ export function AssignmentTitle({
       }
     >
       <div className="flex flex-col gap-2 p-2 text-xs font-light ml-2 pl-2">
-        {assignment?.instruction ? (
-          <Label className="font-light">{assignment.instruction}</Label>
+        {exercise?.instruction ? (
+          <Label className="font-light">{exercise.instruction}</Label>
         ) : (
           <Label className="font-light">
-            No instructions provided for this assignment.
+            No instructions provided for this exercise.
           </Label>
         )}
       </div>

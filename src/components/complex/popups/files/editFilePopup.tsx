@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import type { FileData, FileTag } from "@/api/types.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
-import { getUserId } from "@/api/api.ts";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { getAvailableTags, updateFileData } from "@/api/apiCalls.ts";
 import { NewTagPopup } from "@/components/complex/popups/files/newTagPopup.tsx";
@@ -29,10 +28,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
   const [open, setOpen] = useState<boolean>(false);
 
   //TODO: get available tags from backend
-  const [availableTags, setAvailableTags] = useState<FileTag[]>([
-    // { id: "1", name: "tag1", ownerId: userId || "" },
-    // { id: "2", name: "tag2", ownerId: userId || "" },
-  ]);
+  const [availableTags, setAvailableTags] = useState<FileTag[]>([]);
 
   async function updateFile() {
     try {

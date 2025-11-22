@@ -15,27 +15,41 @@ import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePop
 import { useState } from "react";
 import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
 import type { FileData } from "@/api/types.ts";
+import { toast } from "sonner";
 
-export function AddAssignmentPopup({ classId }: { classId: string }) {
+export function CreateExercisePopup({
+  classId,
+  closeParent,
+}: {
+  classId: string;
+  closeParent: (open: false) => void;
+}) {
   const [chosenFile, setChosenFile] = useState<FileData | null>(null);
-  function addAssignment() {
-    //TODO: backend magic - add assignment with optional file to class
+  function addExercise() {
+    //TODO: backend magic - add exercise with optional file to class
+    try {
+      //TODO: backend magic - add exercise with optional file to class
+      toast.success("Exercise created successfully");
+      closeParent(false);
+    } catch (e: any) {
+      toast.error("Failed to create exercise: " + e.message);
+    }
   }
   return (
     <Dialog>
       <DialogTrigger>
         <Button variant={"outline"} disabled={!classId}>
-          Add new assignment
+          Add new exercise
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create new assignment</DialogTitle>
-          <DialogDescription>Add assignment details:</DialogDescription>
+          <DialogTitle>Create new exercise</DialogTitle>
+          <DialogDescription>Add exercise details:</DialogDescription>
         </DialogHeader>
         <div className={"flex flex-col gap-4 pt-2"}>
           <Label>Title</Label>
-          <Input id={"title"} type={"text"} disabled={false} />
+          <Input id={"title"} type={"text"} />
           <Label>Description</Label>
           <Input id={"descr"} type={"text"} />
           <Label>Additional file</Label>
@@ -48,7 +62,7 @@ export function AddAssignmentPopup({ classId }: { classId: string }) {
             <DialogClose>
               <Button>Cancel</Button>
             </DialogClose>
-            <Button variant={"outline"} onClick={() => addAssignment()}>
+            <Button variant={"outline"} onClick={() => addExercise()}>
               Create
             </Button>
           </DialogFooter>

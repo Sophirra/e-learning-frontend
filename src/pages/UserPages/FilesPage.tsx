@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
-import { FileGallery } from "@/components/complex/fileGallery.tsx";
+import { FileGallery } from "@/components/complex/galleries/fileGallery.tsx";
 
 export function FilesPage() {
   const { user } = useUser();

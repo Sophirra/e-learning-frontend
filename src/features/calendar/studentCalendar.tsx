@@ -12,9 +12,9 @@ import {
 } from "@/components/complex/summaries/linksSummary.tsx";
 import {
   type AnyTask,
-  AssignmentSummary,
+  ExerciseSummary,
   type QuizTask,
-} from "@/components/complex/summaries/assignmentSummary.tsx";
+} from "@/components/complex/summaries/exerciseSummary.tsx";
 import { getUserId } from "@/api/api.ts";
 import {
   type FileProps,
@@ -236,23 +236,30 @@ export function StudentCalendar() {
     if (!studentId) return;
 
     const fetchQuizzes = async () => {
-      const data = await getQuizzes(studentId, selectedCourseId ?? undefined, undefined, selectedClassId ?? undefined);
+      const data = await getQuizzes(
+        studentId,
+        selectedCourseId ?? undefined,
+        undefined,
+        selectedClassId ?? undefined,
+      );
 
-      const mapped = data.map(q => ({
-        id: q.id,
-        name: q.name,
-        courseName: q.courseName,
-        className: undefined,
-        completed: q.completed,
-        type: "quiz",
-      } satisfies QuizTask));
+      const mapped = data.map(
+        (q) =>
+          ({
+            id: q.id,
+            name: q.name,
+            courseName: q.courseName,
+            className: undefined,
+            completed: q.completed,
+            type: "quiz",
+          }) satisfies QuizTask,
+      );
 
       setQuizzes(mapped);
     };
 
     fetchQuizzes();
   }, [selectedCourseId, selectedClassId]);
-
 
   // Auto-scroll do wybranej kafelki (gdy przyszło z URL lub po kliknięciu)
   useEffect(() => {
@@ -314,7 +321,7 @@ export function StudentCalendar() {
         </div>
         <div className="w-3/4 space-y-8">
           <LinksSummary links={links} student={true} />
-          <AssignmentSummary assignments={assignments} student={true} />
+          <ExerciseSummary exercises={assignments} student={true} />
           <QuizSummary quizzes={quizzes} student={true} />
           <FilesSummary files={files} lastCount={5} student={true} />
         </div>

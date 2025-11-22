@@ -7,9 +7,9 @@ import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
   type AnyTask,
-  AssignmentSummary,
+  ExerciseSummary,
   type QuizTask,
-} from "@/components/complex/summaries/assignmentSummary.tsx";
+} from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import {
   getClassBriefs,
@@ -53,7 +53,7 @@ export function HomePage() {
     setSelectedCourseId(null);
     setLoadingCourses(true);
 
-    const run = async () => {
+    const fetchClasses = async () => {
       try {
         if (!activeRole) {
           // brak roli   nie fetchujemy nic
@@ -73,7 +73,7 @@ export function HomePage() {
       }
     };
 
-    run();
+    fetchClasses();
     // brak cleanupu potrzebnego   unieważnianie robi requestIdRef
   }, [activeRole]);
 
@@ -170,8 +170,8 @@ export function HomePage() {
             classes={filteredClasses}
           />
 
-          <AssignmentSummary
-            assignments={visibleAssignments}
+          <ExerciseSummary
+            exercises={visibleAssignments}
             student={activeRole === "student" || false}
           />
 

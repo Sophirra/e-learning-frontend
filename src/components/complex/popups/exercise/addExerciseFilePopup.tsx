@@ -14,10 +14,10 @@ import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePop
 import { useState } from "react";
 import type { FileData } from "@/api/types.ts";
 
-export function AddAssignmentFilePopup(assignmentId?: string) {
+export function AddExerciseFilePopup(exerciseId?: string) {
   const [chosenFile, setChosenFile] = useState<FileData | null>(null);
-  function handleAddAssignmentFile(file: FileData) {
-    //TODO: backend magic - add file to existing assignment
+  function handleAddExcersiseFile(file: FileData) {
+    //TODO: backend magic - add file to existing exercise
   }
   return (
     <Dialog>
@@ -43,7 +43,7 @@ export function AddAssignmentFilePopup(assignmentId?: string) {
             variant={"outline"}
             disabled={!chosenFile}
             onSelect={() => {
-              chosenFile && handleAddAssignmentFile(chosenFile);
+              chosenFile && handleAddExcersiseFile(chosenFile);
             }}
           >
             Create

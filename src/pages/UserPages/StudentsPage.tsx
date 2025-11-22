@@ -10,13 +10,13 @@ import CourseFilter from "@/components/complex/courseFilter.tsx";
 import type { CourseBrief, Student } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
-  AssignmentSummary,
+  ExerciseSummary,
   type AssignmentTask,
   type QuizTask,
-} from "@/components/complex/summaries/assignmentSummary.tsx";
+} from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { FileGallery } from "@/components/complex/fileGallery.tsx";
+import { FileGallery } from "@/components/complex/galleries/fileGallery.tsx";
 import {
   getStudentData,
   getStudentWithTeacherExercises,
@@ -135,7 +135,7 @@ export function StudentsPage() {
 
               <div className="w-3/4 space-y-8">
                 <CalendarSummary classes={[]} />
-                <AssignmentSummary student={false} assignments={assignments} />
+                <ExerciseSummary student={false} exercises={assignments} />
                 <QuizSummary quizzes={quizzes} student={false} />
                 <ChatSummary />
                 <Summary

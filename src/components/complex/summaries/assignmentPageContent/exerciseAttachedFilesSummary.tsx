@@ -2,18 +2,15 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type {
-  AssignmentBrief,
-  Mode,
-} from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ExerciseBrief, Mode } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
-import { AddAssignmentFilePopup } from "@/components/complex/popups/assignments/addAssignmentFilePopup.tsx";
+import { AddExerciseFilePopup } from "@/components/complex/popups/exercise/addExerciseFilePopup.tsx";
 
-export function AssignmentAttachedFiles({
-  assignment,
+export function ExerciseAttachedFilesSummary({
+  exercise,
   pageMode,
 }: {
-  assignment: AssignmentBrief | null;
+  exercise: ExerciseBrief | null;
   pageMode: Mode;
 }) {
   const { user } = useUser();
@@ -41,7 +38,7 @@ export function AssignmentAttachedFiles({
     return formatted;
   };
 
-  const contentFiles = assignment?.files?.filter(
+  const contentFiles = exercise?.files?.filter(
     (file) => file.type === "content",
   );
 
@@ -52,23 +49,23 @@ export function AssignmentAttachedFiles({
       canHide={false}
       customButton={
         user?.activeRole === "teacher" && pageMode === "edit"
-          ? () => AddAssignmentFilePopup(assignment?.id)
+          ? () => AddExerciseFilePopup(exercise?.id)
           : undefined
       }
     >
       <div className="flex flex-col gap-2 p-2 text-xs font-normal ml-1">
         {contentFiles?.length === 0 || contentFiles === undefined ? (
           <Label className="mt-2 ml-2 font-light">
-            No attached files found for this assignment.
+            No attached files found for this exercise.
           </Label>
         ) : (
           contentFiles?.map((file) => (
             <div className="flex flex-row gap-0 pl-2" key={file.id}>
               <Label>{convertFileNameToConvenientName(file.name)}</Label>
               <a
-                  href={`${import.meta.env.VITE_API_URL}/${file.name}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                href={`${import.meta.env.VITE_API_URL}/${file.name}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Button variant="link">{file.name}</Button>
               </a>

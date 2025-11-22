@@ -20,13 +20,13 @@ import type {
   QuizBrief,
   QuestionCategory,
   QuizSolution,
-  Student
+  Student,
 } from "@/api/types.ts";
-import {readPersistedRole} from "@/features/user/RolePersistence.ts";
+import { readPersistedRole } from "@/features/user/RolePersistence.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
 import type { ExerciseBrief } from "@/pages/UserPages/HomePage.tsx";
-import type { AssignmentBrief } from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ExerciseBrief } from "@/pages/UserPages/ExercisePage.tsx";
 import type { ClassSchedule } from "@/components/complex/schedules/schedule.tsx";
 import type { ClassBriefDto } from "@/features/calendar/teacherCalendar.tsx";
 import type { StudentBrief } from "@/components/complex/courseFilter.tsx";
@@ -39,7 +39,7 @@ import { useUser } from "@/features/user/UserContext.tsx";
 import type {
   AssignmentTask,
   QuizTask,
-} from "@/components/complex/summaries/assignmentSummary.tsx";
+} from "@/components/complex/summaries/exerciseSummary.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -210,19 +210,21 @@ export const getCourses = async (filters?: {
 }): Promise<PagedResult<CourseWidget>> => {
   const params = new URLSearchParams();
 
-
   filters?.categories?.forEach((c) => params.append("categories", c));
   filters?.levels?.forEach((l) => params.append("levels", l));
   filters?.languages?.forEach((lng) => params.append("languages", lng));
 
-  if (typeof filters?.priceFrom === "number") params.set("priceFrom", String(filters.priceFrom));
-  if (typeof filters?.priceTo === "number")   params.set("priceTo", String(filters.priceTo));
-  if (filters?.teacherId)                     params.set("teacherId", filters.teacherId);
-  if (filters?.query)                         params.set("query", filters.query);
+  if (typeof filters?.priceFrom === "number")
+    params.set("priceFrom", String(filters.priceFrom));
+  if (typeof filters?.priceTo === "number")
+    params.set("priceTo", String(filters.priceTo));
+  if (filters?.teacherId) params.set("teacherId", filters.teacherId);
+  if (filters?.query) params.set("query", filters.query);
 
-
-  if (typeof filters?.pageNumber === "number") params.set("pageNumber", String(filters.pageNumber));
-  if (typeof filters?.pageSize === "number")   params.set("pageSize", String(filters.pageSize));
+  if (typeof filters?.pageNumber === "number")
+    params.set("pageNumber", String(filters.pageNumber));
+  if (typeof filters?.pageSize === "number")
+    params.set("pageSize", String(filters.pageSize));
 
   const queryString = params.toString();
   const url = `/api/courses${queryString ? `?${queryString}` : ""}`;
@@ -230,8 +232,6 @@ export const getCourses = async (filters?: {
   const { data } = await Api.get<PagedResult<CourseWidget>>(url);
   return data ?? { items: [], totalCount: 0, page: 1, pageSize: 10 };
 };
-
-
 
 /**
  * Fetches all upcoming classes (within the next 14 days) for the currently
@@ -294,30 +294,26 @@ export const getClassBriefs = async (
 
   const resp = await Api.get<ClassBrief[]>(url);
 
-    const status = (resp as any)?.status;
-    const arr: unknown = (resp as any)?.data ?? resp;
+  const status = (resp as any)?.status;
+  const arr: unknown = (resp as any)?.data ?? resp;
 
-    if (status === 204 || !arr) return [];
+  if (status === 204 || !arr) return [];
 
-    if (!Array.isArray(arr)) {
-      console.warn("getCourseBriefs: unexpected response shape", resp);
-      return [];
-    }
+  if (!Array.isArray(arr)) {
+    console.warn("getCourseBriefs: unexpected response shape", resp);
+    return [];
+  }
 
-    return arr.map((c) => ({
-      ...c,
-      startTime: new Date(c.startTime),
-    }));}
+  return arr.map((c) => ({
+    ...c,
+    startTime: new Date(c.startTime),
+  }));
+};
 //   } catch (err) {
 //     console.error("getCourseBriefs: error fetching data", err);
 //     return [];
 //   }
 // };
-
-
-
-
-
 
 /**
  * Fetches all spectators for the currently authenticated student from the API.
@@ -445,20 +441,22 @@ export const uploadUserFile = async (file: File): Promise<any> => {
  * @returns Promise resolving to an array of Course objects.
  */
 //TODO: modify according to backend (created based on getCourses)
-export const getFiles = async (filter?: FileFilter): Promise<PagedResult<FileData>> => {
+export const getFiles = async (
+  filter?: FileFilter,
+): Promise<PagedResult<FileData>> => {
   const params = new URLSearchParams();
   if (filter?.studentId) params.append("studentId", filter.studentId);
   if (filter?.courseId) params.append("courseId", filter.courseId);
 
-  filter?.createdBy?.forEach(id => params.append("createdBy", id));
-  filter?.type?.forEach(t => params.append("types", t));
-  filter?.tagIds?.forEach(id => params.append("tags", id));
+  filter?.createdBy?.forEach((id) => params.append("createdBy", id));
+  filter?.type?.forEach((t) => params.append("types", t));
+  filter?.tagIds?.forEach((id) => params.append("tags", id));
 
   if (filter?.page) params.append("page", String(filter.page));
   if (filter?.pageSize) params.append("pageSize", String(filter.pageSize));
 
   const res = await Api.get<PagedResult<FileData>>(
-      `/api/user/files?${params.toString()}`,
+    `/api/user/files?${params.toString()}`,
   );
 
   return res.data;
@@ -494,7 +492,6 @@ export async function createNewTag(name: string) {
 }
 
 export async function deleteFile(fileId: string) {
-
   await Api.delete(`/api/user/files?fileId=${fileId}`);
 }
 
@@ -527,7 +524,7 @@ export async function getTeacherClassesWithStudents(): Promise<
  * @param grade
  * @param comments
  */
-export async function addAssignmentGrade( //TODO: check
+export async function addExerciseGrade( //TODO: check
   assignmentId: string,
   grade: number,
   comments?: string,
@@ -779,7 +776,7 @@ export async function getExercises(
   activeRole: string | null,
   preferredCourseId: string | null,
   preferredStudentId?: string | null,
-): Promise<AssignmentBrief[]> {
+): Promise<ExerciseBrief[]> {
   if (!userId) {
     return [];
   }
@@ -794,7 +791,7 @@ export async function getExercises(
     return [];
   }
 
-  const { data } = await Api.get<AssignmentBrief[]>(endpoint, {
+  const { data } = await Api.get<ExerciseBrief[]>(endpoint, {
     params: {
       courseId: preferredCourseId,
       studentId: preferredStudentId ?? undefined,
@@ -869,7 +866,6 @@ export async function getTeacherStudents(
 
   return data ?? [];
 }
-
 
 export async function getUserFileTags(): Promise<FileTag[]> {
   const { data } = await Api.get<FileTag[]>("/api/user/files/tags");
@@ -962,4 +958,26 @@ export async function getClassBrief(classId: string): Promise<ClassBriefDto> {
   const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}`);
 
   return data;
+}
+
+export async function createQuiz(
+  name: string,
+  questionIds: string[],
+  classId: string,
+) {
+  const res = await Api.post("/api/quizzes", { name, questionIds, classId });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
+}
+
+export async function copyQuiz(quizId: string, classId: string) {
+  const res = await Api.post(`/api/quizzes/${quizId}/copy`, { classId });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
+}
+
+export async function copyExercise(exerciseId: string, classId: string) {
+  const res = await Api.post(`/api/exercises/${exerciseId}/copy`, { classId });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
 }

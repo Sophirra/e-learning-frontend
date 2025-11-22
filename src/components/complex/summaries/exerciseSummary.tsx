@@ -2,7 +2,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { AddTaskPopup } from "@/components/complex/popups/assignments/addTaskPopup.tsx";
+import { AddExercisePopup } from "@/components/complex/popups/exercise/addExercisePopup.tsx";
 
 export type AnyTask = QuizTask | AssignmentTask;
 
@@ -10,7 +10,6 @@ export interface TaskProps {
   id: string;
   name: string;
   completed: boolean;
-  //TODO: tasks are downloaded by class/course, they do not point back to them
   courseName: string;
   className?: string;
 }
@@ -27,12 +26,12 @@ export interface AssignmentTask extends TaskProps {
   comments?: string;
 }
 
-export function AssignmentSummary({
-  assignments,
+export function ExerciseSummary({
   student,
+  exercises,
   classId,
 }: {
-  assignments: AnyTask[];
+  exercises: AnyTask[];
   student: boolean;
   classId?: string;
 }) {
@@ -60,18 +59,24 @@ export function AssignmentSummary({
       label={"Exercises"}
       labelIcon={icons.ClipboardList}
       canHide={true}
-      customButton={
-        //TODO: zmodyfikować do uzupełnienia assignment type
-        student || !classId ? undefined : () => AddTaskPopup(classId)
+      customButton={() =>
+        student ? undefined : !classId ? (
+          <Button variant={"ghost"} disabled={true}>
+            <icons.Plus />
+            Add
+          </Button>
+        ) : (
+          <AddExercisePopup classId={classId} />
+        )
       }
     >
       <div className="flex flex-col gap-2">
-        {assignments === null || assignments?.length === 0 ? (
+        {exercises === null || exercises?.length === 0 ? (
           <Label className="mt-2 ml-4">
             No exercises available for the selected courses/classes
           </Label>
         ) : (
-          assignments?.map((task: AnyTask) => (
+          exercises?.map((task: AnyTask) => (
             <div
               className={"flex flex-row gap-0"}
               key={task.id}

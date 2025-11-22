@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { FileGallery } from "@/components/complex/fileGallery.tsx";
+import { FileGallery } from "@/components/complex/galleries/fileGallery.tsx";
 import { useState } from "react";
 import type { FileData } from "@/api/types.ts";
 
