@@ -1,6 +1,3 @@
-import {useState} from "react";
-import type {ApiDayAvailability, ClassSchedule} from "@/components/complex/schedules/schedule.tsx";
-
 export interface RegisterUserDto {
   accountType: "student" | "teacher";
   email: string;
@@ -104,36 +101,37 @@ export interface ClassBrief {
   startTime: Date;
   courseId: string;
   courseName: string;
-  teacherId: string;
-  studentId: string;
+  teacherId?: string;
+  studentId?: string;
 }
 //co to za potwór (z teacher calendar)
 export type ClassBriefDto = {
+  id: string;
+  startTime: string;
+  status: string;
+  linkToMeeting?: string;
+  links: string[];
+  userId: string;
+  courseId: string;
+  courseName: string;
+  exercises: {
     id: string;
-    startTime: string;
-    status: string;
-    linkToMeeting?: string;
-    links: string[];
-    userId: string;
-    courseId: string;
+    exerciseStatus: string;
+    grade?: number;
+  }[];
+  quizzes: {
+    id: string;
+    title: string;
+    score?: number;
+  }[];
+  files: {
+    id: string;
+    name: string;
+    path: string;
     courseName: string;
-    exercises: {
-        id: string;
-        exerciseStatus: string;
-        grade?: number;
-    }[];
-    quizzes: {
-        id: string;
-        title: string;
-        score?: number;
-    }[];
-    files: {
-        id: string;
-        name: string;
-        path: string;
-        courseName: string;
-        classDate: string;
-    }[];
+    classDate: string;
+  }[];
+};
 export interface FileData {
   id: string;
   fileName: string;

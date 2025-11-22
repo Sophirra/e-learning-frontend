@@ -7,13 +7,13 @@ import {
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useNavigate } from "react-router-dom";
-import type { ClassBrief, CourseBrief } from "@/api/types.ts";
+import type { CourseBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 interface StudentDetailsCardProps {
   id: string;
   name: string;
-  image?: string;
+  // image?: string;
   courses: CourseBrief[];
   selectedCourseId: string | null;
   setSelectedCourseId: (courseId: string) => void;
@@ -22,7 +22,7 @@ interface StudentDetailsCardProps {
 export function StudentDetailsCard({
   id,
   name,
-  image,
+  // image,
   courses,
   selectedCourseId,
   setSelectedCourseId,
@@ -31,11 +31,11 @@ export function StudentDetailsCard({
   return (
     <Card className="bg-slate-100 rounded-lg p-6">
       <CardHeader className={"flex-col gap-4 text-left"}>
-        <img
-          src={image}
-          alt={"profile picture"}
-          className={"aspect-square text-left rounded-full"}
-        />
+        {/*<img*/}
+        {/*  src={image}*/}
+        {/*  alt={"profile picture"}*/}
+        {/*  className={"aspect-square text-left rounded-full"}*/}
+        {/*/>*/}
         <CardTitle className={"text-xl"}>{name}</CardTitle>
       </CardHeader>
       <CardContent className={"space-y-2 text-left"}>

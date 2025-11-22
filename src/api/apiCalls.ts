@@ -35,7 +35,6 @@ import {
   mapParticipationToCourseBrief,
 } from "@/mappers/courseMappers.ts";
 import type { ErrorResponse } from "react-router-dom";
-import { useUser } from "@/features/user/UserContext.tsx";
 import type {
   AssignmentTask,
   QuizTask,
@@ -205,9 +204,7 @@ export const getCourses = async (filters?: {
   priceTo?: number;
   teacherId?: string;
   query?: string;
-  pageNumber?: number;
-  pageSize?: number;
-}): Promise<PagedResult<CourseWidget>> => {
+}): Promise<CourseWidget[]> => {
   const params = new URLSearchParams();
 
   filters?.categories?.forEach((c) => params.append("categories", c));
@@ -884,53 +881,53 @@ export async function getUserFileOwners(): Promise<FileOwner[]> {
 
 export async function getTeacherCourses(
   teacherId: string,
-): Promise<ClassBrief[]> {
+): Promise<CourseBrief[]> {
   if (!teacherId) {
     return [];
   }
 
-  const { data } = await Api.get<ClassBrief[]>(
+  const { data } = await Api.get<CourseBrief[]>(
     `/api/teacher/${teacherId}/courses`,
   );
 
   return (data ?? [])
-    .map((c: any) => mapApiCourseToCourseBrief(c, teacherId))
-    .filter((c: ClassBrief | null): c is ClassBrief => !!c);
+    .map((c: any) => mapApiCourseToCourseBrief(c))
+    .filter((c: CourseBrief | null): c is CourseBrief => !!c);
 }
 
 export async function getStudentParticipations(
   studentId: string,
-): Promise<ClassBrief[]> {
+): Promise<CourseBrief[]> {
   if (!studentId) {
     return [];
   }
 
-  const { data } = await Api.get<ClassBrief[]>(
+  const { data } = await Api.get<CourseBrief[]>(
     `/api/students/${studentId}/participations`,
   );
 
   return data
     .map(mapParticipationToCourseBrief)
-    .filter((c: any): c is ClassBrief => !!c);
+    .filter((c: any): c is CourseBrief => !!c);
 }
 
 export async function getStudentCoursesWithSpecificTeacher(
   studentId: string,
-  teacherId: string,
   signal?: AbortSignal,
-): Promise<ClassBrief[]> {
+): Promise<CourseBrief[]> {
+  const teacherId = getUserId();
   if (!studentId || !teacherId) {
     return [];
   }
 
-  const { data } = await Api.get<ClassBrief[]>(
+  const { data } = await Api.get<CourseBrief[]>(
     `/api/teacher/${teacherId}/students/${studentId}/courses`,
     { signal },
   );
 
   return (data ?? [])
-    .map((c: any) => mapApiCourseToCourseBrief(c, teacherId))
-    .filter((c: ClassBrief | null): c is ClassBrief => !!c);
+    .map((c: any) => mapApiCourseToCourseBrief(c))
+    .filter((c: CourseBrief | null): c is CourseBrief => !!c);
 }
 
 export async function getTeacherStudentsWithSpecificCourse(

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button.tsx";
-import type { ClassBrief } from "@/api/types.tsx";
+import type { CourseBrief } from "@/api/types.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { SetupNewClassPopup } from "@/components/complex/popups/setupNewClassPopup.tsx";
@@ -33,7 +33,7 @@ export default function CourseFilter({
   setupClassButton?: boolean;
   resetExternal?: () => void;
 }) {
-  const [courses, setCourses] = useState<ClassBrief[]>([]);
+  const [courses, setCourses] = useState<CourseBrief[]>([]);
   const [students, setStudents] = useState<StudentBrief[]>([]);
   const { user } = useUser();
   const userId = getUserId();
@@ -54,7 +54,7 @@ export default function CourseFilter({
           if (!canceled) {
             setCourses(mapped);
 
-            if (!mapped.some((c) => c.courseId === selectedCourseId)) {
+            if (!mapped.some((c) => c.id === selectedCourseId)) {
               setSelectedCourseId(null);
             }
           }
@@ -115,7 +115,6 @@ export default function CourseFilter({
       try {
         const courseList = await getStudentCoursesWithSpecificTeacher(
           selectedStudentId,
-          userId,
           ac.signal,
         );
 
@@ -127,7 +126,7 @@ export default function CourseFilter({
         // Clears the selected course if it no longer exists in the new course set.
         if (
           selectedCourseId &&
-          !courseList.some((c) => c.courseId === selectedCourseId)
+          !courseList.some((c) => c.id === selectedCourseId)
         ) {
           setSelectedCourseId(null);
         }
@@ -219,19 +218,17 @@ export default function CourseFilter({
           All courses
         </Button>
         {student &&
-          courses.map((course: ClassBrief) => (
+          courses.map((course: CourseBrief) => (
             <Button
-              key={course.courseId}
-              variant={
-                selectedCourseId == course.courseId ? "default" : "outline"
-              }
+              key={course.id}
+              variant={selectedCourseId == course.id ? "default" : "outline"}
               size={"sm"}
               className="justify-start text-left h-auto py-2 px-3"
               onClick={() => {
-                setSelectedCourseId(course.courseId);
+                setSelectedCourseId(course.id);
               }}
             >
-              {course.courseName}
+              {course.name}
             </Button>
           ))}
         {!student && setSelectedStudentId && (
@@ -257,8 +254,8 @@ export default function CourseFilter({
             reset={false}
             key={`courses-${filterKey}`}
             items={courses.map((c) => ({
-              name: c.courseName,
-              value: c.courseId,
+              name: c.name,
+              value: c.id,
             }))}
             icon={icons.BookOpen}
             searchable={true}
