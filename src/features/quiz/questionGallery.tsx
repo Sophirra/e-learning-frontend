@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "@/features/user/UserContext.tsx";
 import {
@@ -9,19 +9,27 @@ import type { Question } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { getUserCategories, getUserQuestions } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
-import { QuestionDetailsPopup } from "@/components/complex/popups/questionDetailsPopup.tsx";
+import { QuestionDetailsPopup } from "@/features/quiz/questionDetailsPopup.tsx";
 import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
+import { Button } from "@/components/ui/button.tsx";
 
-export function QuestionGallery({ enableSelect }: { enableSelect: boolean }) {
+export function QuestionGallery({
+  enableSelect,
+  selectedQuestionIds,
+  setSelectedQuestionIds,
+}: {
+  enableSelect: boolean;
+  selectedQuestionIds: string[];
+  setSelectedQuestionIds: (questionId: string[]) => void;
+}) {
   const { user } = useUser();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [questionCategories, setQuestionCategories] = useState<
     SelectableItem[]
   >([]);
   const [selectedCategory, setSelectedCategory] = useState<SelectableItem[]>(
     [],
   );
-  // const [selectedQuestions, setSelectedQuestions] = useState<Question[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
@@ -71,9 +79,61 @@ export function QuestionGallery({ enableSelect }: { enableSelect: boolean }) {
       />
       {questions.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {questions.map((question) => (
-            <QuestionDetailsPopup key={question.id} questionBrief={question} />
-          ))}
+          {!enableSelect
+            ? questions.map((question) => (
+                <QuestionDetailsPopup
+                  key={question.id}
+                  questionBrief={question}
+                />
+              ))
+            : questions.map((question) => (
+                <Button
+                  key={question.id}
+                  disabled={user?.activeRole !== "teacher"}
+                  variant={"ghost"}
+                  className="shadow-md flex flex-col gap-1 h-1/1 items-start "
+                  onClick={() => {
+                    if (selectedQuestionIds.some((q) => q === question.id)) {
+                      console.log("remove: ", question.id);
+                      setSelectedQuestionIds(
+                        selectedQuestionIds.filter((q) => q !== question.id),
+                      );
+                    } else {
+                      if (question.id) {
+                        console.log("add: ", question.id);
+                        setSelectedQuestionIds([
+                          ...selectedQuestionIds,
+                          question.id,
+                        ]);
+                      }
+                    }
+                    console.log("selected: ", selectedQuestionIds);
+                  }}
+                >
+                  <div className={"flex flex-col gap-1"}>
+                    <h3 className="text-lg font-bold truncate">
+                      {question.content}
+                    </h3>
+                    <div className={"flex flex-row gap-2 "}>
+                      {question.categories.map((category) => (
+                        <p
+                          key={category.id}
+                          className="text-m text-gray-500 font-medium"
+                        >
+                          {category.name}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    {selectedQuestionIds.some((q) => q === question.id) ? (
+                      <icons.Check />
+                    ) : (
+                      <icons.Circle />
+                    )}
+                  </div>
+                </Button>
+              ))}
         </div>
       ) : (
         <LoadingTile text={"No questions found"} />

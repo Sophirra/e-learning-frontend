@@ -77,13 +77,10 @@ export function QuizGallery() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {quizzes.map((quiz) => (
-            <QuizDetailsPopup quizBrief={quiz} />
+            <QuizDetailsPopup key={quiz.id} quizBrief={quiz} />
           ))}
         </div>
       </Summary>
-      {user?.activeRole === "teacher" && (
-        <QuestionGallery enableSelect={false} />
-      )}
     </div>
   );
 }

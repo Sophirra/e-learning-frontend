@@ -23,13 +23,20 @@ import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
-import { CreateQuestionCategoryPopup } from "@/components/complex/popups/createQuestionCategoryPopup.tsx";
+import { CreateQuestionCategoryPopup } from "@/features/quiz/createQuestionCategoryPopup.tsx";
 
 export function QuestionDetailsPopup({
   questionBrief,
+  enableSelect = false,
+  selected,
+  setSelected,
 }: {
   questionBrief?: Question;
+  enableSelect?: boolean;
+  selected?: boolean;
+  setSelected?: (selected: boolean) => void;
 }) {
+  console.log("select:", selected);
   const { user } = useUser();
   const [load, setLoad] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -213,21 +220,30 @@ export function QuestionDetailsPopup({
             variant={"ghost"}
             className="shadow-md flex flex-col gap-1 h-1/1 items-start "
             onClick={() => {
-              setLoad(true);
-              setOpen(true);
+              if (selected !== undefined && setSelected) {
+                setSelected(!selected);
+              } else {
+                setLoad(true);
+                setOpen(true);
+              }
             }}
           >
-            <h3 className="text-lg font-bold truncate">{question.content}</h3>
-            <div className={"flex flex-row gap-2 "}>
-              {question.categories.map((category) => (
-                <p
-                  key={category.id}
-                  className="text-m text-gray-500 font-medium"
-                >
-                  {category.name}
-                </p>
-              ))}
+            <div className={"flex flex-col gap-1"}>
+              <h3 className="text-lg font-bold truncate">{question.content}</h3>
+              <div className={"flex flex-row gap-2 "}>
+                {question.categories.map((category) => (
+                  <p
+                    key={category.id}
+                    className="text-m text-gray-500 font-medium"
+                  >
+                    {category.name}
+                  </p>
+                ))}
+              </div>
             </div>
+            {enableSelect && (
+              <div> {selected ? <icons.Check /> : <icons.Circle />}</div>
+            )}
           </Button>
         ) : (
           <Button
