@@ -20,8 +20,8 @@ export function QuestionGallery({
   setSelectedQuestionIds,
 }: {
   enableSelect: boolean;
-  selectedQuestionIds: string[];
-  setSelectedQuestionIds: (questionId: string[]) => void;
+  selectedQuestionIds?: string[];
+  setSelectedQuestionIds?: (questionId: string[]) => void;
 }) {
   const { user } = useUser();
   // const navigate = useNavigate();
@@ -63,7 +63,12 @@ export function QuestionGallery({
 
   return (
     <Summary
-      label={"Questions: (" + selectedQuestionIds.length + " selected)"}
+      label={
+        "Questions" +
+        (selectedQuestionIds
+          ? `: (${selectedQuestionIds.length} selected)`
+          : "")
+      }
       labelIcon={icons.Question}
       customButton={() => <QuestionDetailsPopup />}
       canHide={true}
@@ -94,26 +99,30 @@ export function QuestionGallery({
                   variant={"ghost"}
                   className={cn(
                     "shadow-md flex flex-col gap-1 h-1/1 items-start border-1",
-                    selectedQuestionIds.some((q) => q === question.id)
+                    selectedQuestionIds &&
+                      selectedQuestionIds.some((q) => q === question.id)
                       ? "border-slate-300"
                       : "border-transparent",
                   )}
                   onClick={() => {
-                    if (selectedQuestionIds.some((q) => q === question.id)) {
-                      console.log("remove: ", question.id);
-                      setSelectedQuestionIds(
-                        selectedQuestionIds.filter((q) => q !== question.id),
-                      );
-                    } else {
-                      if (question.id) {
-                        console.log("add: ", question.id);
-                        setSelectedQuestionIds([
-                          ...selectedQuestionIds,
-                          question.id,
-                        ]);
+                    if (selectedQuestionIds && setSelectedQuestionIds) {
+                      if (selectedQuestionIds.some((q) => q === question.id)) {
+                        console.log("remove: ", question.id);
+                        setSelectedQuestionIds(
+                          selectedQuestionIds.filter((q) => q !== question.id),
+                        );
+                        console.log("selected: ", selectedQuestionIds);
+                      } else {
+                        if (question.id) {
+                          console.log("add: ", question.id);
+                          setSelectedQuestionIds([
+                            ...selectedQuestionIds,
+                            question.id,
+                          ]);
+                        }
+                        console.log("selected: ", selectedQuestionIds);
                       }
                     }
-                    console.log("selected: ", selectedQuestionIds);
                   }}
                 >
                   <div className={"flex flex-col gap-1"}>

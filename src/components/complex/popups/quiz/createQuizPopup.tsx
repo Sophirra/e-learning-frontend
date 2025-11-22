@@ -8,7 +8,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
@@ -16,6 +15,7 @@ import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
 import { QuestionGallery } from "@/components/complex/galleries/questionGallery.tsx";
+import { createQuiz as createQuizApi } from "@/api/apiCalls.ts";
 
 export function CreateQuizPopup({
   classId,
@@ -28,10 +28,15 @@ export function CreateQuizPopup({
   const [questionIds, setQuestionIds] = useState<string[]>([]);
   const [name, setName] = useState<string>("");
   const [nameError, setNameError] = useState<boolean>(false);
-  function createQuiz() {
+  async function createQuiz() {
     try {
-      //create quiz with questions ids, name and class id
+      if (name.trim().length == 0 || questionIds.length == 0) {
+        toast.error("Quiz name and questions must be filled");
+        return;
+      }
+      await createQuizApi(name, questionIds, classId);
       setOpen(false);
+      toast.success("Quiz created successfully");
       closeParent(false);
     } catch (e: any) {
       toast.error("Failed to create quiz: " + e.message);

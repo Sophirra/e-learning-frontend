@@ -26,7 +26,7 @@ import { readPersistedRole } from "@/features/user/RolePersistence.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
 import type { ExerciseBrief } from "@/pages/UserPages/HomePage.tsx";
-import type { ExerciseBrief } from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ExerciseBrief } from "@/pages/UserPages/ExercisePage.tsx";
 import type { ClassSchedule } from "@/components/complex/schedules/schedule.tsx";
 import type { ClassBriefDto } from "@/features/calendar/teacherCalendar.tsx";
 import type { StudentBrief } from "@/components/complex/courseFilter.tsx";
@@ -958,4 +958,26 @@ export async function getClassBrief(classId: string): Promise<ClassBriefDto> {
   const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}`);
 
   return data;
+}
+
+export async function createQuiz(
+  name: string,
+  questionIds: string[],
+  classId: string,
+) {
+  const res = await Api.post("/api/quizzes", { name, questionIds, classId });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
+}
+
+export async function copyQuiz(quizId: string, classId: string) {
+  const res = await Api.post(`/api/quizzes/${quizId}/copy`, { classId });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
+}
+
+export async function copyExercise(exerciseId: string, classId: string) {
+  const res = await Api.post(`/api/exercises/${exerciseId}/copy`, { classId });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
 }

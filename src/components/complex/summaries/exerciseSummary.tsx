@@ -62,7 +62,8 @@ export function ExerciseSummary({
       customButton={() =>
         student ? undefined : !classId ? (
           <Button variant={"ghost"} disabled={true}>
-            Choose class
+            <icons.Plus />
+            Add
           </Button>
         ) : (
           <AddExercisePopup classId={classId} />

@@ -13,6 +13,7 @@ import { QuizGallery } from "@/components/complex/galleries/quizGallery.tsx";
 import { useState } from "react";
 import type { QuizBrief } from "@/api/types.ts";
 import { toast } from "sonner";
+import { copyQuiz as copyQuizApi } from "@/api/apiCalls.ts";
 
 export function CopyQuizPopup({
   classId,
@@ -25,12 +26,17 @@ export function CopyQuizPopup({
     null,
   );
   const [open, setOpen] = useState(false);
-  function copyQuiz() {
+  async function copyQuiz() {
     try {
-      //create quiz with questions ids, name and class id
-      setOpen(false);
-      closeParent(false);
-      toast.success("Quiz copied successfully");
+      if (!selectedQuizBrief) {
+        toast.error("No quiz selected");
+        return;
+      } else {
+        await copyQuizApi(selectedQuizBrief.id, classId);
+        setOpen(false);
+        closeParent(false);
+        toast.success("Quiz copied successfully");
+      }
     } catch (e: any) {
       toast.error("Failed to create quiz: " + e.message);
     }
@@ -62,7 +68,11 @@ export function CopyQuizPopup({
             <DialogClose>
               <Button>Cancel</Button>
             </DialogClose>
-            <Button variant={"outline"} onClick={() => copyQuiz()}>
+            <Button
+              variant={"outline"}
+              onClick={() => copyQuiz()}
+              disabled={!selectedQuizBrief}
+            >
               Confirm
             </Button>
           </DialogFooter>

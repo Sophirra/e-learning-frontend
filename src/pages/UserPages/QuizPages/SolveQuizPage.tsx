@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
-import { Component, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import { useNavigate, useParams } from "react-router-dom";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
@@ -143,7 +143,7 @@ export function SolveQuizPage() {
   //TODO: odkomentować jak będzie backend
   useEffect(() => {
     if (loading) {
-      getQuiz(quizId).then;
+      getQuiz(quizId);
       getQuestions(quizId);
       setLoading(false);
       console.log("set loading", loading);

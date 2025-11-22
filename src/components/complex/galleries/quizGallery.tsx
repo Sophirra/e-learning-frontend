@@ -6,6 +6,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { getQuizzes } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuizDetailsPopup } from "@/components/complex/popups/quiz/quizDetailsPopup.tsx";
+import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
 
 export function QuizGallery({
   enableSelect,
@@ -62,21 +63,26 @@ export function QuizGallery({
         labelIcon={icons.Quiz}
         canHide={user?.activeRole === "teacher"}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-150 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
-          {quizzes.map((quiz) => (
-            <QuizDetailsPopup
-              key={quiz.id}
-              quizBrief={quiz}
-              selected={selected ? selected.id === quiz.id : undefined}
-              setSelected={
-                !enableSelect
-                  ? undefined
-                  : () => setSelected && setSelected(quiz)
-              }
-            />
-          ))}
-        </div>
+        {quizzes.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-150 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+            {quizzes.map((quiz) => (
+              <QuizDetailsPopup
+                key={quiz.id}
+                quizBrief={quiz}
+                selected={selected ? selected.id === quiz.id : undefined}
+                setSelected={
+                  !enableSelect
+                    ? undefined
+                    : () => setSelected && setSelected(quiz)
+                }
+              />
+            ))}
+          </div>
+        ) : (
+          <LoadingTile text={"No quizzes found"} />
+        )}
       </Summary>
+      <div />
     </div>
   );
 }

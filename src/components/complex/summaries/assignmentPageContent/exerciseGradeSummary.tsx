@@ -1,11 +1,11 @@
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type { ExerciseBrief } from "@/pages/UserPages/AssignmentPage.tsx";
+import type { ExerciseBrief } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { GradeExercisePopup } from "@/components/complex/popups/exercise/gradeExercisePopup.tsx";
 
-export function ExerciseGrade({
+export function ExerciseGradeSummary({
   exercise,
 }: {
   exercise: ExerciseBrief | null;
