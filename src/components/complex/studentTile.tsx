@@ -2,8 +2,8 @@ import type { StudentBrief } from "@/api/types.ts";
 
 type StudentTileProps = {
   student: StudentBrief;
-  selectedStudentId: string | null;
-  setSelectedStudentId: (id: string | null) => void;
+  selectedStudentId: string | undefined;
+  setSelectedStudentId: (id: string | undefined) => void;
 };
 
 export function StudentTile({

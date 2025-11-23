@@ -297,7 +297,7 @@ export const getClassBriefs = async (
   if (status === 204 || !arr) return [];
 
   if (!Array.isArray(arr)) {
-    console.warn("getCourseBriefs: unexpected response shape", resp);
+    console.warn("getClassBriefs: unexpected response shape", resp);
     return [];
   }
 
