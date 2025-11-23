@@ -17,6 +17,7 @@ import { ExercisePage } from "@/pages/UserPages/ExercisePage.tsx";
 import { HomePage } from "@/pages/UserPages/HomePage.tsx";
 import ErrorPage from "@/pages/ErrorPage.tsx";
 import SpectatorAcceptPage from "@/components/complex/popups/spectators/spectatorAcceptPage.tsx";
+import { SpectatorPage } from "@/pages/UserPages/SpectatorPage.tsx";
 
 function ProtectedRoute() {
   let { loading, user } = useUser();
@@ -49,6 +50,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/exercise" element={<ExercisePage />} />
             <Route path="/files" element={<FilesPage />} />
             <Route path="/chats" element={<ChatsPage />} />
+            <Route path="/spectate" element={<SpectatorPage />} />
           </Route>
           <Route path="*" element={<ErrorPage />} />
         </Routes>

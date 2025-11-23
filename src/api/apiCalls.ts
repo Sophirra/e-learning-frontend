@@ -978,3 +978,8 @@ export async function copyExercise(exerciseId: string, classId: string) {
   if (res.status === 201 || res.status === 200) return;
   else throw res.data as ErrorResponse;
 }
+export async function getSpectated(): Promise<StudentBrief> {
+  const userId = getUserId();
+  const { data } = await Api.get(`/api/spectated/${userId}`);
+  return data;
+}

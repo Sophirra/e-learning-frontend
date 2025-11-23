@@ -7,13 +7,15 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentDetailsCard } from "@/components/complex/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type { ClassBrief, CourseBrief, Student } from "@/api/types.ts";
+import type {
+  AssignmentTask,
+  ClassBrief,
+  CourseBrief,
+  QuizTask,
+  Student,
+} from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
-import {
-  ExerciseSummary,
-  type AssignmentTask,
-  type QuizTask,
-} from "@/components/complex/summaries/exerciseSummary.tsx";
+import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import {
   getStudentWithTeacherExercises,
@@ -23,7 +25,6 @@ import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 import { FileGallery } from "@/components/complex/galleries/fileGallery.tsx";
 import {
   getClassBriefs,
-  getExercises,
   getStudentCoursesWithSpecificTeacher,
   getStudentData,
 } from "@/api/apiCalls.ts";

@@ -3,7 +3,7 @@ import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import ExerciseTile from "@/components/complex/ExerciseTile.tsx";
+import ExerciseTile from "@/components/complex/exerciseTile.tsx";
 import { ExerciseTitle } from "@/components/complex/summaries/exercisePageSummaries/exerciseTitle.tsx";
 import { ExerciseAttachedFilesSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseAttachedFilesSummary.tsx";
 import { ExerciseSolutionSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseSolutionSummary.tsx";
