@@ -980,6 +980,6 @@ export async function copyExercise(exerciseId: string, classId: string) {
 }
 export async function getSpectated(): Promise<StudentBrief> {
   const userId = getUserId();
-  const { data } = await Api.get(`/api/spectated/${userId}`);
+  const { data } = await Api.get(`/api/spectators/${userId}/spectated`);
   return data;
 }
