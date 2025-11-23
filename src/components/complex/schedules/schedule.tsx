@@ -3,35 +3,13 @@ import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { DaySchedule } from "./daySchedule.tsx";
 import { addMonths } from "date-fns";
+import type {
+  ApiDayAvailability,
+  ClassSchedule,
+  TimeSlot,
+} from "@/api/types.ts";
 
-export interface TimeSlot {
-  start: number;
-  end: number;
-  dayIndex: number;
-  date: Date;
-  courseName?: string;
-  studentName?: string;
-  classId?: string;
-}
-
-//type downloaded from backend - can be moved
-export interface ClassSchedule {
-  classId: string;
-  studentId: string;
-  studentName: string;
-  courseId: string;
-  courseName: string;
-  classDate: Date;
-  classStartTime: string;
-  classEndTime: string;
-}
-
-export interface ApiDayAvailability {
-  day: string;
-  timeslots: { timeFrom: string; timeUntil: string }[];
-}
-
-interface ScheduleProps {
+type ScheduleProps = {
   startDate: Date;
   daysCount: number;
   endDate?: Date;
@@ -40,7 +18,7 @@ interface ScheduleProps {
   displayMode: "time" | "class";
   onSelect: (slot: TimeSlot) => void;
   selectedClassId?: string;
-}
+};
 
 export default function Schedule({
   startDate,

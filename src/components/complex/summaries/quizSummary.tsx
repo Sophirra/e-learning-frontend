@@ -2,8 +2,8 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type { AnyTask } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { AddQuizPopup } from "@/components/complex/popups/quiz/addQuizPopup.tsx";
+import type { AnyTask } from "@/api/types.ts";
 
 export function QuizSummary({
   quizzes,

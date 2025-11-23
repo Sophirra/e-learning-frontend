@@ -12,25 +12,11 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
 import { getApiDayAvailability } from "@/api/apiCalls.ts";
 import Schedule from "@/components/complex/schedules/schedule.tsx";
-
-export interface TimeSlot {
-  start: number;
-  end: number;
-  dayIndex: number;
-  date: Date;
-}
-
-export interface ApiDayAvailability {
-  day: string;
-  timeslots: { timeFrom: string; timeUntil: string }[];
-}
-
-interface WeekScheduleDialogProps {
-  disabled: boolean;
-  onConfirm: (selectedSlot: TimeSlot) => void;
-  classDetails?: string;
-  courseId: string;
-}
+import type {
+  ApiDayAvailability,
+  TimeSlot,
+  WeekScheduleDialogProps,
+} from "@/api/types.ts";
 
 export default function WeekScheduleDialog({
   disabled,

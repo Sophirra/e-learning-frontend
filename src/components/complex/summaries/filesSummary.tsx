@@ -3,21 +3,7 @@ import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { icons } from "lucide-react";
 import { AddFilePopup } from "@/components/complex/popups/files/addFilePopup.tsx";
-
-export type FileLink = {
-  id?: string;
-  courseName: string;
-  filePath: string;
-  className?: string;
-};
-
-export type FileProps = {
-  id: string;
-  name: string;
-  filePath: string;
-  associatedCourseName: string;
-  associatedClassDate: string;
-};
+import type { FileProps } from "@/api/types.ts";
 
 export function FilesSummary({
   classId,
@@ -61,9 +47,9 @@ export function FilesSummary({
                 {file.associatedClassDate.substring(0, 10)}]
               </Label>
               <a
-                  href={`${import.meta.env.VITE_API_URL}/${file.filePath}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                href={`${import.meta.env.VITE_API_URL}/${file.filePath}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Button variant="link">{file.name}</Button>
               </a>

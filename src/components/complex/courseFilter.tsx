@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button.tsx";
-import type { CourseBrief } from "@/api/types.tsx";
+import type { CourseBrief, StudentBrief } from "@/api/types.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { SetupNewClassPopup } from "@/components/complex/popups/setupNewClassPopup.tsx";
@@ -14,7 +14,15 @@ import {
   getTeacherStudentsWithSpecificCourse,
 } from "@/api/apiCalls.ts";
 
-type StudentBrief = { id: string; name: string; surname: string };
+type CourseFilterProps = {
+  student: boolean;
+  selectedCourseId: string | null;
+  setSelectedCourseId: (courseId: string | null) => void;
+  selectedStudentId?: string | null;
+  setSelectedStudentId?: (studentId: string | null) => void;
+  setupClassButton?: boolean;
+  resetExternal?: () => void;
+};
 
 export default function CourseFilter({
   student,
@@ -23,16 +31,8 @@ export default function CourseFilter({
   selectedStudentId,
   setSelectedStudentId,
   setupClassButton = false,
-  resetExternal
-}: {
-  student: boolean;
-  selectedCourseId: string | null;
-  setSelectedCourseId: (courseId: string | null) => void;
-  selectedStudentId?: string | null;
-  setSelectedStudentId?: (studentId: string | null) => void;
-  setupClassButton?: boolean;
-  resetExternal?: () => void;
-}) {
+  resetExternal,
+}: CourseFilterProps) {
   const [courses, setCourses] = useState<CourseBrief[]>([]);
   const [students, setStudents] = useState<StudentBrief[]>([]);
   const { user } = useUser();

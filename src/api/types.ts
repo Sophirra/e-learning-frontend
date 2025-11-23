@@ -1,3 +1,117 @@
+/**
+ * MISC SECTION
+ */
+
+import { useState } from "react";
+
+/**
+ * Generic interface representing a paginated API response.
+ **/
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface TimeSlot {
+  start: number;
+  end: number;
+  dayIndex: number;
+  date: Date;
+}
+
+export interface ApiDayAvailability {
+  day: string;
+  timeslots: { timeFrom: string; timeUntil: string }[];
+}
+
+export interface WeekScheduleDialogProps {
+  disabled: boolean;
+  onConfirm: (selectedSlot: TimeSlot) => void;
+  classDetails?: string;
+  courseId: string;
+}
+
+export interface TimeSlot {
+  start: number;
+  end: number;
+  dayIndex: number;
+  date: Date;
+  courseName?: string;
+  studentName?: string;
+  classId?: string;
+}
+
+//type downloaded from backend - can be moved
+export interface ClassSchedule {
+  classId: string;
+  studentId: string;
+  studentName: string;
+  courseId: string;
+  courseName: string;
+  classDate: Date;
+  classStartTime: string;
+  classEndTime: string;
+}
+
+export interface ApiDayAvailability {
+  day: string;
+  timeslots: { timeFrom: string; timeUntil: string }[];
+}
+
+export type AnyTask = QuizTask | AssignmentTask;
+
+export interface TaskProps {
+  id: string;
+  name: string;
+  completed: boolean;
+  courseName: string;
+  className?: string;
+}
+
+export interface QuizTask extends TaskProps {
+  type: "quiz";
+}
+
+export interface AssignmentTask extends TaskProps {
+  type: "assignment";
+  status: string;
+  graded: boolean;
+  grade?: number;
+  comments?: string;
+}
+
+export type FileLink = {
+  id?: string;
+  courseName: string;
+  filePath: string;
+  className?: string;
+};
+
+export type LinkProps = {
+  id?: string;
+  isMeeting?: boolean;
+  path: string;
+  courseName: string;
+  className?: string;
+};
+
+export type FileProps = {
+  id: string;
+  name: string;
+  filePath: string;
+  associatedCourseName: string;
+  associatedClassDate: string;
+};
+
+/**
+ * USERS SECTION
+ */
+export interface AuthResponse {
+  accessToken: string;
+  roles: string[];
+}
 export interface RegisterUserDto {
   accountType: "student" | "teacher";
   email: string;
@@ -13,11 +127,6 @@ export interface LoginUserDto {
   password: string;
 }
 
-export interface AuthResponse {
-  accessToken: string;
-  roles: string[];
-}
-
 export interface aboutUser {
   name: string;
   surname: string;
@@ -26,7 +135,56 @@ export interface aboutUser {
   description: string;
 }
 
-// Teacher Section
+export interface ProfilePicture {
+  fileName: string;
+  url: string;
+  uploadedAt: string;
+}
+
+/**
+ * FILES SECTION
+ */
+
+export interface FileData {
+  id: string;
+  fileName: string;
+  relativePath: string;
+  uploadedAt: string;
+  uploadedBy: string;
+  courses: CourseShortVersion[];
+  tags: FileTag[];
+  ownerInfo: FileOwner;
+}
+
+export interface FileFilter {
+  query?: string;
+  studentId?: string;
+  courseId?: string;
+  origin?: string[];
+  tagIds?: string[];
+  createdBy?: string[];
+  type?: string[];
+  page?: number;
+  pageSize?: number;
+  //optional: dates (can be added)
+}
+
+export interface FileTag {
+  id: string;
+  name: string;
+  ownerId: string;
+}
+
+export interface FileOwner {
+  id: string;
+  name: string;
+  surname: string;
+}
+
+/**
+ * TEACHER SECTION
+ */
+
 export interface Teacher {
   id: string;
   name: string;
@@ -34,12 +192,6 @@ export interface Teacher {
   description: string;
   coursesBrief?: CourseBrief[];
   teacherProfilePictureUrl: string;
-}
-
-export interface ProfilePicture {
-  fileName: string;
-  url: string;
-  uploadedAt: string;
 }
 
 export interface TeacherReview {
@@ -56,16 +208,27 @@ export interface TeacherAvailability {
 }
 
 /**
- * Generic interface representing a paginated API response.
- **/
-export interface PagedResult<T> {
-  items: T[];
-  totalCount: number;
-  page: number;
-  pageSize: number;
-}
+ * STUDENTS SECTION
+ */
 
-// Course Section
+/**
+ * Represents a brief student view used in selection lists.
+ */
+export type StudentBrief = {
+  id: string;
+  name: string;
+  surname: string;
+};
+
+export type Student = {
+  name: string;
+  courses: CourseBrief[];
+};
+
+/**
+ * COURSE SECTION
+ */
+
 export interface CourseWidget {
   id: string;
   name: string;
@@ -96,6 +259,20 @@ export interface CourseVariant {
   languageName: string;
 }
 
+export interface CourseShortVersion {
+  id: string;
+  name: string;
+}
+
+export type CourseBrief = {
+  id: string;
+  name: string;
+};
+
+/**
+ * CLASS SECTION
+ */
+
 export interface ClassBrief {
   id: string;
   startTime: Date;
@@ -104,6 +281,7 @@ export interface ClassBrief {
   teacherId?: string;
   studentId?: string;
 }
+
 //co to za potwór (z teacher calendar)
 export type ClassBriefDto = {
   id: string;
@@ -132,54 +310,6 @@ export type ClassBriefDto = {
     classDate: string;
   }[];
 };
-export interface FileData {
-  id: string;
-  fileName: string;
-  relativePath: string;
-  uploadedAt: string;
-  uploadedBy: string;
-  courses: CourseShortVersion[];
-  tags: FileTag[];
-  ownerInfo: FileOwner;
-}
-
-export interface CourseShortVersion {
-  id: string;
-  name: string;
-}
-export interface FileFilter {
-  query?: string;
-  studentId?: string;
-  courseId?: string;
-  origin?: string[];
-  tagIds?: string[];
-  createdBy?: string[];
-  type?: string[];
-  page?: number;
-  pageSize?: number;
-  //optional: dates (can be added)
-}
-
-export interface FileTag {
-  id: string;
-  name: string;
-  ownerId: string;
-}
-
-export interface FileOwner {
-  id: string;
-  name: string;
-  surname: string;
-}
-
-/**
- * Represents a brief student view used in selection lists.
- */
-export type StudentBriefDTO = {
-  id: string;
-  name: string;
-  surname: string;
-};
 
 /**
  * A single class with its course name and students enrolled in the course/class.
@@ -188,15 +318,12 @@ export type StudentBriefDTO = {
 export type ClassWithStudentsDTO = {
   classId: string;
   courseName: string;
-  students: StudentBriefDTO[];
+  students: StudentBrief[];
 };
 
-export type Student = { name: string; courses: CourseBrief[] };
-
-export type CourseBrief = {
-  id: string;
-  name: string;
-};
+/**
+ * QUIZ & QUESTIONS SECTION
+ */
 
 export type QuizBrief = {
   id: string;
@@ -206,7 +333,6 @@ export type QuizBrief = {
   questionNumber: number;
   completed: boolean;
 };
-
 export type Quiz = {
   id: string;
   name: string;

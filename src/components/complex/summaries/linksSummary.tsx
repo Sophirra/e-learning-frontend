@@ -4,14 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Link } from "react-router-dom";
 import { AddLinkPopup } from "@/components/complex/popups/addLinkPopup.tsx";
-
-export type LinkProps = {
-  id?: string;
-  isMeeting?: boolean;
-  path: string;
-  courseName: string;
-  className?: string;
-};
+import type { LinkProps } from "@/api/types.ts";
 
 export function LinksSummary({
   links,

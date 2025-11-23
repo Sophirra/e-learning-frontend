@@ -3,24 +3,6 @@ import { Content } from "@/components/ui/content.tsx";
 /* import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import {
-  type LinkProps,
-  LinksSummary,
-} from "@/components/complex/summaries/linksSummary.tsx";
-import {
-  type AnyTask,
-  ExerciseSummary,
-  type QuizTask,
-} from "@/components/complex/summaries/exerciseSummary.tsx";
-import {
-  type FileProps,
-  FilesSummary,
-} from "@/components/complex/summaries/filesSummary.tsx";
-import Schedule, {
-  type ApiDayAvailability,
-  type ClassSchedule,
-  type TimeSlot,
-} from "@/components/complex/schedules/schedule.tsx";
 import { getUserId } from "@/api/api.ts";
 import {
   getClassBrief,
@@ -29,6 +11,19 @@ import {
   getTeacherUpcomingClasses,
 } from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
+import type {
+  AnyTask,
+  ApiDayAvailability,
+  ClassSchedule,
+  FileProps,
+  LinkProps,
+  QuizTask,
+  TimeSlot,
+} from "@/api/types.ts";
+import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
+import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
+import { FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
+import Schedule from "@/components/complex/schedules/schedule.tsx";
 
 export function TeacherCalendar() {
   // Course filter

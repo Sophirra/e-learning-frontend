@@ -3,11 +3,11 @@ import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import AssignmentTile from "@/components/complex/AssignmentTile.tsx";
-import { ExerciseTitle } from "@/components/complex/summaries/assignmentPageContent/exerciseTitle.tsx";
-import { ExerciseAttachedFilesSummary } from "@/components/complex/summaries/assignmentPageContent/exerciseAttachedFilesSummary.tsx";
-import { ExerciseSolutionSummary } from "@/components/complex/summaries/assignmentPageContent/exerciseSolutionSummary.tsx";
-import { ExerciseGradeSummary } from "@/components/complex/summaries/assignmentPageContent/exerciseGradeSummary.tsx";
+import ExerciseTile from "@/components/complex/ExerciseTile.tsx";
+import { ExerciseTitle } from "@/components/complex/summaries/exercisePageSummaries/exerciseTitle.tsx";
+import { ExerciseAttachedFilesSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseAttachedFilesSummary.tsx";
+import { ExerciseSolutionSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseSolutionSummary.tsx";
+import { ExerciseGradeSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseGradeSummary.tsx";
 import { getUserId } from "@/api/api.ts";
 import { getExercises } from "@/api/apiCalls.ts";
 import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
@@ -94,10 +94,10 @@ export function ExercisePage() {
               />
             ) : (
               exercises.map((assignment) => (
-                <AssignmentTile
-                  assignment={assignment}
-                  selectedAssignmentId={selectedAssignmentId}
-                  setSelectedAssignmentId={handleSelectAssignmentId}
+                <ExerciseTile
+                  exercise={assignment}
+                  selectedExerciseId={selectedAssignmentId}
+                  setSelectedExerciseId={handleSelectAssignmentId}
                 />
               ))
             )}

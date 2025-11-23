@@ -23,9 +23,9 @@ export function NavigationBar() {
               icon: icons.ClipboardList,
               label: "Exercises",
             },
-            { to: "/chats", icon: icons.MessageSquare, label: "Chats" },
             { to: "/quizzes", icon: icons.Brain, label: "Quizzes" },
             { to: "/files", icon: icons.FolderOpen, label: "Files" },
+            { to: "/spectate", icon: icons.Spectate, label: "Spectate" },
           ]
             //filter to remove null from list
             .filter(Boolean)

@@ -7,7 +7,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentDetailsCard } from "@/components/complex/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type { CourseBrief, Student } from "@/api/types.ts";
+import type { ClassBrief, CourseBrief, Student } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import {
   ExerciseSummary,
@@ -20,14 +20,15 @@ import {
   getStudentWithTeacherQuizzes,
 } from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
-import { FileGallery } from "@/components/complex/fileGallery.tsx";
+import { FileGallery } from "@/components/complex/galleries/fileGallery.tsx";
 import {
-  getClassBriefs, getExercises,
+  getClassBriefs,
+  getExercises,
   getStudentCoursesWithSpecificTeacher,
   getStudentData,
 } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
-import {getUserId} from "@/api/api.ts";
+import { getUserId } from "@/api/api.ts";
 import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
@@ -125,13 +126,13 @@ export function StudentsPage() {
       setUpcomingClasses([]);
     }
   }
-  async function fetchStudentAssignments() {
-      try {
-          const userId = getUserId();
-          const data = await getExercises(userId, user?.activeRole || null, selectedCourseId, selectedStudentId);
-          // set
-      }
-  }
+  // async function fetchStudentAssignments() {
+  //     try {
+  //         const userId = getUserId();
+  //         const data = await getExercises(userId, user?.activeRole || null, selectedCourseId, selectedStudentId);
+  //         // set
+  //     }
+  // }
 
   return (
     <div className="bg-white min-h-screen">
@@ -188,7 +189,7 @@ export function StudentsPage() {
               </div>
             </div>
           ) : (
-            <LoadingTile text={"Choose a student to view their details."}/>
+            <LoadingTile text={"Choose a student to view their details."} />
           )}
         </div>
       </Content>

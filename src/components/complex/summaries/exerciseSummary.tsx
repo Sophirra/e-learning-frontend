@@ -3,28 +3,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { AddExercisePopup } from "@/components/complex/popups/exercise/addExercisePopup.tsx";
-
-export type AnyTask = QuizTask | AssignmentTask;
-
-export interface TaskProps {
-  id: string;
-  name: string;
-  completed: boolean;
-  courseName: string;
-  className?: string;
-}
-
-export interface QuizTask extends TaskProps {
-  type: "quiz";
-}
-
-export interface AssignmentTask extends TaskProps {
-  type: "assignment";
-  status: string;
-  graded: boolean;
-  grade?: number;
-  comments?: string;
-}
+import type { AnyTask } from "@/api/types.ts";
 
 export function ExerciseSummary({
   student,

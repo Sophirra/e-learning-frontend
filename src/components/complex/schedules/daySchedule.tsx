@@ -5,16 +5,16 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type { TimeSlot } from "@/components/complex/schedules/schedule.tsx";
+import type { TimeSlot } from "@/api/types.ts";
 
-interface DayScheduleProps {
+type DayScheduleProps = {
   date: Date;
   timeSlots: TimeSlot[];
   isActive: boolean;
   isSelected: (slot: TimeSlot) => boolean | null;
   onSelect: (slot: TimeSlot) => void;
   displayMode: "class" | "time";
-}
+};
 
 export function DaySchedule({
   date,

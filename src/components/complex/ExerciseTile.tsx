@@ -3,22 +3,22 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import type { ExerciseBrief } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 
-type AssignmentTileProps = {
-  assignment: ExerciseBrief;
-  selectedAssignmentId: string | null;
-  setSelectedAssignmentId: (id: string | null) => void;
+type ExerciseTileProps = {
+  exercise: ExerciseBrief;
+  selectedExerciseId: string | null;
+  setSelectedExerciseId: (id: string | null) => void;
 };
 
-export default function AssignmentTile({
-  assignment,
-  selectedAssignmentId,
-  setSelectedAssignmentId,
-}: AssignmentTileProps) {
-  const { id, name, date, status } = assignment;
+export default function ExerciseTile({
+  exercise,
+  selectedExerciseId,
+  setSelectedExerciseId,
+}: ExerciseTileProps) {
+  const { id, name, date, status } = exercise;
   const { user } = useUser();
 
   const handleSelect = () => {
-    setSelectedAssignmentId(selectedAssignmentId === id ? null : id);
+    setSelectedExerciseId(selectedExerciseId === id ? null : id);
   };
 
   const getStatusIcon = () => {
@@ -38,7 +38,7 @@ export default function AssignmentTile({
     <div
       className={
         "flex flex-row items-center gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-xs " +
-        (selectedAssignmentId === id
+        (selectedExerciseId === id
           ? "bg-slate-300 font-semibold"
           : "font-normal")
       }
