@@ -25,7 +25,10 @@ export function NavigationBar() {
             },
             { to: "/quizzes", icon: icons.Brain, label: "Quizzes" },
             { to: "/files", icon: icons.FolderOpen, label: "Files" },
-            { to: "/spectate", icon: icons.Spectate, label: "Spectate" },
+
+            user?.activeRole === "teacher"
+              ? null
+              : { to: "/spectate", icon: icons.Spectate, label: "Spectate" },
           ]
             //filter to remove null from list
             .filter(Boolean)

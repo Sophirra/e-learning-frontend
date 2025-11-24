@@ -1,5 +1,4 @@
 import Api, { getUserId } from "@/api/api.ts";
-import type { ApiDayAvailability } from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import type {
   ClassBrief,
   ClassWithStudentsDTO,
@@ -21,24 +20,21 @@ import type {
   QuestionCategory,
   QuizSolution,
   Student,
+  ApiDayAvailability,
+  ClassBriefDto,
+  ClassSchedule,
+  AssignmentTask,
+  QuizTask,
+  StudentBrief,
 } from "@/api/types.ts";
-import { readPersistedRole } from "@/features/user/RolePersistence.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
-import type { ExerciseBrief } from "@/pages/UserPages/HomePage.tsx";
-import type { ExerciseBrief } from "@/pages/UserPages/ExercisePage.tsx";
-import type { ClassSchedule } from "@/components/complex/schedules/schedule.tsx";
-import type { ClassBriefDto } from "@/features/calendar/teacherCalendar.tsx";
-import type { StudentBrief } from "@/components/complex/courseFilter.tsx";
 import {
   mapApiCourseToCourseBrief,
   mapParticipationToCourseBrief,
 } from "@/mappers/courseMappers.ts";
 import type { ErrorResponse } from "react-router-dom";
-import type {
-  AssignmentTask,
-  QuizTask,
-} from "@/components/complex/summaries/exerciseSummary.tsx";
+import type { ExerciseBrief } from "@/pages/UserPages/HomePage.tsx";
 
 /**
  * Fetches detailed course data by courseID.
