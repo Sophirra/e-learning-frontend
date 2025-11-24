@@ -982,12 +982,12 @@ export async function getSpectated(): Promise<StudentBrief> {
 export async function createExercise(
   classId: string,
   instructions: string,
-  fileId?: string,
+  fileIds?: string[],
 ) {
   const res = await Api.post("/api/exercises", {
     classId,
     instructions,
-    fileId,
+    fileIds,
   });
   if (res.status === 201 || res.status === 200) return;
   else throw res.data as ErrorResponse;
