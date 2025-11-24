@@ -979,3 +979,16 @@ export async function getSpectated(): Promise<StudentBrief> {
   const { data } = await Api.get(`/api/spectators/${userId}/spectated`);
   return data;
 }
+export async function createExercise(
+  classId: string,
+  instructions: string,
+  fileId?: string,
+) {
+  const res = await Api.post("/api/exercises", {
+    classId,
+    instructions,
+    fileId,
+  });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
+}
