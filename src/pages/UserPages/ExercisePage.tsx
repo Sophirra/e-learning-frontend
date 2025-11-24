@@ -10,29 +10,8 @@ import { ExerciseSolutionSummary } from "@/components/complex/summaries/exercise
 import { ExerciseGradeSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseGradeSummary.tsx";
 import { getUserId } from "@/api/api.ts";
 import { getExercises } from "@/api/apiCalls.ts";
-import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
-
-export type ExerciseBrief = {
-  id?: string;
-  name: string;
-  courseName: string;
-  className?: string;
-  status: "unsolved" | "solutionAdded" | "submitted" | "graded";
-  graded: boolean; // TO JEST RACZEJ BEZ SENSU BO JAK STATUS TO GRADED I JEST GRADE, TO TO Z TEGO WYNIKA
-  grade?: number;
-  comments?: string;
-  instruction?: string;
-  date?: Date; // TO CHYBA MUSI BYC DATA ZAJEC BO SAM QUIZ/EXERCISE NIE MA DATY
-  files?: AssignmentFile[];
-};
-
-export type AssignmentFile = {
-  id?: string;
-  name: string;
-  path: string;
-  type: "solution" | "content";
-  uploadDate?: Date;
-};
+import { LoadingTile } from "@/components/complex/loadingTile.tsx";
+import type { Exercise } from "@/api/types.ts";
 
 export type Role = "teacher" | "student";
 export type Mode = "view" | "edit";
@@ -47,7 +26,7 @@ export function ExercisePage() {
     string | null
   >(null);
   const [pageMode, setAssignmentPageMode] = useState<Mode>("view");
-  const [exercises, setExercises] = useState<ExerciseBrief[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
   const activeRole = user?.activeRole ?? null;
 
   useEffect(() => {

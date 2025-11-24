@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import type { ExerciseBrief } from "@/pages/UserPages/ExercisePage.tsx";
+import type { Exercise } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 
 type ExerciseTileProps = {

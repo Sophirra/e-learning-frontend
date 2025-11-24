@@ -2,14 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
-import type { ClassBrief } from "@/api/types.ts";
+import type { AnyTask, ClassBrief, Exercise, QuizTask } from "@/api/types.ts";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
-import {
-  type AnyTask,
-  ExerciseSummary,
-  type QuizTask,
-} from "@/components/complex/summaries/exerciseSummary.tsx";
+import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import {
   getClassBriefs,
@@ -20,14 +16,6 @@ import { toast } from "sonner";
 import { getUserId } from "@/api/api.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 
-export type ExerciseBrief = {
-  id: string;
-  courseId: string;
-  courseName: string;
-  classStartTime: string;
-  exerciseStatus: string;
-};
-
 export function HomePage() {
   const { user } = useUser();
   const activeRole = user?.activeRole ?? null;
@@ -37,7 +25,7 @@ export function HomePage() {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
-  const [assignmentsRaw, setAssignmentsRaw] = useState<ExerciseBrief[]>([]);
+  const [assignmentsRaw, setAssignmentsRaw] = useState<Exercise[]>([]);
   const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
 

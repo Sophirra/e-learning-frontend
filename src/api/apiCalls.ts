@@ -26,6 +26,7 @@ import type {
   AssignmentTask,
   QuizTask,
   StudentBrief,
+  FileBrief,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -34,7 +35,7 @@ import {
   mapParticipationToCourseBrief,
 } from "@/mappers/courseMappers.ts";
 import type { ErrorResponse } from "react-router-dom";
-import type { ExerciseBrief } from "@/pages/UserPages/HomePage.tsx";
+import type { Exercise } from "@/pages/UserPages/HomePage.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -412,15 +413,16 @@ export const acceptSpectatorInvite = async (token: string): Promise<void> => {
  * @param {File} file - The file object selected by the user (from an `<input type="file">`).
  * @returns {Promise<any>} Resolves with the uploaded file metadata returned by the backend.
  */
-export const uploadUserFile = async (file: File): Promise<any> => {
+export const uploadUserFile = async (file: File): Promise<FileBrief> => {
   const formData = new FormData();
   formData.append("file", file);
 
   const response = await Api.post("/api/user/files", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-
-  return response.data;
+  if (response.status === 201 || response.status === 200)
+    return response.data as FileBrief;
+  else throw response.data as ErrorResponse;
 };
 
 /**
@@ -982,13 +984,22 @@ export async function getSpectated(): Promise<StudentBrief> {
 export async function createExercise(
   classId: string,
   instructions: string,
-  fileId?: string,
+  fileIds?: string[],
 ) {
   const res = await Api.post("/api/exercises", {
     classId,
     instructions,
-    fileId,
+    fileIds,
   });
   if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
+}
+export async function updateQuiz(
+  quizId: string,
+  name: string,
+  questionIds: string[],
+) {
+  const res = await Api.put(`/api/quizzes/${quizId}`, { name, questionIds });
+  if (res.status === 200 || res.status === 201) return;
   else throw res.data as ErrorResponse;
 }

@@ -27,7 +27,6 @@ export function EditFilePopup({ file }: { file: FileData }) {
   const [newTags, setNewTags] = useState<FileTag[]>(tags);
   const [open, setOpen] = useState<boolean>(false);
 
-  //TODO: get available tags from backend
   const [availableTags, setAvailableTags] = useState<FileTag[]>([]);
 
   async function updateFile() {
@@ -43,7 +42,6 @@ export function EditFilePopup({ file }: { file: FileData }) {
     }
   }
 
-  // TODO: check if alright
   useEffect(() => {
     async function fetchAvailableTags() {
       if (load) {

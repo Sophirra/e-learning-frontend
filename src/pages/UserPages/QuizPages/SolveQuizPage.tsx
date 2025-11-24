@@ -25,7 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
-import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
+import { LoadingTile } from "@/components/complex/loadingTile.tsx";
 
 export function SolveQuizPage() {
   const navigate = useNavigate();

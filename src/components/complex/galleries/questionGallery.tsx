@@ -10,7 +10,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { getUserCategories, getUserQuestions } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuestionDetailsPopup } from "@/components/complex/popups/quiz/questions/questionDetailsPopup.tsx";
-import { LoadingTile } from "@/components/complex/LoadingTile.tsx";
+import { LoadingTile } from "@/components/complex/loadingTile.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { cn } from "@/lib/utils.ts";
 
@@ -140,13 +140,7 @@ export function QuestionGallery({
                       ))}
                     </div>
                   </div>
-                  <div>
-                    {/*{selectedQuestionIds.some((q) => q === question.id) ? (*/}
-                    {/*  <icons.Check />*/}
-                    {/*) : (*/}
-                    {/*  <icons.Circle />*/}
-                    {/*)}*/}
-                  </div>
+                  <div></div>
                 </Button>
               ))}
         </div>

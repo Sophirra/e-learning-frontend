@@ -14,22 +14,23 @@ import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { uploadUserFile } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
-import type { FileData } from "@/api/types.ts";
+import type { FileBrief } from "@/api/types.ts";
 
 export function UploadFilePopup({
   setChosenFile,
 }: {
-  setChosenFile: (file: FileData | null) => void;
+  setChosenFile?: (file: FileBrief) => void;
 }) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File>();
   const [uploading, setUploading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   /**
    * Handles file input change event.
    * Stores the selected file in local state.
    */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFile(e.target.files?.[0] || null);
+    setSelectedFile(e.target.files?.[0] || undefined);
   };
 
   /**
@@ -44,25 +45,24 @@ export function UploadFilePopup({
 
     try {
       setUploading(true);
-
       // toast.promise automatycznie obsługuje loading / success / error
-      const result = await toast.promise(uploadUserFile(selectedFile), {
-        loading: "Uploading file...",
-        success: (res) => `File uploaded successfully: ${res.name}`,
-        error: "Upload failed. Please try again.",
-      });
-      setChosenFile &&
-        setChosenFile(
-          null,
-          //TODO: automatically set selected file after upload
-        );
+      // const result = await toast.promise(uploadUserFile(selectedFile), {
+      //   loading: "Uploading file...",
+      //   success: (res) => `File uploaded successfully: ${res.name}`,
+      //   error: "Upload failed. Please try again.",
+      // });
+      const result = await uploadUserFile(selectedFile);
+      setChosenFile && setChosenFile(result);
+      setOpen(false);
+    } catch (e: any) {
+      toast.error("Upload failed: " + e.message);
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant={"outline"}>Upload new file</Button>
       </DialogTrigger>

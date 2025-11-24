@@ -1,9 +1,6 @@
 /**
  * MISC SECTION
  */
-
-import { useState } from "react";
-
 /**
  * Generic interface representing a paginated API response.
  **/
@@ -155,6 +152,12 @@ export interface FileData {
   tags: FileTag[];
   ownerInfo: FileOwner;
 }
+
+export type FileBrief = {
+  id: string;
+  name: string;
+  path: string;
+};
 
 export interface FileFilter {
   query?: string;
@@ -373,4 +376,34 @@ export type QuizSolution = {
     questionId: string;
     selectedAnswerIds: string[];
   }[];
+};
+
+export type ExerciseBrief = {
+  id: string;
+  courseId: string;
+  courseName: string;
+  classStartTime: string;
+  exerciseStatus: string;
+};
+
+export type Exercise = {
+  id?: string;
+  name: string;
+  courseName: string;
+  className?: string;
+  status: "unsolved" | "solutionAdded" | "submitted" | "graded";
+  graded: boolean; // TO JEST RACZEJ BEZ SENSU BO JAK STATUS TO GRADED I JEST GRADE, TO TO Z TEGO WYNIKA
+  grade?: number;
+  comments?: string;
+  instruction?: string;
+  date?: Date; // TO CHYBA MUSI BYC DATA ZAJEC BO SAM QUIZ/EXERCISE NIE MA DATY
+  files?: ExerciseFile[];
+};
+
+export type ExerciseFile = {
+  id?: string;
+  name: string;
+  path: string;
+  type: "solution" | "content";
+  uploadDate?: Date;
 };

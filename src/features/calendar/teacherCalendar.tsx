@@ -14,7 +14,10 @@ import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 import type {
   AnyTask,
   ApiDayAvailability,
+  ClassBrief,
+  ClassBriefDto,
   ClassSchedule,
+  Exercise,
   FileProps,
   LinkProps,
   QuizTask,
@@ -91,38 +94,36 @@ export function TeacherCalendar() {
     }
 
     const fetchUnsolvedExercises = async () => {
-      const data = await getClassBrief(selectedClassId);
-
-      const cls = data;
+      const classData: ClassBriefDto = await getClassBrief(selectedClassId);
       const now = new Date();
-      const start = new Date(cls.startTime);
+      const start = new Date(classData.startTime);
       const isMeetingActive =
-        !!cls.linkToMeeting &&
+        !!classData.linkToMeeting &&
         Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
 
       // LINKS
-      const allLinks = [...(cls.links ?? [])];
-      if (isMeetingActive && cls.linkToMeeting) {
-        allLinks.unshift(cls.linkToMeeting);
+      const allLinks = [...(classData.links ?? [])];
+      if (isMeetingActive && classData.linkToMeeting) {
+        allLinks.unshift(classData.linkToMeeting);
       }
 
       const mappedLinks: LinkProps[] = allLinks.map((link) => ({
         path: link,
-        isMeeting: link === cls.linkToMeeting,
-        courseName: cls.courseName,
-        className: `[${cls.startTime.toString().slice(0, 10)}]`,
+        isMeeting: link === classData.linkToMeeting,
+        courseName: classData.courseName,
+        className: `[${classData.startTime.toString().slice(0, 10)}]`,
       }));
 
       // ASSIGNMENTS
-      const courseName = cls.courseName;
-      const className = `Class ${cls.id.toString().slice(0, 4)}`;
-      const classDate = cls.startTime.toString().slice(0, 10);
+      const courseName = classData.courseName;
+      const className = `Class ${classData.id.toString().slice(0, 4)}`;
+      const classDate = classData.startTime.toString().slice(0, 10);
 
-      const exercises = (cls.exercises ?? []).map((ex) => ({
+      const exercises = (classData.exercises ?? []).map((ex) => ({
         id: ex.id,
         name: `Exercise ${courseName} [${classDate}]`,
-        className,
-        courseName,
+        className: className,
+        courseName: courseName,
         completed: !!ex.grade,
         type: "assignment" as const,
         status: ex.exerciseStatus === "completed" ? "good" : "behind",
@@ -130,7 +131,7 @@ export function TeacherCalendar() {
         grade: ex.grade ?? null,
       }));
 
-      const quizzes = (cls.quizzes ?? []).map((qz) => ({
+      const quizzes = (classData.quizzes ?? []).map((qz) => ({
         id: qz.id,
         name: `Quiz ${courseName} [${classDate}]`,
         className,
@@ -144,12 +145,12 @@ export function TeacherCalendar() {
       const mappedAssignments: AnyTask[] = [...exercises, ...quizzes];
 
       // FILES
-      const mappedFiles: FileProps[] = (cls.files ?? []).map((f) => ({
+      const mappedFiles: FileProps[] = (classData.files ?? []).map((f) => ({
         id: f.id,
         name: f.name,
         filePath: f.path,
-        associatedCourseName: cls.courseName,
-        associatedClassDate: cls.startTime.toString().slice(0, 10),
+        associatedCourseName: classData.courseName,
+        associatedClassDate: classData.startTime.toString().slice(0, 10),
       }));
 
       setLinks(mappedLinks);

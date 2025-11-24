@@ -8,22 +8,24 @@ import {
   DialogContent,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FileGallery } from "@/components/complex/galleries/fileGallery.tsx";
 import { useState } from "react";
-import type { FileData } from "@/api/types.ts";
+import type { FileBrief } from "@/api/types.ts";
 
 export function ChooseFilePopup({
   setChosenFile,
 }: {
-  setChosenFile: (file: FileData | null) => void;
+  setChosenFile: (file: FileBrief) => void;
 }) {
-  const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
-  function addFileToAssignment(file: FileData) {
+  const [selectedFile, setSelectedFile] = useState<FileBrief | undefined>();
+  const [open, setOpen] = useState(false);
+  function addFileToAssignment(file: FileBrief) {
     setChosenFile(file);
+    console.log(file);
+    setOpen(false);
   }
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Choose file</Button>
       </DialogTrigger>
@@ -32,15 +34,15 @@ export function ChooseFilePopup({
           <DialogTitle>Choose file from library</DialogTitle>
         </DialogHeader>
         <div className={"flex flex-col gap-4 pt-2"}>
-          <FileGallery setSelectedFileProp={setSelectedFile} />
+          <FileGallery setSelectedFileParent={setSelectedFile} />
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
             <DialogClose>
               <Button>Cancel</Button>
             </DialogClose>
             <Button
               variant={"outline"}
-              onSelect={() => {
-                //TODO: investigate
+              onClick={() => {
+                console.log("adding file to assignment");
                 selectedFile && addFileToAssignment(selectedFile);
               }}
             >

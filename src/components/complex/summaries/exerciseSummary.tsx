@@ -61,10 +61,15 @@ export function ExerciseSummary({
               key={task.id}
               style={{ width: "100%" }}
             >
+              {/*{classId && (*/}
+              {/*  <CreateExercisePopup*/}
+              {/*    classId={classId}*/}
+              {/*    editingExercise={{ task }}*/}
+              {/*  />*/}
+              {/*)}*/}
               <Button variant={"link"} className={"w-300px"}>
                 {task.name}:
               </Button>
-              {/*HERE GET COURSE ASSIGNMENT BRIEF*/}
               <Label>{composeTaskDetails(task)}</Label>
             </div>
           ))

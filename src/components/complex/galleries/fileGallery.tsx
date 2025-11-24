@@ -11,14 +11,13 @@ import {
 } from "@/components/ui/table.tsx";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils.ts";
-import { useUser } from "@/features/user/UserContext.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import {
   FilterDropdown,
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
 import { getFiles } from "@/api/apiCalls.ts";
-import type { FileData, FileFilter } from "@/api/types.ts";
+import type { FileBrief, FileData, FileFilter } from "@/api/types.ts";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { formatDate } from "date-fns";
 import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";
@@ -38,15 +37,14 @@ const DEFAULT_PAGE_SIZE = 7;
 export function FileGallery({
   courseId,
   studentId,
-  setSelectedFileProp,
+  setSelectedFileParent,
   slim,
 }: {
   courseId?: string;
   studentId?: string;
-  setSelectedFileProp?: (file: FileData) => void;
+  setSelectedFileParent?: (file: FileBrief) => void;
   slim?: boolean;
 }) {
-  const { user } = useUser();
   const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
   const [sortConfig, setSortConfig] = useState<{
     field: SortField | null;
@@ -55,7 +53,6 @@ export function FileGallery({
 
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<FileData[]>([]);
-  const [selectedOrigin, setSelectedOrigin] = useState<SelectableItem[]>([]);
   const [selectedCreatedBy, setSelectedCreatedBy] = useState<SelectableItem[]>(
     [],
   );
@@ -176,11 +173,9 @@ export function FileGallery({
   };
 
   function resetFilters() {
-    setSelectedOrigin([]);
     setSelectedCreatedBy([]);
     setSelectedType([]);
     setSelectedTags([]);
-
     fetchFiles({}, 1);
   }
 
@@ -214,17 +209,6 @@ export function FileGallery({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-end gap-4">
-        {/*<FilterDropdown*/}
-        {/*  reset={true}*/}
-        {/*  label={"Origin"}*/}
-        {/*  placeholder={"Where file was created"}*/}
-        {/*  emptyMessage={"Origin"}*/}
-        {/*  items={[*/}
-        {/*    { name: "Uploaded", value: "uploaded" },*/}
-        {/*    { name: "Generated", value: "generated" },*/}
-        {/*  ]}*/}
-        {/*  onSelectionChange={setSelectedOrigin}*/}
-        {/*/>*/}
         <FilterDropdown
           reset={true}
           label={"Created by"}
@@ -291,7 +275,12 @@ export function FileGallery({
               )}
               onClick={() => {
                 setSelectedFile(file);
-                setSelectedFileProp && setSelectedFileProp(file);
+                setSelectedFileParent &&
+                  setSelectedFileParent({
+                    id: file.id,
+                    name: file.fileName,
+                    path: file.relativePath,
+                  });
               }}
             >
               <TableCell>{file.fileName}</TableCell>
@@ -326,31 +315,6 @@ export function FileGallery({
                     <DownloadButton file={selectedFile} />
                   </div>
                 ) : (
-                  // <DropdownMenu>
-                  //   <DropdownMenuTrigger asChild>
-                  //     <Button variant="ghost" size="icon">
-                  //       <icons.MoreHorizontalIcon />
-                  //     </Button>
-                  //   </DropdownMenuTrigger>
-                  //   <DropdownMenuContent align="end">
-                  //     <DropdownMenuItem>
-                  //       <icons.Link />
-                  //       Open in new tab
-                  //     </DropdownMenuItem>
-                  //     <DropdownMenuItem>
-                  //       <icons.Share />
-                  //       Share
-                  //     </DropdownMenuItem>
-                  //     <DropdownMenuItem>
-                  //       {/*<EditFilePopup />*/}
-                  //       {/*file={selectedFile} />*/}
-                  //     </DropdownMenuItem>
-                  //     <DropdownMenuItem className="text-destructive">
-                  //       <icons.Trash />
-                  //       Delete
-                  //     </DropdownMenuItem>
-                  //   </DropdownMenuContent>
-                  // </DropdownMenu>
                   <div className={"h-8"} />
                 )}
               </TableCell>

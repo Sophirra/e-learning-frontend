@@ -17,6 +17,7 @@ import { getQuiz, getStudentById, getTeacherById } from "@/api/apiCalls.ts";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils.ts";
+import { CreateQuizPopup } from "@/components/complex/popups/quiz/createQuizPopup.tsx";
 
 export function QuizDetailsPopup({
   quizBrief,
@@ -49,6 +50,8 @@ export function QuizDetailsPopup({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    getPersonDetails();
+
     async function getPersonDetails() {
       if (load) {
         //TODO: odkomentować jak będzie działał backend
@@ -65,7 +68,6 @@ export function QuizDetailsPopup({
         }
       }
     }
-    getPersonDetails();
   }, [load]);
 
   function handleSelect() {
@@ -104,51 +106,55 @@ export function QuizDetailsPopup({
           </p>
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{quiz.name}</DialogTitle>
-          <DialogDescription>
-            {quiz.courseName}
-            {user?.activeRole === "teacher"
-              ? " for " + student
-              : " by " + teacher}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <Label>
-            {quizBrief.questionNumber} questions,{" "}
-            {quiz.isMultipleChoice ? "multiple choice" : "single choice"}
-          </Label>
-          <Label>
-            Score:{" "}
-            {quiz.score ? quiz.score + "/" + quiz.maxScore : "not solved yet"}
-          </Label>
-        </div>
-        <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
-          <DialogClose>
-            <Button>Cancel</Button>
-          </DialogClose>
-          {setSelected ? (
-            <Button variant={"outline"} onClick={() => handleSelect()}>
-              Choose
-            </Button>
-          ) : (
-            <Button
-              variant={"outline"}
-              onClick={() => {
-                navigate(
-                  "/quizzes/" +
-                    quiz.id +
-                    (user?.activeRole === "student" ? "/solve" : "/edit"),
-                );
-              }}
-              disabled={user?.activeRole !== "student"}
-            >
-              {user?.activeRole === "student" ? "Solve" : "Edit"}
-            </Button>
-          )}
-        </DialogFooter>
-      </DialogContent>
+      {quiz && (
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{quiz.name}</DialogTitle>
+            <DialogDescription>
+              {quiz.courseName}
+              {user?.activeRole === "teacher"
+                ? " for " + student
+                : " by " + teacher}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
+            <Label>
+              {quizBrief.questionNumber} questions,{" "}
+              {quiz.isMultipleChoice ? "multiple choice" : "single choice"}
+            </Label>
+            <Label>
+              Score:{" "}
+              {quiz.score ? quiz.score + "/" + quiz.maxScore : "not solved yet"}
+            </Label>
+          </div>
+          <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
+            <DialogClose>
+              <Button>Cancel</Button>
+            </DialogClose>
+            {setSelected ? (
+              <Button variant={"outline"} onClick={() => handleSelect()}>
+                Choose
+              </Button>
+            ) : user?.activeRole === "student" ? (
+              <Button
+                variant={"outline"}
+                onClick={() => {
+                  navigate("/quizzes/" + quiz.id + "/solve");
+                }}
+              >
+                Solve
+              </Button>
+            ) : (
+              !load && (
+                <CreateQuizPopup
+                  classId={quiz.classId}
+                  editingQuiz={quizBrief}
+                />
+              )
+            )}
+          </DialogFooter>
+        </DialogContent>
+      )}
     </Dialog>
   );
 }

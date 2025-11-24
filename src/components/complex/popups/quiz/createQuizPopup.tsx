@@ -8,25 +8,32 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
 import { QuestionGallery } from "@/components/complex/galleries/questionGallery.tsx";
-import { createQuiz as createQuizApi } from "@/api/apiCalls.ts";
+import {
+  createQuiz as createQuizApi,
+  getQuizQuestions,
+  updateQuiz as updateQuizApi,
+} from "@/api/apiCalls.ts";
+import type { Question, QuizBrief } from "@/api/types.ts";
 
 export function CreateQuizPopup({
   classId,
   closeParent,
+  editingQuiz,
 }: {
   classId: string;
-  closeParent: (open: boolean) => void;
+  closeParent?: (open: boolean) => void;
+  editingQuiz?: QuizBrief;
 }) {
   const [open, setOpen] = useState(false);
   const [questionIds, setQuestionIds] = useState<string[]>([]);
-  const [name, setName] = useState<string>("");
+  const [name, setName] = useState<string>(editingQuiz?.name ?? "");
   const [nameError, setNameError] = useState<boolean>(false);
   async function createQuiz() {
     try {
@@ -37,23 +44,58 @@ export function CreateQuizPopup({
       await createQuizApi(name, questionIds, classId);
       setOpen(false);
       toast.success("Quiz created successfully");
-      closeParent(false);
+      closeParent && closeParent(false);
     } catch (e: any) {
       toast.error("Failed to create quiz: " + e.message);
     }
   }
+  async function updateQuiz() {
+    try {
+      if (name.trim().length == 0 || questionIds.length == 0) {
+        toast.error("Quiz name and questions must be filled");
+        return;
+      }
+      await updateQuizApi(quizId, name, questionIds);
+      setOpen(false);
+      toast.success("Quiz saved successfully");
+      closeParent && closeParent(false);
+    } catch (e: any) {
+      toast.error("Failed to update quiz: " + e.message);
+    }
+  }
+
+  useEffect(() => {
+    getQuestions();
+
+    async function getQuestions() {
+      if (editingQuiz) {
+        try {
+          const data = await getQuizQuestions(editingQuiz.id);
+          setQuestionIds(
+            data.map((q: Question) => q.id).filter((q) => q !== undefined),
+          );
+        } catch (e: any) {
+          toast.error("Failed to fetch quiz questions: " + e.message);
+        }
+      }
+    }
+  }, [editingQuiz]);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"outline"} disabled={!classId}>
-          Create
+          {editingQuiz ? "Edit" : "Create"}
         </Button>
       </DialogTrigger>
       <DialogContent className={"min-w-fit max-h-4/5"}>
         <DialogHeader>
-          <DialogTitle>Create new quiz</DialogTitle>
+          <DialogTitle>
+            {editingQuiz ? "Edit quiz" : "Create new quiz"}
+          </DialogTitle>
           <DialogDescription>
-            {"Creating new quiz for student"}
+            {editingQuiz
+              ? "Editing quiz for student"
+              : "Creating new quiz for student"}
           </DialogDescription>
         </DialogHeader>
         <Label>Title</Label>
@@ -81,7 +123,7 @@ export function CreateQuizPopup({
             <Button>Cancel</Button>
           </DialogClose>
           <Button onClick={() => createQuiz()} variant={"outline"}>
-            Create
+            {editingQuiz ? "Save" : "Create"}
           </Button>
         </DialogFooter>
       </DialogContent>
