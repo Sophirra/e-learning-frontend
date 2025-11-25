@@ -57,28 +57,6 @@ export interface ApiDayAvailability {
   timeslots: { timeFrom: string; timeUntil: string }[];
 }
 
-export type AnyTask = QuizTask | AssignmentTask;
-
-export interface TaskProps {
-  id: string;
-  name: string;
-  completed: boolean;
-  courseName: string;
-  className?: string;
-}
-
-export interface QuizTask extends TaskProps {
-  type: "quiz";
-}
-
-export interface AssignmentTask extends TaskProps {
-  type: "assignment";
-  status: string;
-  graded: boolean;
-  grade?: number;
-  comments?: string;
-}
-
 export type FileLink = {
   id?: string;
   courseName: string;
@@ -380,24 +358,32 @@ export type QuizSolution = {
 
 export type ExerciseBrief = {
   id: string;
-  courseId: string;
-  courseName: string;
-  classStartTime: string;
-  exerciseStatus: string;
+  name: string;
+  date: Date;
+  status: string;
 };
+//
+// export interface ExerciseProps {
+//   id: string;
+//   courseName: string;
+//   className?: string;
+//   status: string;
+//   graded: boolean;
+//   grade?: number;
+//   comments?: string;
+// }
 
 export type Exercise = {
   id?: string;
-  name: string;
+  name: string; //nie wiem czym jest ale jest zawarte w ExerciseSummary
   courseName: string;
   className?: string;
   status: "unsolved" | "solutionAdded" | "submitted" | "graded";
-  graded: boolean; // TO JEST RACZEJ BEZ SENSU BO JAK STATUS TO GRADED I JEST GRADE, TO TO Z TEGO WYNIKA
+  graded: boolean; //powinno być wyliczalne ze statusu, można usunąć
   grade?: number;
-  comments?: string;
-  instruction?: string;
-  date?: Date; // TO CHYBA MUSI BYC DATA ZAJEC BO SAM QUIZ/EXERCISE NIE MA DATY
-  files?: ExerciseFile[];
+  comments?: string; //tylko gdy graded
+  instruction?: string; //potrzebne tylko na podglądzie
+  files?: ExerciseFile[]; //musimy pobrać solution dla nauczyciela gdy jest status submitted
 };
 
 export type ExerciseFile = {

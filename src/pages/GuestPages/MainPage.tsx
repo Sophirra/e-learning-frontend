@@ -41,7 +41,6 @@ type Filters = {
   query?: string;
 };
 
-
 const DEFAULT_PAGE_SIZE = 20;
 
 function MainPage() {
@@ -62,12 +61,11 @@ function MainPage() {
   const [levels, setLevels] = useState<string[]>([]);
   const [languages, setLanguages] = useState<string[]>([]);
 
-
   const [selectedCategory, setSelectedCategory] = useState<SelectableItem[]>(
-      [],
+    [],
   );
   const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>(
-      [],
+    [],
   );
   const [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<SelectableItem[]>([]);
@@ -103,9 +101,9 @@ function MainPage() {
         }, [searchQuery, courses]);*/
 
   //TODO: opisać do czego to służy i dlaczego są dwa
-// przy starcie (opcjonalnie)
+  // przy starcie (opcjonalnie)
   useEffect(() => {
-    // fetchCourses({ query: searchQuery });
+    fetchCourses({ query: searchQuery });
   }, [searchQuery]);
 
   // Fetch courses (bez filtrów przy starcie)
@@ -113,16 +111,15 @@ function MainPage() {
     fetchCourses();
   }, []);
 
-// przy zmianie strony
+  // przy zmianie strony
   useEffect(() => {
     fetchCourses(activeFilters);
   }, [currentPage]);
 
-// przy zmianie filtrów
+  // przy zmianie filtrów
   useEffect(() => {
     fetchCourses(activeFilters);
   }, [activeFilters]);
-
 
   //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
   //odp: przeniesione wszystkie calle do pliku apiCalls.ts
@@ -144,7 +141,7 @@ function MainPage() {
       }
     };
     loadFilters();
-  }, [currentPage,activeFilters,DEFAULT_PAGE_SIZE]);
+  }, [currentPage, activeFilters, DEFAULT_PAGE_SIZE]);
 
   const fetchCourses = async (filters?: Parameters<typeof getCourses>[0]) => {
     setLoading(true);
@@ -165,7 +162,7 @@ function MainPage() {
 
   // Mapowanie etykiety zakresu cen na from/to
   const mapPriceLabelToRange = (
-      label?: string,
+    label?: string,
   ): { from?: number; to?: number } => {
     if (!label) return {};
     const found = PRICE_OPTIONS.find((opt) => opt.label === label);
@@ -176,7 +173,7 @@ function MainPage() {
   const handleApplyFilters = () => {
     setCurrentPage(1);
     const { from: priceFrom, to: priceTo } = mapPriceLabelToRange(
-        selectedPrice[0]?.value,
+      selectedPrice[0]?.value,
     );
 
     const filters = {
@@ -259,72 +256,72 @@ function MainPage() {
             <p>Loading courses...</p>
           ) : (
             <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredCourses &&
-                filteredCourses.map((course) => (
-                  <CourseCard
-                    key={course.id}
-                    title={course.name}
-                    imageUrl={
-                      course.profilePictureUrl ??
-                      "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
-                    }
-                    rating={course.rating}
-                    levels={course.levelVariants ?? []}
-                    language={course.languageVariants ?? []}
-                    price={`${course.minimumCoursePrice ?? 0}-${
-                      course.maximumCoursePrice ?? 0
-                    }$/h`}
-                    description={course.description ?? ""}
-                    teacher={{
-                      name: course.teacherName ?? "Unknown",
-                      surname: course.teacherSurname ?? "",
-                    }}
-                    onClick={() =>
-                      navigate(`/course/${course.id}`, {
-                        state: { teacherId: course.teacherId ?? "" },
-                      })
-                    }
-                  />
-                ))}
-            </div>
-            <div className="flex justify-center items-center gap-4 mt-6">
-            <Button
-            disabled={currentPage <= 1}
-          onClick={() =>
-            setCurrentPage((prev) => Math.max(1, prev - 1))
-          }
-        >
-          Previous
-        </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredCourses &&
+                  filteredCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      title={course.name}
+                      imageUrl={
+                        course.profilePictureUrl ??
+                        "https://www.codeguru.com/wp-content/uploads/2023/01/c-sharp-tutorials-tips-tricks-1024x683.png"
+                      }
+                      rating={course.rating}
+                      levels={course.levelVariants ?? []}
+                      language={course.languageVariants ?? []}
+                      price={`${course.minimumCoursePrice ?? 0}-${
+                        course.maximumCoursePrice ?? 0
+                      }$/h`}
+                      description={course.description ?? ""}
+                      teacher={{
+                        name: course.teacherName ?? "Unknown",
+                        surname: course.teacherSurname ?? "",
+                      }}
+                      onClick={() =>
+                        navigate(`/course/${course.id}`, {
+                          state: { teacherId: course.teacherId ?? "" },
+                        })
+                      }
+                    />
+                  ))}
+              </div>
+              <div className="flex justify-center items-center gap-4 mt-6">
+                <Button
+                  disabled={currentPage <= 1}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
+                >
+                  Previous
+                </Button>
 
-        <span>
+                <span>
                   Page {pagedCourses.page} of{" "}
-          {Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)}
+                  {Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)}
                 </span>
 
-        <Button
-          disabled={
-            currentPage >=
-            Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)
-          }
-          onClick={() =>
-            setCurrentPage((prev) =>
-              prev + 1 <=
-              Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)
-                ? prev + 1
-                : prev,
-            )
-          }
-        >
-          Next
-        </Button>
+                <Button
+                  disabled={
+                    currentPage >=
+                    Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)
+                  }
+                  onClick={() =>
+                    setCurrentPage((prev) =>
+                      prev + 1 <=
+                      Math.ceil(pagedCourses.totalCount / pagedCourses.pageSize)
+                        ? prev + 1
+                        : prev,
+                    )
+                  }
+                >
+                  Next
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      </Content>
     </div>
-</>
-)}
-</div>
-</Content>
-</div>
   );
 }
 

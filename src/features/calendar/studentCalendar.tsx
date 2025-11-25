@@ -6,50 +6,20 @@ import CourseFilter from "@/components/complex/courseFilter.tsx";
 import ClassTile, {
   type ClassTileProps,
 } from "@/components/complex/classTile.tsx";
-import {
-  type LinkProps,
-  LinksSummary,
-} from "@/components/complex/summaries/linksSummary.tsx";
-import {
-  type AnyTask,
-  ExerciseSummary,
-  type QuizTask,
-} from "@/components/complex/summaries/exerciseSummary.tsx";
+import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
+import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { getUserId } from "@/api/api.ts";
-import {
-  type FileProps,
-  FilesSummary,
-} from "@/components/complex/summaries/filesSummary.tsx";
+import { FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
 import { useSearchParams } from "react-router-dom";
 import { getQuizzes, getStudentTimeline } from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
-
-type ClassBriefDto = {
-  id: string;
-  startTime: string;
-  status: string;
-  linkToMeeting?: string;
-  links: string[];
-  userId: string;
-  courseId: string;
-  courseName: string;
-  exercises: {
-    id: string;
-    exerciseStatus: string;
-    grade?: number;
-  }[];
-  quizzes: {
-    id: string;
-    score?: number;
-  }[];
-  files: {
-    id: string;
-    name: string;
-    path: string;
-    courseName: string;
-    classDate: string;
-  }[];
-};
+import type {
+  ClassBrief,
+  Exercise,
+  FileProps,
+  LinkProps,
+  QuizBrief,
+} from "@/api/types.ts";
 
 export function StudentCalendar() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -66,15 +36,15 @@ export function StudentCalendar() {
   });
 
   // Raw timeline data (to recalculate when clicking a class)
-  const [timeline, setTimeline] = useState<ClassBriefDto[]>([]);
+  const [timeline, setTimeline] = useState<ClassBrief[]>([]);
 
   // Left column: class tiles
   const [classes, setClasses] = useState<ClassTileProps[]>([]);
 
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
-  const [assignments, setAssignments] = useState<AnyTask[]>([]);
-  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
+  const [assignments, setAssignments] = useState<Exercise[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
   // Sync with ?courseId & ?classId in URL

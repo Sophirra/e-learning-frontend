@@ -12,11 +12,11 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { useState } from "react";
-import type { FileData } from "@/api/types.ts";
+import type { FileBrief, FileData } from "@/api/types.ts";
 
 export function AddExerciseFilePopup(exerciseId?: string) {
-  const [chosenFile, setChosenFile] = useState<FileData | null>(null);
-  function handleAddExcersiseFile(file: FileData) {
+  const [chosenFile, setChosenFile] = useState<FileBrief | null>(null);
+  function handleAddExcersiseFile(file: FileBrief) {
     //TODO: backend magic - add file to existing exercise
   }
   return (

@@ -2,13 +2,13 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type { Exercise } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
+import type { Exercise } from "@/api/types.ts";
 
 export function ExerciseSolutionSummary({
   assignment,
 }: {
-  assignment: ExerciseBrief | null;
+  assignment: Exercise | null;
 }) {
   const solutionFiles = assignment?.files?.filter(
     (file) => file.type === "solution",

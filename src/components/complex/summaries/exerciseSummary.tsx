@@ -3,31 +3,40 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { AddExercisePopup } from "@/components/complex/popups/exercise/addExercisePopup.tsx";
-import type { AnyTask } from "@/api/types.ts";
+import type { Exercise } from "@/api/types.ts";
+import { CreateExercisePopup } from "@/components/complex/popups/exercise/createExercisePopup.tsx";
 
 export function ExerciseSummary({
   student,
   exercises,
   classId,
 }: {
-  exercises: AnyTask[];
+  exercises: Exercise[];
   student: boolean;
   classId?: string;
 }) {
-  function composeTaskDetails(task: AnyTask) {
+  function composeTaskDetails(exercise: Exercise) {
     let statusLabel = "";
-    if (!task.completed) {
+    if (exercise.status == "unsolved") {
       statusLabel = "To be solved";
-    } else if (task.type === "quiz") {
-      statusLabel = "Completed";
-    } else if (task.type === "assignment") {
-      if (!task.graded) {
-        statusLabel = "Waiting for grade";
-      } else if (task.grade !== undefined) {
-        statusLabel = "Graded " + task.grade;
-        if (task.comments) statusLabel += " (" + task.comments + ")";
+    } else if (exercise.status == "solutionAdded") {
+      if (student) {
+        statusLabel = "Solution added";
       } else {
-        statusLabel = task.comments ?? "No grade found";
+        statusLabel = "To be solved";
+      }
+    } else if (exercise.status == "submitted") {
+      if (student) {
+        statusLabel = "Waiting for grade";
+      } else {
+        statusLabel = "To be graded";
+      }
+    } else if (exercise.status == "graded") {
+      statusLabel = "Graded " + exercise.grade;
+      if (exercise.comments) {
+        statusLabel += " (" + exercise.comments + ")";
+      } else {
+        statusLabel = exercise.comments ?? "No grade found";
       }
     }
     return statusLabel;
@@ -55,22 +64,22 @@ export function ExerciseSummary({
             No exercises available for the selected courses/classes
           </Label>
         ) : (
-          exercises?.map((task: AnyTask) => (
+          exercises?.map((exercise) => (
             <div
               className={"flex flex-row gap-0"}
-              key={task.id}
+              key={exercise.id}
               style={{ width: "100%" }}
             >
-              {/*{classId && (*/}
-              {/*  <CreateExercisePopup*/}
-              {/*    classId={classId}*/}
-              {/*    editingExercise={{ task }}*/}
-              {/*  />*/}
-              {/*)}*/}
+              {classId && (
+                <CreateExercisePopup
+                  classId={classId}
+                  editingExercise={exercise}
+                />
+              )}
               <Button variant={"link"} className={"w-300px"}>
-                {task.name}:
+                {exercise.name}:
               </Button>
-              <Label>{composeTaskDetails(task)}</Label>
+              <Label>{composeTaskDetails(exercise)}</Label>
             </div>
           ))
         )}

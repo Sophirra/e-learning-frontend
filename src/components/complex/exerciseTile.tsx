@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import type { Exercise } from "@/pages/UserPages/ExercisePage.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
+import type { ExerciseBrief } from "@/api/types.ts";
 
 type ExerciseTileProps = {
   exercise: ExerciseBrief;
@@ -15,7 +14,6 @@ export default function ExerciseTile({
   setSelectedExerciseId,
 }: ExerciseTileProps) {
   const { id, name, date, status } = exercise;
-  const { user } = useUser();
 
   const handleSelect = () => {
     setSelectedExerciseId(selectedExerciseId === id ? null : id);

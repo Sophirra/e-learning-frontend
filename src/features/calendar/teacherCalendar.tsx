@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { Content } from "@/components/ui/content.tsx";
-/* import Summary from "@/components/complex/summaries/summary.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { getUserId } from "@/api/api.ts";
 import {
@@ -12,15 +10,12 @@ import {
 } from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 import type {
-  AnyTask,
   ApiDayAvailability,
-  ClassBrief,
-  ClassBriefDto,
   ClassSchedule,
   Exercise,
   FileProps,
   LinkProps,
-  QuizTask,
+  QuizBrief,
   TimeSlot,
 } from "@/api/types.ts";
 import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
@@ -47,8 +42,8 @@ export function TeacherCalendar() {
 
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
-  const [assignments, setAssignments] = useState<AnyTask[]>([]);
-  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
   useEffect(() => {
@@ -88,9 +83,25 @@ export function TeacherCalendar() {
   useEffect(() => {
     if (!selectedClassId) {
       setLinks([]);
-      setAssignments([]);
+      setExercises([]);
       setFiles([]);
       return;
+    }
+    async function fetchClasses() {
+      //TODO: pobierany ClassSchedule[] (ClassBrief mapowany na ClassSchedule)
+      // ALBO getTeacherUpcomingClasses który sam zwraca ClassSchedule[] ??
+    }
+    async function fetchExercises() {
+      //TODO: pobierany Exercise[] bez opcjonalnych lub ExerciseProps[] (exercise props nie jest nigdzie używane, ja bym wywaliła)
+    }
+    async function fetchQuizzes() {
+      //TODO: pobierany QuizBrief[]
+    }
+    async function fetchFiles() {
+      //TODO: pobierany FileProps[]
+    }
+    async function fetchLinks() {
+      //TODO: pobierany LinkProps[]
     }
 
     const fetchUnsolvedExercises = async () => {
@@ -154,7 +165,7 @@ export function TeacherCalendar() {
       }));
 
       setLinks(mappedLinks);
-      setAssignments(mappedAssignments);
+      setExercises(mappedAssignments);
       setFiles(mappedFiles);
     };
 
@@ -257,7 +268,7 @@ export function TeacherCalendar() {
             classId={selectedClassId ? selectedClassId : undefined}
           />
           <ExerciseSummary
-            exercises={assignments}
+            exercises={exercises}
             student={false}
             classId={selectedClassId ? selectedClassId : undefined}
           />

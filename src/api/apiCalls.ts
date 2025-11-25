@@ -23,8 +23,6 @@ import type {
   ApiDayAvailability,
   ClassBriefDto,
   ClassSchedule,
-  AssignmentTask,
-  QuizTask,
   StudentBrief,
   FileBrief,
 } from "@/api/types.ts";
@@ -817,7 +815,7 @@ export async function getTeacherUpcomingClasses(
 
   return data;
 }
-
+//TODO: zmienić na typ ClassBrief
 export async function getStudentTimeline(
   studentId: string,
   preferredCourseId: string | null,
