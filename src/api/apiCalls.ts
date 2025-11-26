@@ -996,12 +996,26 @@ export async function createExercise(
   if (res.status === 201 || res.status === 200) return;
   else throw res.data as ErrorResponse;
 }
+
+export async function updateExercise(
+    exerciseId: string,
+    instructions: string,
+    fileIds?: string[],
+) {
+    const res = await Api.put(`/api/exercises/${exerciseId}`, {
+        instructions,
+        fileIds,
+    });
+    if (res.status === 200 || res.status === 204) return;
+    else throw res.data as ErrorResponse;
+}
+
 export async function updateQuiz(
   quizId: string,
   name: string,
   questionIds: string[],
 ) {
   const res = await Api.put(`/api/quizzes/${quizId}`, { name, questionIds });
-  if (res.status === 200 || res.status === 201) return;
+  if (res.status === 200 || res.status === 204) return;
   else throw res.data as ErrorResponse;
 }
