@@ -26,7 +26,7 @@ let RegistrationSchema = z
     confirmPassword: z.string(),
     name: z.string().min(1, { message: "Name cannot be empty" }),
     surname: z.string().min(1, { message: "Surname cannot be empty" }),
-    telephone: z
+    phone: z
       .string()
       .trim()
       .min(9, { message: "Telephone must be at least 9 characters long" }),
@@ -52,7 +52,7 @@ export function UserSheetContentRegister({
       confirmPassword: "",
       name: "",
       surname: "",
-      telephone: "",
+      phone: "",
     },
   });
 
@@ -177,7 +177,7 @@ export function UserSheetContentRegister({
         />
         <FormField
           control={form.control}
-          name="telephone"
+          name="phone"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Telephone number: </FormLabel>

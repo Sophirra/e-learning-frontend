@@ -116,7 +116,7 @@ export interface RegisterUserDto {
   confirmPassword: string;
   name: string;
   surname: string;
-  telephone: string;
+  phone: string;
 }
 
 export interface LoginUserDto {
