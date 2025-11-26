@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/command.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export type SelectableItem = { name: string; value: string };
 
@@ -59,15 +59,8 @@ export function FilterDropdown({
   icon: Icon,
   className,
 }: FilterDropdownProps) {
-  const [selectedValues, setSelectedValues] = useState<SelectableItem[]>(() => {
-    if (defaultValues) {
-      console.log("defaultValues", defaultValues);
-      console.log("items", items);
-      return items.filter((item) => defaultValues.includes(item.value));
-    }
-    return [];
-  });
-
+  const [selectedValues, setSelectedValues] = useState<SelectableItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
 
   const handleSelect = (selected: SelectableItem) => {
@@ -95,6 +88,21 @@ export function FilterDropdown({
     setSelectedValues([]);
     onSelectionChange?.([]);
   };
+
+  useEffect(() => {
+    if (!loaded) {
+      if (defaultValues) {
+        console.log("defaultValues", defaultValues);
+        console.log("items", items);
+        setSelectedValues(
+          items.filter((item) => defaultValues.includes(item.value)),
+        );
+        if (selectedValues.length === defaultValues.length) {
+          setLoaded(true);
+        }
+      }
+    }
+  }, [items]);
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>

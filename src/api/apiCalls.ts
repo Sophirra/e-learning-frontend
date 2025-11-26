@@ -413,7 +413,7 @@ export const acceptSpectatorInvite = async (token: string): Promise<void> => {
  * @param {File} file - The file object selected by the user (from an `<input type="file">`).
  * @returns {Promise<any>} Resolves with the uploaded file metadata returned by the backend.
  */
-export const uploadUserFile = async (file: File): Promise<FileBrief> => {
+export const uploadUserFile = async (file: File): Promise<any> => {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -462,11 +462,13 @@ export const getFiles = async (
  * @param fileId id of the file to update
  * @param data new file name and tags
  */
-export function updateFileData(
+export async function updateFileData(
   fileId: string,
   data: { fileName: string; tags: FileTag[] },
 ) {
-  //TODO: send shit
+  const res = await Api.put(`/api/user/files/${fileId}`, data);
+  if (res.status === 200 || res.status === 201) return res.data;
+  else return res.data as ErrorResponse;
 }
 
 /**

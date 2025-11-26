@@ -95,7 +95,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
             }}
             className={cn(nameError ? "border-red-300" : "")}
           ></Input>
-          <div className={"flex flex-row gap-4 pt-2"}>
+          <div className={"flex flex-row flex-wrap gap-2 pt-2"}>
             Tags:
             {newTags.length > 0 ? (
               newTags.map((tag) => (

@@ -15,7 +15,6 @@ import { useState } from "react";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { toast } from "sonner";
 import { createNewTag } from "@/api/apiCalls.ts";
-import type { ErrorResponse } from "react-router-dom";
 
 export function NewTagPopup({ resetLoading }: { resetLoading: () => void }) {
   const [name, setName] = useState<string>("");
@@ -23,7 +22,7 @@ export function NewTagPopup({ resetLoading }: { resetLoading: () => void }) {
 
   async function apiAddTag(name: string) {
     try {
-      const res = await createNewTag(name);
+      await createNewTag(name);
       toast.success("Tag created successfully");
       resetLoading();
       setOpen(false);
