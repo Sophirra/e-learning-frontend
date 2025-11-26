@@ -87,12 +87,7 @@ export function QuizDetailsPopup({
       onOpenChange={async (open) => {
         if (open) {
           setLoad(true);
-          // const quizData = await getQuiz(quizBrief.id);
-          // setQuiz(quizData);
-          // console.log("Set quiz:", quiz);
-          // console.log("Got data:", quizData);
         }
-        // setLoad(false);
         setOpen(open);
       }}
       open={open}

@@ -69,79 +69,6 @@ export function SolveQuizPage() {
         answers: newAnswers,
       };
     });
-
-    // //TODO: naprawić - nie zmienia wybranej odpowiedzi jeśli jest już jakaś zaznaczona
-    // setSolution((prevSolution) => {
-    //   let newAnswers = prevSolution.answers;
-    //   // const currentQuestionAnswers = prevSolution.answers.find(
-    //   //   (a) => a.questionId === currentQuestion.id,
-    //   // );
-    //   // if (currentQuestionAnswers?.selectedAnswerIds.includes(answerId)) {
-    //   //   newAnswers =
-    //       newAnswers.map((q) => {
-    //       if (q.questionId === currentQuestion.id){
-    //         if (q.selectedAnswerIds.includes(answerId)) {
-    //           //odznacz odpowiedź
-    //           return {
-    //             ...q,
-    //             selectedAnswerIds: q.selectedAnswerIds.filter(
-    //               (id) => id !== answerId,
-    //             ),
-    //           };
-    //         }
-    //         else {
-    //           return {
-    //             ...q,
-    //             selectedAnswerIds: q.selectedAnswerIds.push(answerId),
-    //           }
-    //         }
-    //       }
-    //     });
-    //   // }
-    //   // const existingAnswerIndex = prevSolution.answers.findIndex(
-    //   //   (a) => a.questionId === currentQuestion.id,
-    //   // );
-    //   //
-    //   // const newAnswers = [...prevSolution.answers];
-    //   //
-    //   // if (existingAnswerIndex >= 0) {
-    //   //   // Pytanie już ma odpowiedzi
-    //   //   const currentAnswerIds =
-    //   //     newAnswers[existingAnswerIndex].selectedAnswerIds;
-    //   //   if (quiz.isMultipleChoice) {
-    //   //     // Multiple choice - toggle odpowiedzi
-    //   //     if (currentAnswerIds.includes(answerId)) {
-    //   //       newAnswers[existingAnswerIndex].selectedAnswerIds =
-    //   //         currentAnswerIds.filter((id) => id !== answerId);
-    //   //     } else {
-    //   //       newAnswers[existingAnswerIndex].selectedAnswerIds = [
-    //   //         ...currentAnswerIds,
-    //   //         answerId,
-    //   //       ];
-    //   //     }
-    //   //   } else {
-    //   //     // Single choice - zamień na nową odpowiedź lub usuń jeśli ta sama
-    //   //     if (currentAnswerIds.includes(answerId)) {
-    //   //       newAnswers[existingAnswerIndex].selectedAnswerIds = [];
-    //   //     } else {
-    //   //       newAnswers[existingAnswerIndex].selectedAnswerIds = [answerId];
-    //   //     }
-    //   //   }
-    //   // } else {
-    //   //   // Nowe pytanie - dodaj odpowiedź
-    //   //   if (currentQuestion.id) {
-    //   //     newAnswers.push({
-    //   //       questionId: currentQuestion.id,
-    //   //       selectedAnswerIds: [answerId],
-    //   //     });
-    //   //   }
-    //   // }
-    //
-    //   return {
-    //     ...prevSolution,
-    //     answers: newAnswers,
-    //   };
-    // });
   }
 
   async function handleNavigateQuestion(direction: "prev" | "next") {
@@ -319,13 +246,6 @@ export function SolveQuizPage() {
                       </div>
                     </div>
                     <Separator />
-                    {/*<div className="space-y-4">*/}
-                    {/*  {currentQuestion.content && (*/}
-                    {/*    <p className="text-gray-600">*/}
-                    {/*      {currentQuestion.content}*/}
-                    {/*    </p>*/}
-                    {/*  )}*/}
-                    {/*</div>*/}
                     <div className="space-y-3">
                       {currentQuestion.answers &&
                         currentQuestion.answers.map((answer: Answer) => (
@@ -339,26 +259,12 @@ export function SolveQuizPage() {
                             )}
                             onClick={() => handleAnswerSelect(answer.id)}
                           >
-                            {/*<input*/}
-                            {/*  type="checkbox"*/}
-                            {/*  checked={isAnswerSelected(*/}
-                            {/*    currentQuestion.id,*/}
-                            {/*    answer.id,*/}
-                            {/*  )}*/}
-                            {/*  onChange={() => handleAnswerSelect(answer.id)}*/}
-                            {/*  className="h-4 w-4"*/}
-                            {/*/>*/}
-                            {/*<Button*/}
-                            {/*  variant={"ghost"}*/}
-                            {/*>*/}
                             {isAnswerSelected(currentQuestion.id, answer.id) ? (
                               <icons.CheckCircle />
                             ) : (
                               <icons.Circle />
                             )}
                             {answer.content}
-                            {/*</Button>*/}
-                            {/*<div>{answer.content}</div>*/}
                           </Button>
                         ))}
                     </div>
