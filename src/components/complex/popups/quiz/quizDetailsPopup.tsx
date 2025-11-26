@@ -33,16 +33,16 @@ export function QuizDetailsPopup({
   const [load, setLoad] = useState(false);
   const [quiz, setQuiz] = useState<Quiz>({
     id: "1",
-    name: "Quiz number 1",
+    name: "Loading quiz..",
     classId: "1",
     courseId: "1",
-    courseName: "course A",
+    courseName: "",
     teacherId: "11111111-1111-1111-1111-111111111111",
     studentId: "11111111-1111-1111-1111-111111111111",
     // questions: Question[];
     isMultipleChoice: true,
     // score: 6
-    maxScore: 10,
+    maxScore: 0,
   });
 
   const [teacher, setTeacher] = useState<string>("");
@@ -51,12 +51,14 @@ export function QuizDetailsPopup({
 
   useEffect(() => {
     getPersonDetails();
-
     async function getPersonDetails() {
+      console.log("load", load);
       if (load) {
+        console.log("Loading quiz details...");
         //TODO: odkomentować jak będzie działał backend
         const quizData = await getQuiz(quizBrief.id);
         setQuiz(quizData);
+        console.log("Set quiz:", quiz);
         if (quiz) {
           if (user?.activeRole === "teacher") {
             const studentData = await getStudentById(quiz.studentId);
@@ -74,7 +76,7 @@ export function QuizDetailsPopup({
     if (setSelected) {
       setSelected(quizBrief);
       toast.success("Selected quiz: " + quizBrief.name);
-      setOpen(false);
+      setOpen(true);
     } else {
       toast.error("Couldn't select quiz");
     }
@@ -82,8 +84,15 @@ export function QuizDetailsPopup({
 
   return (
     <Dialog
-      onOpenChange={(open) => {
-        setLoad(false);
+      onOpenChange={async (open) => {
+        if (open) {
+          setLoad(true);
+          // const quizData = await getQuiz(quizBrief.id);
+          // setQuiz(quizData);
+          // console.log("Set quiz:", quiz);
+          // console.log("Got data:", quizData);
+        }
+        // setLoad(false);
         setOpen(open);
       }}
       open={open}

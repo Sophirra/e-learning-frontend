@@ -70,7 +70,8 @@ export function UploadFilePopup({
         <DialogHeader>
           <DialogTitle>Upload new file</DialogTitle>
           <DialogDescription>
-            Select a file from your device and upload it to your account.
+            Select a file from your device and upload it to your account. Max
+            size: 50MB.
           </DialogDescription>
         </DialogHeader>
 

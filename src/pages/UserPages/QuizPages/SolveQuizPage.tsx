@@ -50,52 +50,98 @@ export function SolveQuizPage() {
     console.log(currentQuestion, questions);
     if (!currentQuestion.id) return;
 
-    //TODO: naprawić - nie zmienia wybranej odpowiedzi jeśli jest już jakaś zaznaczona
-    setSolution((prevSolution) => {
-      const existingAnswerIndex = prevSolution.answers.findIndex(
-        (a) => a.questionId === currentQuestion.id,
-      );
+    setSolution((prev) => {
+      const newAnswers = prev.answers.map((q) => {
+        if (q.questionId !== currentQuestion.id) return q;
 
-      const newAnswers = [...prevSolution.answers];
+        const isSelected = q.selectedAnswerIds.includes(answerId);
 
-      if (existingAnswerIndex >= 0) {
-        // Pytanie już ma odpowiedzi
-        const currentAnswerIds =
-          newAnswers[existingAnswerIndex].selectedAnswerIds;
-        if (quiz.isMultipleChoice) {
-          // Multiple choice - toggle odpowiedzi
-          if (currentAnswerIds.includes(answerId)) {
-            newAnswers[existingAnswerIndex].selectedAnswerIds =
-              currentAnswerIds.filter((id) => id !== answerId);
-          } else {
-            newAnswers[existingAnswerIndex].selectedAnswerIds = [
-              ...currentAnswerIds,
-              answerId,
-            ];
-          }
-        } else {
-          // Single choice - zamień na nową odpowiedź lub usuń jeśli ta sama
-          if (currentAnswerIds.includes(answerId)) {
-            newAnswers[existingAnswerIndex].selectedAnswerIds = [];
-          } else {
-            newAnswers[existingAnswerIndex].selectedAnswerIds = [answerId];
-          }
-        }
-      } else {
-        // Nowe pytanie - dodaj odpowiedź
-        if (currentQuestion.id) {
-          newAnswers.push({
-            questionId: currentQuestion.id,
-            selectedAnswerIds: [answerId],
-          });
-        }
-      }
+        return {
+          ...q,
+          selectedAnswerIds: isSelected
+            ? q.selectedAnswerIds.filter((id) => id !== answerId)
+            : [...q.selectedAnswerIds, answerId],
+        };
+      });
 
       return {
-        ...prevSolution,
+        ...prev,
         answers: newAnswers,
       };
     });
+
+    // //TODO: naprawić - nie zmienia wybranej odpowiedzi jeśli jest już jakaś zaznaczona
+    // setSolution((prevSolution) => {
+    //   let newAnswers = prevSolution.answers;
+    //   // const currentQuestionAnswers = prevSolution.answers.find(
+    //   //   (a) => a.questionId === currentQuestion.id,
+    //   // );
+    //   // if (currentQuestionAnswers?.selectedAnswerIds.includes(answerId)) {
+    //   //   newAnswers =
+    //       newAnswers.map((q) => {
+    //       if (q.questionId === currentQuestion.id){
+    //         if (q.selectedAnswerIds.includes(answerId)) {
+    //           //odznacz odpowiedź
+    //           return {
+    //             ...q,
+    //             selectedAnswerIds: q.selectedAnswerIds.filter(
+    //               (id) => id !== answerId,
+    //             ),
+    //           };
+    //         }
+    //         else {
+    //           return {
+    //             ...q,
+    //             selectedAnswerIds: q.selectedAnswerIds.push(answerId),
+    //           }
+    //         }
+    //       }
+    //     });
+    //   // }
+    //   // const existingAnswerIndex = prevSolution.answers.findIndex(
+    //   //   (a) => a.questionId === currentQuestion.id,
+    //   // );
+    //   //
+    //   // const newAnswers = [...prevSolution.answers];
+    //   //
+    //   // if (existingAnswerIndex >= 0) {
+    //   //   // Pytanie już ma odpowiedzi
+    //   //   const currentAnswerIds =
+    //   //     newAnswers[existingAnswerIndex].selectedAnswerIds;
+    //   //   if (quiz.isMultipleChoice) {
+    //   //     // Multiple choice - toggle odpowiedzi
+    //   //     if (currentAnswerIds.includes(answerId)) {
+    //   //       newAnswers[existingAnswerIndex].selectedAnswerIds =
+    //   //         currentAnswerIds.filter((id) => id !== answerId);
+    //   //     } else {
+    //   //       newAnswers[existingAnswerIndex].selectedAnswerIds = [
+    //   //         ...currentAnswerIds,
+    //   //         answerId,
+    //   //       ];
+    //   //     }
+    //   //   } else {
+    //   //     // Single choice - zamień na nową odpowiedź lub usuń jeśli ta sama
+    //   //     if (currentAnswerIds.includes(answerId)) {
+    //   //       newAnswers[existingAnswerIndex].selectedAnswerIds = [];
+    //   //     } else {
+    //   //       newAnswers[existingAnswerIndex].selectedAnswerIds = [answerId];
+    //   //     }
+    //   //   }
+    //   // } else {
+    //   //   // Nowe pytanie - dodaj odpowiedź
+    //   //   if (currentQuestion.id) {
+    //   //     newAnswers.push({
+    //   //       questionId: currentQuestion.id,
+    //   //       selectedAnswerIds: [answerId],
+    //   //     });
+    //   //   }
+    //   // }
+    //
+    //   return {
+    //     ...prevSolution,
+    //     answers: newAnswers,
+    //   };
+    // });
   }
 
   async function handleNavigateQuestion(direction: "prev" | "next") {
@@ -111,7 +157,7 @@ export function SolveQuizPage() {
     console.log("running submit quiz", solution);
     try {
       const result = await submitQuiz(solution);
-      toast.success("Scored " + result + "/" + quiz.maxScore);
+      toast.success(`Scored ${Math.floor(result)}%`);
       navigate("/quizzes");
     } catch (e) {
       toast.error("Something went wrong");
@@ -140,7 +186,6 @@ export function SolveQuizPage() {
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  //TODO: odkomentować jak będzie backend
   useEffect(() => {
     if (loading) {
       getQuiz(quizId);
@@ -157,6 +202,13 @@ export function SolveQuizPage() {
       const data = await getQuizQuestions(id);
       setQuestions(data);
       setCurrentQuestionIndex(0);
+      setSolution({
+        quizId: id,
+        answers: data.map((q) => ({
+          questionId: q.id,
+          selectedAnswerIds: [],
+        })),
+      });
       console.log("set questions", questions);
     }
   }, [quizId]);
@@ -181,7 +233,6 @@ export function SolveQuizPage() {
               <Button
                 variant={"outline"}
                 onClick={() => {
-                  console.log("in button");
                   onSubmit();
                 }}
               >
@@ -221,11 +272,10 @@ export function SolveQuizPage() {
                     {questions.map((question, index) => (
                       <Button
                         key={question.id}
-                        variant="ghost"
-                        className={cn(
-                          "w-full justify-start",
-                          currentQuestionIndex === index && "bg-secondary",
-                        )}
+                        variant={
+                          index === currentQuestionIndex ? "outline" : "ghost"
+                        }
+                        className={"w-full justify-start"}
                         onClick={() => setCurrentQuestionIndex(index)}
                       >
                         {isQuestionAnswered(question.id) ? (
@@ -269,17 +319,18 @@ export function SolveQuizPage() {
                       </div>
                     </div>
                     <Separator />
-                    <div className="space-y-4">
-                      {currentQuestion.content && (
-                        <p className="text-gray-600">
-                          {currentQuestion.content}
-                        </p>
-                      )}
-                    </div>
+                    {/*<div className="space-y-4">*/}
+                    {/*  {currentQuestion.content && (*/}
+                    {/*    <p className="text-gray-600">*/}
+                    {/*      {currentQuestion.content}*/}
+                    {/*    </p>*/}
+                    {/*  )}*/}
+                    {/*</div>*/}
                     <div className="space-y-3">
                       {currentQuestion.answers &&
                         currentQuestion.answers.map((answer: Answer) => (
-                          <div
+                          <Button
+                            variant={"ghost"}
                             key={answer.id}
                             className={cn(
                               "flex items-center gap-3 p-4 rounded-lg border",
@@ -288,17 +339,27 @@ export function SolveQuizPage() {
                             )}
                             onClick={() => handleAnswerSelect(answer.id)}
                           >
-                            <input
-                              type="checkbox"
-                              checked={isAnswerSelected(
-                                currentQuestion.id,
-                                answer.id,
-                              )}
-                              onChange={() => handleAnswerSelect(answer.id)}
-                              className="h-4 w-4"
-                            />
-                            <div>{answer.content}</div>
-                          </div>
+                            {/*<input*/}
+                            {/*  type="checkbox"*/}
+                            {/*  checked={isAnswerSelected(*/}
+                            {/*    currentQuestion.id,*/}
+                            {/*    answer.id,*/}
+                            {/*  )}*/}
+                            {/*  onChange={() => handleAnswerSelect(answer.id)}*/}
+                            {/*  className="h-4 w-4"*/}
+                            {/*/>*/}
+                            {/*<Button*/}
+                            {/*  variant={"ghost"}*/}
+                            {/*>*/}
+                            {isAnswerSelected(currentQuestion.id, answer.id) ? (
+                              <icons.CheckCircle />
+                            ) : (
+                              <icons.Circle />
+                            )}
+                            {answer.content}
+                            {/*</Button>*/}
+                            {/*<div>{answer.content}</div>*/}
+                          </Button>
                         ))}
                     </div>
                   </div>
