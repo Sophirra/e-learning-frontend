@@ -1019,3 +1019,18 @@ export async function updateQuiz(
   if (res.status === 200 || res.status === 204) return;
   else throw res.data as ErrorResponse;
 }
+
+export async function addClassLink(classId: string, link: string, isMeeting: boolean) {
+  const res = await Api.post(`/api/classes/${classId}/links`, {
+      link,
+      isMeeting
+  });
+  if (res.status === 200 || res.status === 201) return;
+  else throw res.data as ErrorResponse;
+}
+
+export async function removeClassLink(linkId: string) {
+  const res = await Api.delete(`/api/classes/links/${linkId}`);
+  if (res.status === 200 || res.status === 204) return;
+  else throw res.data as ErrorResponse;
+}
