@@ -1,30 +1,32 @@
 import Api, { getUserId } from "@/api/api.ts";
 import type {
-    ClassBrief,
-    ClassWithStudentsDTO,
-    Course,
-    CourseBrief,
-    CourseWidget,
-    PagedResult,
-    FileData,
-    FileFilter,
-    FileTag,
-    Question,
-    Teacher,
-    TeacherAvailability,
-    TeacherReview,
-    FileOwner,
-    Quiz,
-    Answer,
-    QuizBrief,
-    QuestionCategory,
-    QuizSolution,
-    Student,
-    ApiDayAvailability,
-    ClassBriefDto,
-    ClassSchedule,
-    StudentBrief,
-    FileBrief, FileProps, LinkProps,
+  ClassBrief,
+  ClassWithStudentsDTO,
+  Course,
+  CourseBrief,
+  CourseWidget,
+  PagedResult,
+  FileData,
+  FileFilter,
+  FileTag,
+  Question,
+  Teacher,
+  TeacherAvailability,
+  TeacherReview,
+  FileOwner,
+  Quiz,
+  Answer,
+  QuizBrief,
+  QuestionCategory,
+  QuizSolution,
+  Student,
+  ApiDayAvailability,
+  ClassBriefDto,
+  ClassSchedule,
+  StudentBrief,
+  FileBrief,
+  FileProps,
+  LinkProps,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -34,6 +36,7 @@ import {
 } from "@/mappers/courseMappers.ts";
 import type { ErrorResponse } from "react-router-dom";
 import type { Exercise } from "@/pages/UserPages/HomePage.tsx";
+import type { ClassTileProps } from "@/components/complex/classTile.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -1002,32 +1005,66 @@ export async function updateQuiz(
   else throw res.data as ErrorResponse;
 }
 
+export async function getStudentClasses(
+  studentId: string,
+  preferredCourseId: string | null,
+): Promise<ClassTileProps[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const from = new Date();
+  from.setDate(from.getDate() - 30);
+  const to = new Date();
+  to.setDate(to.getDate() + 14);
+
+  const params: any = {
+    from: from.toISOString(),
+    to: to.toISOString(),
+  };
+
+  if (preferredCourseId) {
+    params.participationIds = preferredCourseId;
+  }
+
+  const { data } = await Api.get<ClassTileProps[]>(
+    `/api/students/${studentId}/classes`,
+    { params },
+  );
+
+  return data;
+}
+
 export async function getClassLinks(classId: string): Promise<LinkProps[]> {
-    if (!classId) {
-        return Promise.reject("No classId provided");
-    }
+  if (!classId) {
+    return Promise.reject("No classId provided");
+  }
 
-    const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}/links`);
+  const { data } = await Api.get<ClassBriefDto>(
+    `/api/classes/${classId}/links`,
+  );
 
-    return data;
+  return data;
 }
 
 export async function getClassFiles(classId: string): Promise<FileProps[]> {
-    if (!classId) {
-        return Promise.reject("No classId provided");
-    }
+  if (!classId) {
+    return Promise.reject("No classId provided");
+  }
 
-    const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}/files`);
+  const { data } = await Api.get<ClassBriefDto>(
+    `/api/classes/${classId}/files`,
+  );
 
-    return data;
+  return data;
 }
 
 export async function getClassExercises(classId: string): Promise<Exercise[]> {
-    if (!classId) {
-        return Promise.reject("No classId provided");
-    }
+  if (!classId) {
+    return Promise.reject("No classId provided");
+  }
 
-    const { data } = await Api.get<Exercise>(`/api/classes/${classId}/exercises`);
+  const { data } = await Api.get<Exercise>(`/api/classes/${classId}/exercises`);
 
-    return data;
+  return data;
 }
