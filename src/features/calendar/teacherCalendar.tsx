@@ -3,7 +3,9 @@ import { Content } from "@/components/ui/content.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { getUserId } from "@/api/api.ts";
 import {
-  getClassBrief,
+  getClassExercises,
+  getClassFiles,
+  getClassLinks,
   getQuizzes,
   getTeacherAvailability,
   getTeacherUpcomingClasses,
@@ -66,7 +68,7 @@ export function TeacherCalendar() {
     fetchAvailability().then();
 
     // Fetch upcoming classes
-    const fetchExercises = async () => {
+    const fetchClasses = async () => {
       const data = await getTeacherUpcomingClasses(
         teacherId,
         startParam,
@@ -76,7 +78,7 @@ export function TeacherCalendar() {
       setScheduledClasses(data);
     };
 
-    fetchExercises().then();
+    fetchClasses().then();
   }, []);
 
   // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
@@ -87,89 +89,55 @@ export function TeacherCalendar() {
       setFiles([]);
       return;
     }
-    async function fetchClasses() {
-      //TODO: pobierany ClassSchedule[] (ClassBrief mapowany na ClassSchedule)
-      // ALBO getTeacherUpcomingClasses który sam zwraca ClassSchedule[] ??
-    }
+
+    const teacherId = getUserId(); // assuming this returns teacherId
+    if (!teacherId) return;
+
     async function fetchExercises() {
-      //TODO: pobierany Exercise[] bez opcjonalnych lub ExerciseProps[] (exercise props nie jest nigdzie używane, ja bym wywaliła)
-    }
-    async function fetchQuizzes() {
-      //TODO: pobierany QuizBrief[]
-    }
-    async function fetchFiles() {
-      //TODO: pobierany FileProps[]
-    }
-    async function fetchLinks() {
-      //TODO: pobierany LinkProps[]
-    }
-
-    const fetchUnsolvedExercises = async () => {
-      const classData: ClassBriefDto = await getClassBrief(selectedClassId);
-      const now = new Date();
-      const start = new Date(classData.startTime);
-      const isMeetingActive =
-        !!classData.linkToMeeting &&
-        Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
-
-      // LINKS
-      const allLinks = [...(classData.links ?? [])];
-      if (isMeetingActive && classData.linkToMeeting) {
-        allLinks.unshift(classData.linkToMeeting);
+      try {
+        const data = await getClassExercises(selectedClassId);
+        setExercises(data ?? []);
+      } catch (err) {
+        console.error("fetchExercises:", err);
       }
+    }
 
-      const mappedLinks: LinkProps[] = allLinks.map((link) => ({
-        path: link,
-        isMeeting: link === classData.linkToMeeting,
-        courseName: classData.courseName,
-        className: `[${classData.startTime.toString().slice(0, 10)}]`,
-      }));
+    async function fetchQuizzes() {
+      try {
+        const data = await getQuizzes(
+          undefined,
+          undefined,
+          undefined,
+          selectedClassId,
+        );
+        setQuizzes(data ?? []);
+      } catch (err) {
+        console.error("fetchQuizzes:", err);
+      }
+    }
 
-      // ASSIGNMENTS
-      const courseName = classData.courseName;
-      const className = `Class ${classData.id.toString().slice(0, 4)}`;
-      const classDate = classData.startTime.toString().slice(0, 10);
+    async function fetchFiles() {
+      try {
+        const data = await getClassFiles(selectedClassId);
+        setFiles(data ?? []);
+      } catch (err) {
+        console.error("fetchFiles:", err);
+      }
+    }
 
-      const exercises = (classData.exercises ?? []).map((ex) => ({
-        id: ex.id,
-        name: `Exercise ${courseName} [${classDate}]`,
-        className: className,
-        courseName: courseName,
-        completed: !!ex.grade,
-        type: "assignment" as const,
-        status: ex.exerciseStatus === "completed" ? "good" : "behind",
-        graded: ex.grade !== undefined,
-        grade: ex.grade ?? null,
-      }));
+    async function fetchLinks() {
+      try {
+        const data = await getClassLinks(selectedClassId);
+        setLinks(data ?? []);
+      } catch (err) {
+        console.error("fetchLinks:", err);
+      }
+    }
 
-      const quizzes = (classData.quizzes ?? []).map((qz) => ({
-        id: qz.id,
-        name: `Quiz ${courseName} [${classDate}]`,
-        className,
-        courseName,
-        completed: !!qz.score,
-        type: "quiz" as const,
-        graded: qz.score !== undefined,
-        grade: qz.score ?? null,
-      }));
-
-      const mappedAssignments: AnyTask[] = [...exercises, ...quizzes];
-
-      // FILES
-      const mappedFiles: FileProps[] = (classData.files ?? []).map((f) => ({
-        id: f.id,
-        name: f.name,
-        filePath: f.path,
-        associatedCourseName: classData.courseName,
-        associatedClassDate: classData.startTime.toString().slice(0, 10),
-      }));
-
-      setLinks(mappedLinks);
-      setExercises(mappedAssignments);
-      setFiles(mappedFiles);
-    };
-
-    fetchUnsolvedExercises();
+    fetchExercises().then();
+    fetchQuizzes().then();
+    fetchFiles().then();
+    fetchLinks().then();
   }, [selectedClassId]);
 
   // Filter scheduled classes when filter changes
@@ -190,35 +158,6 @@ export function TeacherCalendar() {
       prev && !filtered.some((cls) => cls.classId === prev) ? null : prev,
     );
   }, [selectedStudentId, selectedCourseId]);
-
-  useEffect(() => {
-    if (!selectedClassId) return;
-
-    const fetchQuizzes = async () => {
-      const data = await getQuizzes(
-        undefined,
-        undefined,
-        undefined,
-        selectedClassId,
-      );
-
-      const mapped = data.map(
-        (q) =>
-          ({
-            id: q.id,
-            name: q.name,
-            courseName: q.courseName,
-            className: undefined,
-            completed: q.completed,
-            type: "quiz",
-          }) satisfies QuizTask,
-      );
-
-      setQuizzes(mapped);
-    };
-
-    fetchQuizzes();
-  }, [selectedClassId]);
 
   function handleSelect(slot: TimeSlot) {
     if (slot.classId) {

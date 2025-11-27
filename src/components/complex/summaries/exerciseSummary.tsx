@@ -76,9 +76,9 @@ export function ExerciseSummary({
                   editingExercise={exercise}
                 />
               )}
-              <Button variant={"link"} className={"w-300px"}>
+              {/*<Button variant={"link"} className={"w-300px"}>
                 {exercise.name}:
-              </Button>
+              </Button>*/}
               <Label>{composeTaskDetails(exercise)}</Label>
             </div>
           ))

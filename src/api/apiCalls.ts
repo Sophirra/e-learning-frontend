@@ -1,30 +1,30 @@
 import Api, { getUserId } from "@/api/api.ts";
 import type {
-  ClassBrief,
-  ClassWithStudentsDTO,
-  Course,
-  CourseBrief,
-  CourseWidget,
-  PagedResult,
-  FileData,
-  FileFilter,
-  FileTag,
-  Question,
-  Teacher,
-  TeacherAvailability,
-  TeacherReview,
-  FileOwner,
-  Quiz,
-  Answer,
-  QuizBrief,
-  QuestionCategory,
-  QuizSolution,
-  Student,
-  ApiDayAvailability,
-  ClassBriefDto,
-  ClassSchedule,
-  StudentBrief,
-  FileBrief,
+    ClassBrief,
+    ClassWithStudentsDTO,
+    Course,
+    CourseBrief,
+    CourseWidget,
+    PagedResult,
+    FileData,
+    FileFilter,
+    FileTag,
+    Question,
+    Teacher,
+    TeacherAvailability,
+    TeacherReview,
+    FileOwner,
+    Quiz,
+    Answer,
+    QuizBrief,
+    QuestionCategory,
+    QuizSolution,
+    Student,
+    ApiDayAvailability,
+    ClassBriefDto,
+    ClassSchedule,
+    StudentBrief,
+    FileBrief, FileProps, LinkProps,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -1000,4 +1000,34 @@ export async function updateQuiz(
   const res = await Api.put(`/api/quizzes/${quizId}`, { name, questionIds });
   if (res.status === 200 || res.status === 201) return;
   else throw res.data as ErrorResponse;
+}
+
+export async function getClassLinks(classId: string): Promise<LinkProps[]> {
+    if (!classId) {
+        return Promise.reject("No classId provided");
+    }
+
+    const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}/links`);
+
+    return data;
+}
+
+export async function getClassFiles(classId: string): Promise<FileProps[]> {
+    if (!classId) {
+        return Promise.reject("No classId provided");
+    }
+
+    const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}/files`);
+
+    return data;
+}
+
+export async function getClassExercises(classId: string): Promise<Exercise[]> {
+    if (!classId) {
+        return Promise.reject("No classId provided");
+    }
+
+    const { data } = await Api.get<Exercise>(`/api/classes/${classId}/exercises`);
+
+    return data;
 }
