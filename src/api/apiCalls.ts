@@ -746,13 +746,10 @@ export async function getStudentCourses(
 }
 
 export async function getStudentUnsolvedExercises(
-  studentId: string,
+  courseId?: string[],
 ): Promise<ExerciseBrief[]> {
-  if (!studentId) {
-    return [];
-  }
-
-  const { data } = await Api.get<ExerciseBrief[]>(
+  const studentId = getUserId();
+  const { data } = await Api.get(
     `/api/exercises/unsolved-by-user/${studentId}`,
   );
 
@@ -760,15 +757,10 @@ export async function getStudentUnsolvedExercises(
 }
 
 export async function getExercisesReadyToGrade(
-  studentId: string,
+  studentId?: string[],
+  courseId?: string[],
 ): Promise<ExerciseBrief[]> {
-  if (!studentId) {
-    return [];
-  }
-
-  const { data } = await Api.get<ExerciseBrief[]>(
-    `/api/teacher/exercises-to-grade`,
-  );
+  const { data } = await Api.get(`/api/teacher/exercises-to-grade`);
 
   return data;
 }
@@ -782,7 +774,7 @@ export async function getStudentWithTeacherExercises(
     return [];
   }
 
-  const { data } = await Api.get<Exercise[]>(
+  const { data } = await Api.get(
     `/api/teacher/${teacherId}/students/${studentId}/exercises`,
     {
       params: {
@@ -803,7 +795,7 @@ export async function getStudentWithTeacherQuizzes(
     return [];
   }
 
-  const { data } = await Api.get<Quiz[]>(
+  const { data } = await Api.get(
     `/api/teacher/${teacherId}/students/${studentId}/quizzes`,
     {
       params: {
@@ -1151,3 +1143,5 @@ export async function submitSolution(exerciseId: string) {
   if (res.status === 200 || res.status === 204) return;
   else throw res.data as ErrorResponse;
 }
+//TODO: no idea what to send
+export async function setupClass() {}

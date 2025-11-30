@@ -17,8 +17,9 @@ import type {
   TimeSlot,
   WeekScheduleDialogProps,
 } from "@/api/types.ts";
+import { ClassPaymentPopup } from "@/components/complex/popups/classPaymentPopup.tsx";
 
-export default function WeekScheduleDialog({
+export default function WeekSchedulePopup({
   disabled,
   courseId,
   onConfirm,
@@ -121,13 +122,17 @@ export default function WeekScheduleDialog({
               Cancel
             </Button>
           </DialogClose>
-          <Button
-            type={"submit"}
-            onClick={handleConfirm}
+          {/*<Button*/}
+          {/*  type={"submit"}*/}
+          {/*  onClick={handleConfirm}*/}
+          {/*  disabled={!selectedSlot}*/}
+          {/*>*/}
+          {/*  Confirm*/}
+          {/*</Button>*/}
+          <ClassPaymentPopup
             disabled={!selectedSlot}
-          >
-            Confirm
-          </Button>
+            onSuccess={handleConfirm}
+          />
         </DialogFooter>
       </DialogContent>
     </Dialog>
