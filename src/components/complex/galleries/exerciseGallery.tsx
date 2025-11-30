@@ -14,7 +14,6 @@ export function ExerciseGallery({
   selected,
   setSelected,
 }: {
-  enableSelect: boolean;
   selected?: Exercise | null;
   setSelected?: (exercise: Exercise) => void;
 }) {
@@ -47,6 +46,10 @@ export function ExerciseGallery({
       console.error("Error fetching quizzes:", e);
     }
   }
+  function getExerciseDetails(exercise: Exercise) {
+    return exercise.name.replace(exercise.courseName + " ", "");
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <CourseFilter
@@ -58,9 +61,9 @@ export function ExerciseGallery({
         setupClassButton={false}
       />
       <Summary
-        label={"Quizzes"}
-        labelIcon={icons.Quiz}
-        canHide={user?.activeRole === "teacher"}
+        label={"Exercises"}
+        labelIcon={icons.ClipboardList}
+        canHide={true}
       >
         {exercises.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-150 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
@@ -73,8 +76,18 @@ export function ExerciseGallery({
                 )}
                 onClick={() => setSelected && setSelected(exercise)}
               >
-                <h3 className="text-lg font-bold truncate">{exercise.name}</h3>
-                <p className={"text-sm text-gray-800 font-semibold"}>
+                <h3 className="text-lg font-bold truncate">
+                  {exercise.courseName}
+                </h3>
+
+                <p className="text-m text-gray-500 font-medium h-auto w-full overflow-visible whitespace-pre-wrap break-words text-left">
+                  {getExerciseDetails(exercise)}
+                </p>
+                <p
+                  className={
+                    "text-sm text-gray-800 font-semibold h-auto w-full overflow-visible whitespace-pre-wrap break-words text-left"
+                  }
+                >
                   {exercise.instruction}
                 </p>
                 <p className="text-m text-gray-500 font-medium">
