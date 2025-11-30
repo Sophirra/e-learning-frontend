@@ -6,11 +6,11 @@ import { useUser } from "@/features/user/UserContext.tsx";
 import type { Exercise } from "@/api/types.ts";
 
 export function ExerciseSolutionSummary({
-  assignment,
+  exercise,
 }: {
-  assignment: Exercise | null;
+  exercise: Exercise | null;
 }) {
-  const solutionFiles = assignment?.files?.filter(
+  const solutionFiles = exercise?.files?.filter(
     (file) => file.type === "solution",
   );
   const { user } = useUser();
@@ -40,7 +40,7 @@ export function ExerciseSolutionSummary({
       <div className="flex flex-col gap-2 p-2 text-xs font-normal ml-1">
         {solutionFiles?.length === 0 || solutionFiles === undefined ? (
           <Label className="mt-2 ml-2 font-light">
-            No attached files found for this assignment.
+            No attached files found for this exercise.
           </Label>
         ) : (
           solutionFiles?.map((file) => (

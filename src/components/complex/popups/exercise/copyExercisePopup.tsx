@@ -39,7 +39,6 @@ export function CopyExercisePopup({
       toast.error("Failed to copy exercise: " + e.message);
     }
   }
-  console.log(selectedExerciseId);
   return (
     <Dialog
       open={open}

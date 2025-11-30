@@ -5,7 +5,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import ClassTile, {
   type ClassTileProps,
-} from "@/components/complex/classTile.tsx";
+} from "@/components/complex/tiles/classTile.tsx";
 import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { getUserId } from "@/api/api.ts";
@@ -19,14 +19,8 @@ import {
   getStudentClasses,
 } from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
-import type {
-  ClassBrief,
-  Exercise,
-  FileProps,
-  LinkProps,
-  QuizBrief,
-} from "@/api/types.ts";
-import { LoadingTile } from "@/components/complex/loadingTile.tsx";
+import type { Exercise, FileProps, LinkProps, QuizBrief } from "@/api/types.ts";
+import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 
 export function StudentCalendar() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -113,6 +107,7 @@ export function StudentCalendar() {
     if (!teacherId) return;
 
     async function fetchExercises() {
+      if (!selectedClassId) return;
       try {
         const data = await getClassExercises(selectedClassId);
         setAssignments(data ?? []);
@@ -122,6 +117,7 @@ export function StudentCalendar() {
     }
 
     async function fetchQuizzes() {
+      if (!selectedClassId) return;
       try {
         const data = await getQuizzes(
           undefined,
@@ -136,6 +132,7 @@ export function StudentCalendar() {
     }
 
     async function fetchFiles() {
+      if (!selectedClassId) return;
       try {
         const data = await getClassFiles(selectedClassId);
         setFiles(data ?? []);
@@ -145,6 +142,7 @@ export function StudentCalendar() {
     }
 
     async function fetchLinks() {
+      if (!selectedClassId) return;
       try {
         const data = await getClassLinks(selectedClassId);
         setLinks(data ?? []);

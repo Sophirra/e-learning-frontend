@@ -94,6 +94,7 @@ export function TeacherCalendar() {
     if (!teacherId) return;
 
     async function fetchExercises() {
+      if (!selectedClassId) return;
       try {
         const data = await getClassExercises(selectedClassId);
         setExercises(data ?? []);
@@ -103,6 +104,7 @@ export function TeacherCalendar() {
     }
 
     async function fetchQuizzes() {
+      if (!selectedClassId) return;
       try {
         const data = await getQuizzes(
           undefined,
@@ -117,6 +119,7 @@ export function TeacherCalendar() {
     }
 
     async function fetchFiles() {
+      if (!selectedClassId) return;
       try {
         const data = await getClassFiles(selectedClassId);
         setFiles(data ?? []);
@@ -126,6 +129,7 @@ export function TeacherCalendar() {
     }
 
     async function fetchLinks() {
+      if (!selectedClassId) return;
       try {
         const data = await getClassLinks(selectedClassId);
         setLinks(data ?? []);

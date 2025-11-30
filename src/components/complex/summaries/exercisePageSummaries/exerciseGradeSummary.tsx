@@ -21,7 +21,7 @@ export function ExerciseGradeSummary({
         user?.activeRole === "teacher" && exercise?.id ? (
           <GradeExercisePopup
             exerciseId={exercise.id}
-            readyToGrade={!exercise.graded}
+            readyToGrade={exercise.status === "Submitted"}
           />
         ) : null
       }

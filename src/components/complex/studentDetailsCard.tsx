@@ -30,7 +30,7 @@ export function StudentDetailsCard({
   let navigate = useNavigate();
   return (
     <Card className="bg-slate-100 rounded-lg p-6">
-      <CardHeader className={"flex-col gap-4 text-left"}>
+      <CardHeader className={"flex-col text-left"}>
         {/*<img*/}
         {/*  src={image}*/}
         {/*  alt={"profile picture"}*/}

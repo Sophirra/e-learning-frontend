@@ -16,21 +16,24 @@ import { useState } from "react";
 import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
 import type { Exercise, FileBrief } from "@/api/types.ts";
 import { toast } from "sonner";
-import { createExercise } from "@/api/apiCalls.ts";
+import { createExercise, updateExercise } from "@/api/apiCalls.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 export function CreateExercisePopup({
   classId,
   closeParent,
-  editingExercise,
+  editing = true,
+  selectedExercise,
 }: {
-  classId: string;
+  classId?: string;
   closeParent?: (open: false) => void;
-  editingExercise?: Exercise;
+  editing?: boolean;
+  selectedExercise?: Exercise;
 }) {
+  const [edit, setEdit] = useState(editing);
   const [chosenFiles, setChosenFiles] = useState<FileBrief[]>(
-    editingExercise?.files
-      ? editingExercise.files.map(
+    selectedExercise?.files
+      ? selectedExercise.files.map(
           (f): FileBrief => ({
             id: f.id || "", //should never happen but lol
             name: f.name,
@@ -40,9 +43,13 @@ export function CreateExercisePopup({
       : [],
   );
   const [instructions, setInstructions] = useState<string>(
-    editingExercise?.instruction || "",
+    selectedExercise?.instruction || "",
   );
   async function addExercise() {
+    if (!classId) {
+      toast.error("No class found");
+      return;
+    }
     if (chosenFiles.length == 0 && instructions.trim().length == 0) {
       toast.error("Exercise must have either instructions or a file attached.");
     } else {
@@ -59,30 +66,66 @@ export function CreateExercisePopup({
       }
     }
   }
+  async function saveExercise() {
+    if (!selectedExercise || !selectedExercise.id) {
+      toast.error("No exercise found");
+      return;
+    }
+    if (chosenFiles.length == 0 && instructions.trim().length == 0) {
+      toast.error("Exercise must have either instructions or a file attached.");
+    } else {
+      try {
+        await updateExercise(
+          selectedExercise.id,
+          instructions,
+          chosenFiles ? chosenFiles.map((f) => f.id) : [],
+        );
+        toast.success("Exercise updated successfully");
+        closeParent && closeParent(false);
+      } catch (e: any) {
+        toast.error("Failed to update exercise: " + e.message);
+      }
+    }
+  }
   function handleAddFile(newFile: FileBrief) {
     setChosenFiles([...chosenFiles, newFile]);
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={() => setEdit(editing)}>
       <DialogTrigger>
-        {editingExercise ? (
-          <Button variant={"link"} className={"w-300px"}>
-            {editingExercise.name}:
-          </Button>
+        {selectedExercise ? (
+          edit ? (
+            <Button variant={"ghost"} disabled={!selectedExercise}>
+              <icons.Edit />
+              Edit
+            </Button>
+          ) : (
+            <Button variant={"link"} className={"w-300px"}>
+              {selectedExercise.name}:
+            </Button>
+          )
         ) : (
-          <Button variant={"outline"} disabled={!classId}></Button>
+          <Button variant={"outline"} disabled={!classId}>
+            Create new
+          </Button>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {editingExercise ? "Edit exercise" : "Create new exercise"}
+            {edit
+              ? selectedExercise
+                ? "Create new exercise"
+                : "Edit exercise"
+              : "Exercise details"}
           </DialogTitle>
           <DialogDescription>
-            {editingExercise
-              ? "Edit exercise details:"
-              : "Add exercise details:"}
+            {edit
+              ? selectedExercise
+                ? "Edit exercise details:"
+                : "Add exercise details:"
+              : "Instructions and files for the exercise:"}
           </DialogDescription>
         </DialogHeader>
         <div className={"flex flex-col gap-4 pt-2"}>
@@ -93,6 +136,7 @@ export function CreateExercisePopup({
             onChange={(e) => setInstructions(e.target.value)}
             value={instructions}
             className={"w-full"}
+            disabled={!edit}
           />
           <Label>Additional file (optional)</Label>
           <div className={"flex flex-row gap-4"}>
@@ -101,6 +145,7 @@ export function CreateExercisePopup({
                 <Button
                   key={file.id}
                   variant={"outline"}
+                  disabled={!edit}
                   onClick={() =>
                     setChosenFiles(chosenFiles.filter((f) => f.id !== file.id))
                   }
@@ -114,16 +159,28 @@ export function CreateExercisePopup({
             )}
           </div>
           <div className={"flex flex-row gap-4"}>
-            <ChooseFilePopup setChosenFile={handleAddFile} />
-            <UploadFilePopup setChosenFile={handleAddFile} />
+            {edit && <ChooseFilePopup setChosenFile={handleAddFile} />}
+            {edit && <UploadFilePopup setChosenFile={handleAddFile} />}
           </div>
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
             <DialogClose>
-              <Button>Cancel</Button>
+              <Button>{edit ? "Cancel" : "Close"}</Button>
             </DialogClose>
-            <Button variant={"outline"} onClick={() => addExercise()}>
-              Create
-            </Button>
+            {edit ? (
+              selectedExercise ? (
+                <Button variant={"outline"} onClick={() => saveExercise()}>
+                  Save
+                </Button>
+              ) : (
+                <Button variant={"outline"} onClick={() => addExercise()}>
+                  Create
+                </Button>
+              )
+            ) : (
+              <Button variant={"outline"} onClick={() => setEdit(true)}>
+                Edit
+              </Button>
+            )}
           </DialogFooter>
         </div>
       </DialogContent>

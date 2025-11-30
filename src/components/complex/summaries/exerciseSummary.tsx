@@ -58,32 +58,34 @@ export function ExerciseSummary({
         )
       }
     >
-      <div className="flex flex-col gap-2">
-        {exercises === null || exercises?.length === 0 ? (
-          <Label className="mt-2 ml-4">
-            No exercises available for the selected courses/classes
-          </Label>
-        ) : (
-          exercises?.map((exercise) => (
-            <div
-              className={"flex flex-row gap-0"}
-              key={exercise.id}
-              style={{ width: "100%" }}
-            >
-              {classId && (
-                <CreateExercisePopup
-                  classId={classId}
-                  editingExercise={exercise}
-                />
-              )}
+      {/*<div className="flex flex-col gap-2">*/}
+      {exercises === null || exercises?.length === 0 ? (
+        <Label className="mt-2 ml-4">
+          No exercises available for the selected courses/classes
+        </Label>
+      ) : (
+        exercises?.map((exercise) => (
+          <div
+            className={"flex flex-row gap-0"}
+            key={exercise.id}
+            style={{ width: "100%" }}
+          >
+            {classId && exercise.status === "unsolved" ? (
+              <CreateExercisePopup
+                classId={classId}
+                selectedExercise={exercise}
+                editing={false}
+              />
+            ) : (
               <Button variant={"link"} className={"w-300px"}>
                 {exercise.name}:
               </Button>
-              <Label>{composeTaskDetails(exercise)}</Label>
-            </div>
-          ))
-        )}
-      </div>
+            )}
+            <Label>{composeTaskDetails(exercise)}</Label>
+          </div>
+        ))
+      )}
+      {/*</div>*/}
     </Summary>
   );
 }

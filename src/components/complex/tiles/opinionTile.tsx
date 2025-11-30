@@ -1,21 +1,21 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
-interface OpinionCardProps {
+interface OpinionTileProps {
   authorName?: string;
   rating?: number;
   content?: string;
   maxRating?: number;
 }
 
-export default function OpinionCard({
+export default function OpinionTile({
   authorName = "John Smith",
   rating = 4,
   content = "Excellent teacher! Dr. Johnson explains complex mathematical concepts in a very clear and understandable way. Her teaching style is engaging and she's always patient with questions. I've learned so much in her calculus class and would definitely recommend her to other students.",
   maxRating = 5,
-}: OpinionCardProps) {
+}: OpinionTileProps) {
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= maxRating; i++) {

@@ -2,18 +2,14 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type { Mode } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { Exercise } from "@/api/types.ts";
+import { CreateExercisePopup } from "@/components/complex/popups/exercise/createExercisePopup.tsx";
 
-export function ExerciseTitle({
+export function ExerciseDetailsSummary({
   exercise,
-  pageMode,
-  setPageMode,
 }: {
   exercise: Exercise | null;
-  pageMode: Mode;
-  setPageMode: (mode: Mode) => void;
 }) {
   const { user } = useUser();
 
@@ -28,24 +24,25 @@ export function ExerciseTitle({
             variant="ghost"
             className="flex items-center gap-2"
             onClick={() => {
+              //TODO: submit exercise
               console.log("Submitting exercise:", exercise?.id);
             }}
           >
             Submit
             <icons.Send className="w-4 h-4" />
           </Button>
-        ) : user?.activeRole === "teacher" && pageMode === "view" ? (
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2"
-            onClick={() => {
-              console.log("Submitting exercise:", exercise?.id);
-              setPageMode("edit");
-            }}
-          >
-            Edit exercise
-            <icons.Pen className="w-4 h-4" />
-          </Button>
+        ) : user?.activeRole === "teacher" ? (
+          exercise?.status !== "Unsolved" ? (
+            <Button variant="ghost" disabled={true}>
+              <icons.Edit />
+              Edit
+            </Button>
+          ) : (
+            <CreateExercisePopup
+              selectedExercise={exercise === null ? undefined : exercise}
+              editing={true}
+            />
+          )
         ) : (
           // When teacher is in edit mode
           <Button
@@ -53,7 +50,6 @@ export function ExerciseTitle({
             className="flex items-center gap-2"
             onClick={() => {
               console.log("Submitting exercise:", exercise?.id);
-              setPageMode("view");
             }}
           >
             Save

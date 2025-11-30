@@ -30,7 +30,7 @@ import {
 } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
 import { getUserId } from "@/api/api.ts";
-import { LoadingTile } from "@/components/complex/loadingTile.tsx";
+import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.

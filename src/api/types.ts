@@ -378,11 +378,12 @@ export type Exercise = {
   name: string; //nie wiem czym jest ale jest zawarte w ExerciseSummary
   courseName: string;
   className?: string;
-  status: "unsolved" | "solutionAdded" | "submitted" | "graded";
+  status: "Unsolved" | "SolutionAdded" | "Submitted" | "Graded";
   graded: boolean; //powinno być wyliczalne ze statusu, można usunąć
   grade?: number;
   comments?: string; //tylko gdy graded
   instruction?: string; //potrzebne tylko na podglądzie
+  date: Date;
   files?: ExerciseFile[]; //musimy pobrać solution dla nauczyciela gdy jest status submitted
 };
 
