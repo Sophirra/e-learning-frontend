@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { Exercise } from "@/api/types.ts";
+import {AddSolutionFilePopup} from "@/components/complex/popups/files/addSolutionFilePopup.tsx";
 
 export function ExerciseSolutionSummary({
   exercise,
@@ -23,16 +24,20 @@ export function ExerciseSolutionSummary({
       customButton={
         user?.activeRole === "student"
           ? () => (
-              <Button
-                variant="ghost"
-                className="flex items-center gap-2"
-                onClick={() => {
-                  // ...
-                }}
-              >
-                Add
-                <icons.Plus className="w-4 h-4" />
-              </Button>
+                <AddSolutionFilePopup
+                    exerciseId={exercise?.id ?? ""}
+                    //classId={exercise?.classId ?? ""}
+                />
+                // <Button
+              //   variant="ghost"
+              //   className="flex items-center gap-2"
+              //   onClick={() => {
+              //    <AddSolutionFilePopup
+              //   }}
+              // >
+              //   Add
+              //   <icons.Plus className="w-4 h-4" />
+              // </Button>
             )
           : undefined
       }

@@ -41,31 +41,42 @@ export function UserSheetContentLogIn({
   });
   async function onSubmit(userData: z.infer<typeof loginSchema>) {
     try {
-      let resLogin = await loginUser(userData);
-      let resUser = await aboutMe();
-      let resRoles = getRoles();
-      let user: User = {
+      const resLogin = await loginUser(userData);
+      const resUser = await aboutMe();
+      const resRoles = getRoles();
+
+      const user: User = {
         name: resUser.name,
         surname: resUser.surname,
         roles: resRoles,
         activeRole: resRoles[0],
       };
+
       setUser(user);
-      const t = Cookies.get("spectatorInviteToken");
-      if (!t) return;
+
+      const token = Cookies.get("spectatorInviteToken");
+      if (!token) return;
 
       try {
-        await acceptSpectatorInvite(t);
+        await acceptSpectatorInvite(token);
         toast.success("Invitation accepted.");
       } catch {
         toast.error("Could not accept invitation.");
       } finally {
         Cookies.remove("spectatorInviteToken");
       }
+
     } catch (e: any) {
-      form.setError("root", { message: e.message });
+      if (e.message.endsWith("400")){
+        toast.error("Check your email and password");
+      }else{
+        toast.error(e.message);
+      }
+
+      // form.setError("root", { message: e.message });
     }
   }
+
 
   return (
     <div className="inline-flex flex-col gap-6 p-8">

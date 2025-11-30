@@ -17,21 +17,21 @@ export function ExerciseSummary({
 }) {
   function composeTaskDetails(exercise: Exercise) {
     let statusLabel = "";
-    if (exercise.status == "unsolved") {
+    if (exercise.status == "Unsolved") {
       statusLabel = "To be solved";
-    } else if (exercise.status == "solutionAdded") {
+    } else if (exercise.status == "SolutionAdded") {
       if (student) {
         statusLabel = "Solution added";
       } else {
         statusLabel = "To be solved";
       }
-    } else if (exercise.status == "submitted") {
+    } else if (exercise.status == "Submitted") {
       if (student) {
         statusLabel = "Waiting for grade";
       } else {
         statusLabel = "To be graded";
       }
-    } else if (exercise.status == "graded") {
+    } else if (exercise.status == "Graded") {
       statusLabel = "Graded " + exercise.grade;
       if (exercise.comments) {
         statusLabel += " (" + exercise.comments + ")";
@@ -70,7 +70,7 @@ export function ExerciseSummary({
             key={exercise.id}
             style={{ width: "100%" }}
           >
-            {classId && exercise.status === "unsolved" ? (
+            {classId && exercise.status === "Unsolved" ? (
               <CreateExercisePopup
                 classId={classId}
                 selectedExercise={exercise}

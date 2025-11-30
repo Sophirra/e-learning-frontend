@@ -8,13 +8,14 @@ import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import {
-  getClassBriefs,
+  getClassBriefs, getExercisesReadyToGrade,
   getQuizzes,
   getStudentUnsolvedExercises,
 } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
-import { getUserId } from "@/api/api.ts";
+import {getRoles, getUserId} from "@/api/api.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
+import {readPersistedRole} from "@/features/user/RolePersistence.ts";
 
 export function HomePage() {
   const { user } = useUser();
@@ -65,16 +66,30 @@ export function HomePage() {
   // TODO:  Komentarz czatu nie został dostosowany do naszej apki!!!!!
   //    dla nauczyciela powinna być analogiczna końcówka getTeacherUngradedExercises
   useEffect(() => {
-    const userId = getUserId();
-    if (!userId) return;
+    const userId = getUserId(); // albo user?.id, jeśli masz w kontekście
+    if (!userId || !activeRole) return;
 
     const fetchUnsolvedExercises = async () => {
-      const data = await getStudentUnsolvedExercises(userId);
-      setAssignmentsRaw(data);
+      try {
+        if (activeRole === "student") {
+          const data = await getStudentUnsolvedExercises(userId);
+          setAssignmentsRaw(data);
+        } else if (activeRole === "teacher") {
+          const data = await getExercisesReadyToGrade(userId);
+          setAssignmentsRaw(data);
+        } else {
+          setAssignmentsRaw([]);
+        }
+      } catch (e) {
+        console.error("Failed to fetch exercises", e);
+        toast.error("Nie udało się pobrać zadań.");
+        setAssignmentsRaw([]);
+      }
     };
 
     fetchUnsolvedExercises();
-  }, []);
+  }, [activeRole]);
+
 
   useEffect(() => {
     let studentId = getUserId();
@@ -126,7 +141,7 @@ export function HomePage() {
         className: undefined,
         completed: false,
         type: "assignment",
-        status: ex.exerciseStatus === "completed" ? "good" : "behind",
+        status: ex.exerciseStatus,
         graded: false,
         grade: undefined,
         comments: undefined,

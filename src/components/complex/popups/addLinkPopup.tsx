@@ -15,14 +15,18 @@ import { useState } from "react";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { toast } from "sonner";
+import {addClassLink} from "@/api/apiCalls.ts";
+
 
 export function AddLinkPopup(classId?: string) {
   const [link, setLink] = useState<string>("");
   const [isMeeting, setIsMeeting] = useState<boolean>(false);
 
-  function apiAddLink(link: string, isMeeting: boolean, classId: string) {
-    //TODO: add link via api
-  }
+  // function apiAddLink(link: string, isMeeting: boolean, classId: string) {
+  //   //TODO: add link via api
+  // }
+
+
 
   return (
     <Dialog>
@@ -62,9 +66,9 @@ export function AddLinkPopup(classId?: string) {
             </DialogClose>
             <Button
               variant={"outline"}
-              onSelect={() => {
+              onClick={() => {
                 if (classId != null) {
-                  apiAddLink(link, isMeeting, classId);
+                  addClassLink(classId,link,isMeeting);
                 } else {
                   toast.error("Class id is not defined");
                 }

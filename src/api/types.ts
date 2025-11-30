@@ -362,24 +362,15 @@ export type ExerciseBrief = {
   date: Date;
   status: string;
 };
-//
-// export interface ExerciseProps {
-//   id: string;
-//   courseName: string;
-//   className?: string;
-//   status: string;
-//   graded: boolean;
-//   grade?: number;
-//   comments?: string;
-// }
 
 export type Exercise = {
   id?: string;
   name: string; //nie wiem czym jest ale jest zawarte w ExerciseSummary
+  classId?: string;
   courseName: string;
   className?: string;
   status: "Unsolved" | "SolutionAdded" | "Submitted" | "Graded";
-  graded: boolean; //powinno być wyliczalne ze statusu, można usunąć
+  graded: boolean; // TO JEST RACZEJ BEZ SENSU BO JAK STATUS TO GRADED I JEST GRADE, TO TO Z TEGO WYNIKA
   grade?: number;
   comments?: string; //tylko gdy graded
   instruction?: string; //potrzebne tylko na podglądzie
