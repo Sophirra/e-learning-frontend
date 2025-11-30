@@ -18,7 +18,7 @@ import { CourseDetailCard } from "@/features/course/courseDetailCard.tsx";
 import WeekScheduleDialog from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { toast } from "sonner";
-import OpinionCard from "@/components/complex/opinionCard.tsx";
+import OpinionTile from "@/components/complex/tiles/opinionTile.tsx";
 import { SearchBar } from "@/components/complex/searchBar.tsx";
 import {
   getCourseById,
@@ -243,7 +243,7 @@ export function CoursePage() {
             </div>
             <div className="grid grid-cols-2 gap-8 ">
               {teacherReviews?.map((review) => (
-                <OpinionCard
+                <OpinionTile
                   //TODO: dodać id do review - potrzebny bo korzystamy z listy
                   // odp: dodane
                   key={review.id}

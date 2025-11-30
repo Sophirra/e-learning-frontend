@@ -51,11 +51,16 @@ export function CreateQuizPopup({
   }
   async function updateQuiz() {
     try {
+      if (!editingQuiz) {
+        toast.error("Editing quiz not found");
+        setOpen(false);
+        return;
+      }
       if (name.trim().length == 0 || questionIds.length == 0) {
         toast.error("Quiz name and questions must be filled");
         return;
       }
-      await updateQuizApi(quizId, name, questionIds);
+      await updateQuizApi(editingQuiz.id, name, questionIds);
       setOpen(false);
       toast.success("Quiz saved successfully");
       closeParent && closeParent(false);
@@ -122,7 +127,10 @@ export function CreateQuizPopup({
           <DialogClose>
             <Button>Cancel</Button>
           </DialogClose>
-          <Button onClick={() => createQuiz()} variant={"outline"}>
+          <Button
+            onClick={() => (editingQuiz ? updateQuiz() : createQuiz())}
+            variant={"outline"}
+          >
             {editingQuiz ? "Save" : "Create"}
           </Button>
         </DialogFooter>

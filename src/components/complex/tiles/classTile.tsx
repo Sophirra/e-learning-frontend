@@ -27,7 +27,7 @@ export default function ClassTile({
     ongoing: <icons.Clock />,
     completed: <icons.Check />,
   };
-  date.getTimezoneOffset();
+  // date.getTimezoneOffset();
 
   const handleSelect = () => {
     if (selectedClassId == id) {

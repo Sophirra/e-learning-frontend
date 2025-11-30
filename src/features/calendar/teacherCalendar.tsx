@@ -1,26 +1,23 @@
 import { useState, useEffect } from "react";
 import { Content } from "@/components/ui/content.tsx";
-/* import Summary from "@/components/complex/summaries/summary.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { getUserId } from "@/api/api.ts";
 import {
-  getClassBrief,
+  getClassExercises,
+  getClassFiles,
+  getClassLinks,
   getQuizzes,
   getTeacherAvailability,
   getTeacherUpcomingClasses,
 } from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 import type {
-  AnyTask,
   ApiDayAvailability,
-  ClassBrief,
-  ClassBriefDto,
   ClassSchedule,
   Exercise,
   FileProps,
   LinkProps,
-  QuizTask,
+  QuizBrief,
   TimeSlot,
 } from "@/api/types.ts";
 import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
@@ -47,8 +44,8 @@ export function TeacherCalendar() {
 
   // Right column: the result of filtering
   const [links, setLinks] = useState<LinkProps[]>([]);
-  const [assignments, setAssignments] = useState<AnyTask[]>([]);
-  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
   const [files, setFiles] = useState<FileProps[]>([]);
 
   useEffect(() => {
@@ -71,7 +68,7 @@ export function TeacherCalendar() {
     fetchAvailability().then();
 
     // Fetch upcoming classes
-    const fetchExercises = async () => {
+    const fetchClasses = async () => {
       const data = await getTeacherUpcomingClasses(
         teacherId,
         startParam,
@@ -81,84 +78,70 @@ export function TeacherCalendar() {
       setScheduledClasses(data);
     };
 
-    fetchExercises().then();
+    fetchClasses().then();
   }, []);
 
   // RECALCULATE RIGHT COLUMN: depends on [selectedClassId, timeline]
   useEffect(() => {
     if (!selectedClassId) {
       setLinks([]);
-      setAssignments([]);
+      setExercises([]);
       setFiles([]);
       return;
     }
 
-    const fetchUnsolvedExercises = async () => {
-      const classData: ClassBriefDto = await getClassBrief(selectedClassId);
-      const now = new Date();
-      const start = new Date(classData.startTime);
-      const isMeetingActive =
-        !!classData.linkToMeeting &&
-        Math.abs(now.getTime() - start.getTime()) < 10 * 60 * 1000;
+    const teacherId = getUserId(); // assuming this returns teacherId
+    if (!teacherId) return;
 
-      // LINKS
-      const allLinks = [...(classData.links ?? [])];
-      if (isMeetingActive && classData.linkToMeeting) {
-        allLinks.unshift(classData.linkToMeeting);
+    async function fetchExercises() {
+      if (!selectedClassId) return;
+      try {
+        const data = await getClassExercises(selectedClassId);
+        setExercises(data ?? []);
+      } catch (err) {
+        console.error("fetchExercises:", err);
       }
+    }
 
-      const mappedLinks: LinkProps[] = allLinks.map((link) => ({
-        path: link,
-        isMeeting: link === classData.linkToMeeting,
-        courseName: classData.courseName,
-        className: `[${classData.startTime.toString().slice(0, 10)}]`,
-      }));
+    async function fetchQuizzes() {
+      if (!selectedClassId) return;
+      try {
+        const data = await getQuizzes(
+          undefined,
+          undefined,
+          undefined,
+          selectedClassId,
+        );
+        setQuizzes(data ?? []);
+      } catch (err) {
+        console.error("fetchQuizzes:", err);
+      }
+    }
 
-      // ASSIGNMENTS
-      const courseName = classData.courseName;
-      const className = `Class ${classData.id.toString().slice(0, 4)}`;
-      const classDate = classData.startTime.toString().slice(0, 10);
+    async function fetchFiles() {
+      if (!selectedClassId) return;
+      try {
+        const data = await getClassFiles(selectedClassId);
+        setFiles(data ?? []);
+      } catch (err) {
+        console.error("fetchFiles:", err);
+      }
+    }
 
-      const exercises = (classData.exercises ?? []).map((ex) => ({
-        id: ex.id,
-        name: `Exercise ${courseName} [${classDate}]`,
-        className: className,
-        courseName: courseName,
-        completed: !!ex.grade,
-        type: "assignment" as const,
-        status: ex.exerciseStatus === "completed" ? "good" : "behind",
-        graded: ex.grade !== undefined,
-        grade: ex.grade ?? null,
-      }));
+    async function fetchLinks() {
+      if (!selectedClassId) return;
+      try {
+        const data = await getClassLinks(selectedClassId);
+        setLinks(data ?? []);
+      } catch (err) {
+        console.error("fetchLinks:", err);
+      }
+    }
 
-      const quizzes = (classData.quizzes ?? []).map((qz) => ({
-        id: qz.id,
-        name: `Quiz ${courseName} [${classDate}]`,
-        className,
-        courseName,
-        completed: !!qz.score,
-        type: "quiz" as const,
-        graded: qz.score !== undefined,
-        grade: qz.score ?? null,
-      }));
-
-      const mappedAssignments: AnyTask[] = [...exercises, ...quizzes];
-
-      // FILES
-      const mappedFiles: FileProps[] = (classData.files ?? []).map((f) => ({
-        id: f.id,
-        name: f.name,
-        filePath: f.path,
-        associatedCourseName: classData.courseName,
-        associatedClassDate: classData.startTime.toString().slice(0, 10),
-      }));
-
-      setLinks(mappedLinks);
-      setAssignments(mappedAssignments);
-      setFiles(mappedFiles);
-    };
-
-    fetchUnsolvedExercises();
+    fetchExercises().then();
+    fetchQuizzes().then();
+    fetchFiles().then();
+    fetchLinks().then();
   }, [selectedClassId]);
 
   // Filter scheduled classes when filter changes
@@ -179,35 +162,6 @@ export function TeacherCalendar() {
       prev && !filtered.some((cls) => cls.classId === prev) ? null : prev,
     );
   }, [selectedStudentId, selectedCourseId]);
-
-  useEffect(() => {
-    if (!selectedClassId) return;
-
-    const fetchQuizzes = async () => {
-      const data = await getQuizzes(
-        undefined,
-        undefined,
-        undefined,
-        selectedClassId,
-      );
-
-      const mapped = data.map(
-        (q) =>
-          ({
-            id: q.id,
-            name: q.name,
-            courseName: q.courseName,
-            className: undefined,
-            completed: q.completed,
-            type: "quiz",
-          }) satisfies QuizTask,
-      );
-
-      setQuizzes(mapped);
-    };
-
-    fetchQuizzes();
-  }, [selectedClassId]);
 
   function handleSelect(slot: TimeSlot) {
     if (slot.classId) {
@@ -257,7 +211,7 @@ export function TeacherCalendar() {
             classId={selectedClassId ? selectedClassId : undefined}
           />
           <ExerciseSummary
-            exercises={assignments}
+            exercises={exercises}
             student={false}
             classId={selectedClassId ? selectedClassId : undefined}
           />

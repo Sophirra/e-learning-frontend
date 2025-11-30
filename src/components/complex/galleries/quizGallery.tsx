@@ -6,7 +6,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { getQuizzes } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuizDetailsPopup } from "@/components/complex/popups/quiz/quizDetailsPopup.tsx";
-import { LoadingTile } from "@/components/complex/loadingTile.tsx";
+import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 
 export function QuizGallery({
   enableSelect,

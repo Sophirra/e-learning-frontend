@@ -1,10 +1,9 @@
 import { format } from "date-fns";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import type { Exercise } from "@/pages/UserPages/ExercisePage.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
+import type { Exercise } from "@/api/types.ts";
 
 type ExerciseTileProps = {
-  exercise: ExerciseBrief;
+  exercise: Exercise;
   selectedExerciseId: string | null;
   setSelectedExerciseId: (id: string | null) => void;
 };
@@ -15,19 +14,18 @@ export default function ExerciseTile({
   setSelectedExerciseId,
 }: ExerciseTileProps) {
   const { id, name, date, status } = exercise;
-  const { user } = useUser();
 
   const handleSelect = () => {
-    setSelectedExerciseId(selectedExerciseId === id ? null : id);
+    setSelectedExerciseId(id);
   };
 
   const getStatusIcon = () => {
     switch (status) {
-      case "graded":
+      case "Graded":
         return <icons.PenTool />;
-      case "solutionAdded":
+      case "SolutionAdded":
         return <icons.Check />;
-      case "submitted":
+      case "Submitted":
         return <icons.Check />;
       default: // unsolved
         return <icons.Star />;

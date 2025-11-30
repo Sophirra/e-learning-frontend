@@ -9,6 +9,7 @@ import type {
   FileData,
   FileFilter,
   FileTag,
+  Exercise,
   Question,
   Teacher,
   TeacherAvailability,
@@ -23,10 +24,11 @@ import type {
   ApiDayAvailability,
   ClassBriefDto,
   ClassSchedule,
-  AssignmentTask,
-  QuizTask,
   StudentBrief,
   FileBrief,
+  FileProps,
+  LinkProps,
+  ExerciseBrief,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -35,7 +37,7 @@ import {
   mapParticipationToCourseBrief,
 } from "@/mappers/courseMappers.ts";
 import type { ErrorResponse } from "react-router-dom";
-import type { Exercise } from "@/pages/UserPages/HomePage.tsx";
+import type { ClassTileProps } from "@/components/complex/tiles/classTile.tsx";
 
 /**
  * Fetches detailed course data by courseID.
@@ -194,6 +196,8 @@ export const getCourseLanguages = async (): Promise<string[]> => {
  */
 
 export const getCourses = async (filters?: {
+  pageSize: any;
+  pageNumber: any;
   categories?: string[];
   levels?: string[];
   languages?: string[];
@@ -201,7 +205,7 @@ export const getCourses = async (filters?: {
   priceTo?: number;
   teacherId?: string;
   query?: string;
-}): Promise<CourseWidget[]> => {
+}): Promise<PagedResult<CourseWidget>> => {
   const params = new URLSearchParams();
 
   filters?.categories?.forEach((c) => params.append("categories", c));
@@ -413,7 +417,7 @@ export const acceptSpectatorInvite = async (token: string): Promise<void> => {
  * @param {File} file - The file object selected by the user (from an `<input type="file">`).
  * @returns {Promise<any>} Resolves with the uploaded file metadata returned by the backend.
  */
-export const uploadUserFile = async (file: File): Promise<any> => {
+export const uploadUserFile = async (file: File): Promise<FileBrief> => {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -526,7 +530,13 @@ export async function addExerciseGrade( //TODO: check
   grade: number,
   comments?: string,
 ): Promise<void> {
-  await Api.post("/api/exercises/grade", { assignmentId, grade, comments });
+  const res = await Api.post("/api/exercises/grade", {
+    assignmentId,
+    grade,
+    comments,
+  });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
 }
 /**
  * Gets all teacher/student quizzes to display in the gallery
@@ -730,12 +740,12 @@ export async function getStudentWithTeacherExercises(
   teacherId: string,
   studentId: string,
   courseId?: string,
-): Promise<AssignmentTask[]> {
+): Promise<Exercise[]> {
   if (!studentId) {
     return [];
   }
 
-  const { data } = await Api.get<AssignmentTask[]>(
+  const { data } = await Api.get<Exercise[]>(
     `/api/teacher/${teacherId}/students/${studentId}/exercises`,
     {
       params: {
@@ -751,12 +761,12 @@ export async function getStudentWithTeacherQuizzes(
   teacherId: string,
   studentId: string,
   courseId?: string,
-): Promise<QuizTask[]> {
+): Promise<Quiz[]> {
   if (!studentId) {
     return [];
   }
 
-  const { data } = await Api.get<QuizTask[]>(
+  const { data } = await Api.get<Quiz[]>(
     `/api/teacher/${teacherId}/students/${studentId}/quizzes`,
     {
       params: {
@@ -770,10 +780,10 @@ export async function getStudentWithTeacherQuizzes(
 
 export async function getExercises(
   userId: string,
-  activeRole: string | null,
-  preferredCourseId: string | null,
-  preferredStudentId?: string | null,
-): Promise<ExerciseBrief[]> {
+  activeRole?: string,
+  preferredCourseId?: string,
+  preferredStudentId?: string,
+): Promise<Exercise[]> {
   if (!userId) {
     return [];
   }
@@ -788,7 +798,7 @@ export async function getExercises(
     return [];
   }
 
-  const { data } = await Api.get<ExerciseBrief[]>(endpoint, {
+  const { data } = await Api.get(endpoint, {
     params: {
       courseId: preferredCourseId,
       studentId: preferredStudentId ?? undefined,
@@ -819,7 +829,6 @@ export async function getTeacherUpcomingClasses(
 
   return data;
 }
-
 export async function getStudentTimeline(
   studentId: string,
   preferredCourseId: string | null,
@@ -996,18 +1005,17 @@ export async function createExercise(
   if (res.status === 201 || res.status === 200) return;
   else throw res.data as ErrorResponse;
 }
-
 export async function updateExercise(
-    exerciseId: string,
-    instructions: string,
-    fileIds?: string[],
+  exerciseId: string,
+  instructions: string,
+  fileIds?: string[],
 ) {
-    const res = await Api.put(`/api/exercises/${exerciseId}`, {
-        instructions,
-        fileIds,
-    });
-    if (res.status === 200 || res.status === 204) return;
-    else throw res.data as ErrorResponse;
+  const res = await Api.put(`/api/exercises/${exerciseId}`, {
+    instructions,
+    fileIds,
+  });
+  if (res.status === 200 || res.status === 201 || res.status === 204) return;
+  else throw res.data as ErrorResponse;
 }
 
 export async function updateQuiz(
@@ -1027,6 +1035,66 @@ export async function addClassLink(classId: string, link: string, isMeeting: boo
   });
   if (res.status === 200 || res.status === 201) return;
   else throw res.data as ErrorResponse;
+}
+
+export async function getStudentClasses(
+  studentId: string,
+  preferredCourseId: string | null,
+): Promise<ClassTileProps[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const from = new Date();
+  from.setDate(from.getDate() - 30);
+  const to = new Date();
+  to.setDate(to.getDate() + 14);
+
+  const params: any = {
+    from: from.toISOString(),
+    to: to.toISOString(),
+  };
+
+  if (preferredCourseId) {
+    params.participationIds = preferredCourseId;
+  }
+
+  const { data } = await Api.get<ClassTileProps[]>(
+    `/api/students/${studentId}/classes`,
+    { params },
+  );
+
+  return data;
+}
+
+export async function getClassLinks(classId: string): Promise<LinkProps[]> {
+  if (!classId) {
+    return Promise.reject("No classId provided");
+  }
+
+  const { data } = await Api.get(`/api/classes/${classId}/links`);
+
+  return data;
+}
+
+export async function getClassFiles(classId: string): Promise<FileProps[]> {
+  if (!classId) {
+    return Promise.reject("No classId provided");
+  }
+
+  const { data } = await Api.get(`/api/classes/${classId}/files`);
+
+  return data;
+}
+
+export async function getClassExercises(classId: string): Promise<Exercise[]> {
+  if (!classId) {
+    return Promise.reject("No classId provided");
+  }
+
+  const { data } = await Api.get(`/api/classes/${classId}/exercises`);
+
+  return data;
 }
 
 export async function removeClassLink(linkId: string) {

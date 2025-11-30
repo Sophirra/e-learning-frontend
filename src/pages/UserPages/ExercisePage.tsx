@@ -3,14 +3,14 @@ import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import ExerciseTile from "@/components/complex/exerciseTile.tsx";
-import { ExerciseTitle } from "@/components/complex/summaries/exercisePageSummaries/exerciseTitle.tsx";
+import ExerciseTile from "@/components/complex/tiles/exerciseTile.tsx";
+import { ExerciseDetailsSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseDetailsSummary.tsx";
 import { ExerciseAttachedFilesSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseAttachedFilesSummary.tsx";
 import { ExerciseSolutionSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseSolutionSummary.tsx";
 import { ExerciseGradeSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseGradeSummary.tsx";
 import { getUserId } from "@/api/api.ts";
 import { getExercises } from "@/api/apiCalls.ts";
-import { LoadingTile } from "@/components/complex/loadingTile.tsx";
+import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import type { Exercise } from "@/api/types.ts";
 
 export type Role = "teacher" | "student";
@@ -22,12 +22,11 @@ export function ExercisePage() {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState<
-    string | null
-  >(null);
-  const [pageMode, setAssignmentPageMode] = useState<Mode>("view");
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(
+    null,
+  );
   const [exercises, setExercises] = useState<Exercise[]>([]);
-  const activeRole = user?.activeRole ?? null;
+  const activeRole = user?.activeRole;
 
   useEffect(() => {
     const userId = getUserId();
@@ -37,8 +36,8 @@ export function ExercisePage() {
       const data = await getExercises(
         userId,
         activeRole,
-        selectedCourseId,
-        selectedStudentId,
+        selectedCourseId !== null ? selectedCourseId : undefined,
+        selectedStudentId !== null ? selectedStudentId : undefined,
       );
       setExercises(data);
     };
@@ -46,8 +45,8 @@ export function ExercisePage() {
     fetchExercises().then();
   }, [activeRole, selectedCourseId, selectedStudentId]);
 
-  const handleSelectAssignmentId = useCallback((id: string | null) => {
-    setSelectedAssignmentId((prev) => (prev === id ? null : id));
+  const handleSelectExerciseId = useCallback((id: string | null) => {
+    setSelectedExerciseId((prev) => (prev === id ? null : id));
   }, []);
 
   return (
@@ -72,11 +71,11 @@ export function ExercisePage() {
                 text={"No exercise available for the selected course."}
               />
             ) : (
-              exercises.map((assignment) => (
+              exercises.map((exercise) => (
                 <ExerciseTile
-                  exercise={assignment}
-                  selectedExerciseId={selectedAssignmentId}
-                  setSelectedExerciseId={handleSelectAssignmentId}
+                  exercise={exercise}
+                  selectedExerciseId={selectedExerciseId}
+                  setSelectedExerciseId={handleSelectExerciseId}
                 />
               ))
             )}
@@ -84,35 +83,32 @@ export function ExercisePage() {
 
           <div className="w-3/4 space-y-8">
             {exercises.length !== 0 &&
-            selectedAssignmentId &&
-            exercises.some((e) => e.id === selectedAssignmentId) ? (
+            selectedExerciseId &&
+            exercises.some((e) => e.id === selectedExerciseId) ? (
               <>
-                <ExerciseTitle
+                <ExerciseDetailsSummary
                   exercise={
-                    exercises.find((a) => a.id === selectedAssignmentId) || null
+                    exercises.find((a) => a.id === selectedExerciseId) || null
                   }
-                  pageMode={pageMode}
-                  setPageMode={setAssignmentPageMode}
                 />
                 <ExerciseAttachedFilesSummary
                   exercise={
-                    exercises.find((a) => a.id === selectedAssignmentId) || null
+                    exercises.find((a) => a.id === selectedExerciseId) || null
                   }
-                  pageMode={pageMode}
                 />
                 <ExerciseSolutionSummary
-                  assignment={
-                    exercises.find((a) => a.id === selectedAssignmentId) || null
+                  exercise={
+                    exercises.find((a) => a.id === selectedExerciseId) || null
                   }
                 />
                 <ExerciseGradeSummary
                   exercise={
-                    exercises.find((a) => a.id === selectedAssignmentId) || null
+                    exercises.find((a) => a.id === selectedExerciseId) || null
                   }
                 />
               </>
             ) : (
-              <LoadingTile text={"Select an assignment to view its details."} />
+              <LoadingTile text={"Select an exercise to view its details."} />
             )}
           </div>
         </div>

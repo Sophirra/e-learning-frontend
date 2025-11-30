@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button.tsx";
 import { useState } from "react";
 import { toast } from "sonner";
 import { copyExercise as copyExerciseApi } from "@/api/apiCalls.ts";
+import { ExerciseGallery } from "@/components/complex/galleries/exerciseGallery.tsx";
+import type { Exercise } from "@/api/types.ts";
 
 export function CopyExercisePopup({
   classId,
@@ -20,17 +22,15 @@ export function CopyExercisePopup({
   classId: string;
   closeParent: (open: boolean) => void;
 }) {
-  const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(
-    null,
-  );
+  const [selectedExercise, setSelectedExercise] = useState<Exercise>();
   const [open, setOpen] = useState(false);
   async function copyExercise() {
     try {
-      if (!selectedExerciseId) {
-        toast.error("No quiz selected");
+      if (!selectedExercise || !selectedExercise.id) {
+        toast.error("No exercise selected");
         return;
       } else {
-        await copyExerciseApi(selectedExerciseId, classId);
+        await copyExerciseApi(selectedExercise.id, classId);
         setOpen(false);
         closeParent(false);
         toast.success("Exercise copied successfully");
@@ -39,13 +39,12 @@ export function CopyExercisePopup({
       toast.error("Failed to copy exercise: " + e.message);
     }
   }
-  console.log(selectedExerciseId);
   return (
     <Dialog
       open={open}
       onOpenChange={(open) => {
         setOpen(open);
-        setSelectedExerciseId(null);
+        setSelectedExercise(undefined);
       }}
     >
       <DialogTrigger>
@@ -57,7 +56,10 @@ export function CopyExercisePopup({
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className={"flex flex-col gap-4 pt-2"}>
-          Here will be assignment gallery
+          <ExerciseGallery
+            selected={selectedExercise}
+            setSelected={setSelectedExercise}
+          />
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
             <DialogClose>
               <Button>Cancel</Button>
@@ -65,7 +67,7 @@ export function CopyExercisePopup({
             <Button
               variant={"outline"}
               onClick={() => copyExercise()}
-              disabled={!selectedExerciseId}
+              disabled={!selectedExercise}
             >
               Confirm
             </Button>

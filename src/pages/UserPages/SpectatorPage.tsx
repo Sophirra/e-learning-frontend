@@ -7,8 +7,8 @@ import type {
   QuizTask,
   StudentBrief,
 } from "@/api/types.ts";
-import { LoadingTile } from "@/components/complex/loadingTile.tsx";
-import { StudentTile } from "@/components/complex/studentTile.tsx";
+import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
+import { StudentTile } from "@/components/complex/tiles/studentTile.tsx";
 import { toast } from "sonner";
 import {
   getClassBriefs,
