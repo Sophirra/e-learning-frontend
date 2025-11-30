@@ -15,7 +15,7 @@ import type {
   TeacherReview,
 } from "@/api/types.ts";
 import { CourseDetailCard } from "@/features/course/courseDetailCard.tsx";
-import WeekScheduleDialog from "@/components/complex/schedules/availabilityWeekSchedule.tsx";
+import WeekSchedulePopup from "@/components/complex/schedules/weekSchedulePopup.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { toast } from "sonner";
 import OpinionTile from "@/components/complex/tiles/opinionTile.tsx";
@@ -223,7 +223,7 @@ export function CoursePage() {
                 </Button>
               </div>
               {courseId && (
-                <WeekScheduleDialog
+                <WeekSchedulePopup
                   disabled={
                     selectedLanguage.length === 0 ||
                     selectedLevel.length === 0 ||

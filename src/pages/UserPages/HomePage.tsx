@@ -2,20 +2,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
-import type { AnyTask, ClassBrief, Exercise, QuizTask } from "@/api/types.ts";
+import type {
+  ClassBrief,
+  Exercise,
+  ExerciseBrief,
+  QuizBrief,
+} from "@/api/types.ts";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
 import {
-  getClassBriefs, getExercisesReadyToGrade,
+  getClassBriefs,
+  getExercisesReadyToGrade,
   getQuizzes,
   getStudentUnsolvedExercises,
 } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
-import {getRoles, getUserId} from "@/api/api.ts";
+import { getRoles, getUserId } from "@/api/api.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
-import {readPersistedRole} from "@/features/user/RolePersistence.ts";
 
 export function HomePage() {
   const { user } = useUser();
@@ -27,7 +32,7 @@ export function HomePage() {
     null,
   );
   const [assignmentsRaw, setAssignmentsRaw] = useState<Exercise[]>([]);
-  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
 
   // Unieważnianie starych odpowiedzi (race condition guard)
@@ -72,24 +77,26 @@ export function HomePage() {
     const fetchUnsolvedExercises = async () => {
       try {
         if (activeRole === "student") {
-          const data = await getStudentUnsolvedExercises(userId);
+          const data = await getStudentUnsolvedExercises(selectedCourseId);
           setAssignmentsRaw(data);
         } else if (activeRole === "teacher") {
-          const data = await getExercisesReadyToGrade(userId);
+          const data = await getExercisesReadyToGrade(
+            selectedStudentId,
+            selectedCourseId,
+          );
           setAssignmentsRaw(data);
         } else {
           setAssignmentsRaw([]);
         }
       } catch (e) {
         console.error("Failed to fetch exercises", e);
-        toast.error("Nie udało się pobrać zadań.");
+        toast.error("Error getting exercises");
         setAssignmentsRaw([]);
       }
     };
 
     fetchUnsolvedExercises();
   }, [activeRole]);
-
 
   useEffect(() => {
     let studentId = getUserId();
@@ -101,21 +108,12 @@ export function HomePage() {
     if (!studentId) return;
 
     const fetchQuizzes = async () => {
-      const data = await getQuizzes(studentId, selectedCourseId ?? undefined);
-
-      const mapped = data.map(
-        (q) =>
-          ({
-            id: q.id,
-            name: q.name,
-            courseName: q.courseName,
-            className: undefined,
-            completed: q.completed,
-            type: "quiz",
-          }) satisfies QuizTask,
-      );
-
-      setQuizzes(mapped);
+      try {
+        const data = await getQuizzes(studentId, selectedCourseId ?? undefined);
+        setQuizzes(data);
+      } catch (e: any) {
+        toast.error("Error getting quizzes");
+      }
     };
 
     fetchQuizzes();
@@ -130,24 +128,6 @@ export function HomePage() {
     if (!selectedCourseId) return assignmentsRaw;
     return assignmentsRaw.filter((ex) => ex.courseId === selectedCourseId);
   }, [assignmentsRaw, selectedCourseId]);
-
-  const visibleAssignments: AnyTask[] = useMemo(() => {
-    return filteredRaw.map((ex) => {
-      const classDate = ex.classStartTime.slice(0, 10);
-      return {
-        id: ex.id,
-        name: `Exercise ${ex.courseName} [${classDate}]`,
-        courseName: ex.courseName,
-        className: undefined,
-        completed: false,
-        type: "assignment",
-        status: ex.exerciseStatus,
-        graded: false,
-        grade: undefined,
-        comments: undefined,
-      };
-    });
-  }, [filteredRaw]);
 
   return (
     <div className="bg-white h-screen">
@@ -171,10 +151,10 @@ export function HomePage() {
             classes={filteredClasses}
           />
 
-          <ExerciseSummary
-            exercises={visibleAssignments}
-            student={activeRole === "student" || false}
-          />
+          {/*<ExerciseSummary*/}
+          {/*  exercises={visibleAssignments}*/}
+          {/*  student={activeRole === "student" || false}*/}
+          {/*/>*/}
 
           <QuizSummary
             quizzes={quizzes}

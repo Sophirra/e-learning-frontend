@@ -272,7 +272,7 @@ export default function CourseFilter({
         </Button>
       </div>
       {setupClassButton ? (
-        <SetupNewClassPopup course={selectedCourseId ?? ""} />
+        <SetupNewClassPopup courseId={selectedCourseId ?? ""} />
       ) : null}
     </div>
   );
