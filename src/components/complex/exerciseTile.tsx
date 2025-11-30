@@ -23,11 +23,11 @@ export default function ExerciseTile({
 
   const getStatusIcon = () => {
     switch (status) {
-      case "graded":
+      case "Graded":
         return <icons.PenTool />;
-      case "solutionAdded":
+      case "SolutionAdded":
         return <icons.Check />;
-      case "submitted":
+      case "Submitted":
         return <icons.Check />;
       default: // unsolved
         return <icons.Star />;

@@ -26,7 +26,7 @@ import type {
   AssignmentTask,
   QuizTask,
   StudentBrief,
-  FileBrief,
+  FileBrief, ExerciseBrief,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -425,6 +425,32 @@ export const uploadUserFile = async (file: File): Promise<any> => {
   else throw response.data as ErrorResponse;
 };
 
+export const uploadExerciseSolution = async (
+    exerciseId: string,
+    classId: string,
+    file: File
+): Promise<FileBrief> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("classId", classId);
+
+  const response = await Api.post(
+      `/api/exercises/${exerciseId}/solution`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+  );
+
+  if (response.status === 200 || response.status === 201)
+    return response.data as FileBrief;
+
+  throw response.data as ErrorResponse;
+};
+
+
+
+
 /**
  * Fetches a filtered list of files from the backend.
  *
@@ -721,6 +747,20 @@ export async function getStudentUnsolvedExercises(
 
   const { data } = await Api.get<ExerciseBrief[]>(
     `/api/exercises/unsolved-by-user/${studentId}`,
+  );
+
+  return data;
+}
+
+export async function getExercisesReadyToGrade(
+    studentId: string,
+): Promise<ExerciseBrief[]> {
+  if (!studentId) {
+    return [];
+  }
+
+  const { data } = await Api.get<ExerciseBrief[]>(
+      `/api/teacher/exercises-to-grade`,
   );
 
   return data;
@@ -1033,4 +1073,11 @@ export async function removeClassLink(linkId: string) {
   const res = await Api.delete(`/api/classes/links/${linkId}`);
   if (res.status === 200 || res.status === 204) return;
   else throw res.data as ErrorResponse;
+}
+
+
+export async function  submitSolution(exerciseId: string) {
+ const res = await Api.post(`/api/exercises/${exerciseId}/submit`, { exerciseId });
+ if (res.status === 200 || res.status === 204) return;
+ else throw res.data as ErrorResponse;
 }

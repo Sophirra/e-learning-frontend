@@ -16,12 +16,18 @@ export function ExerciseSummary({
 }) {
   function composeTaskDetails(task: AnyTask) {
     let statusLabel = "";
-    if (!task.completed) {
-      statusLabel = "To be solved";
-    } else if (task.type === "quiz") {
-      statusLabel = "Completed";
+    if (task.type === "quiz") {
+      if (!task.completed) {
+        statusLabel = "To be solved";
+      } else {
+        statusLabel = "Completed";
+      }
     } else if (task.type === "assignment") {
-      if (!task.graded) {
+      if (!student && task.status === "Submitted") {
+        statusLabel = "To be Graded";
+      } else if (!task.completed) {
+        statusLabel = "To be solved";
+      } else if (!task.graded) {
         statusLabel = "Waiting for grade";
       } else if (task.grade !== undefined) {
         statusLabel = "Graded " + task.grade;

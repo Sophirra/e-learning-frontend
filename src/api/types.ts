@@ -388,10 +388,11 @@ export type ExerciseBrief = {
 
 export type Exercise = {
   id?: string;
+  classId: string;
   name: string;
   courseName: string;
   className?: string;
-  status: "unsolved" | "solutionAdded" | "submitted" | "graded";
+  status: "Unsolved" | "SolutionAdded" | "Submitted" | "Graded";
   graded: boolean; // TO JEST RACZEJ BEZ SENSU BO JAK STATUS TO GRADED I JEST GRADE, TO TO Z TEGO WYNIKA
   grade?: number;
   comments?: string;

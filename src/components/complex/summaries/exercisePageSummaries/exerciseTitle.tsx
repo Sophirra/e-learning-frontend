@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import type { Exercise, Mode } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
+import {submitSolution} from "@/api/apiCalls.ts";
+import type {ExerciseBrief} from "@/api/types.ts";
+import {toast} from "sonner";
 
 export function ExerciseTitle({
   exercise,
@@ -26,8 +29,18 @@ export function ExerciseTitle({
           <Button
             variant="ghost"
             className="flex items-center gap-2"
-            onClick={() => {
-              console.log("Submitting exercise:", exercise?.id);
+            onClick={async () => {
+                if (exercise?.id != null) {
+                    try {
+                        await submitSolution(exercise.id);
+                        toast.success("Zadanie zostało poprawnie wysłane!");
+                    } catch (error) {
+                        toast.error("Wysyłanie zadania nie powiodło się.");
+                        console.error("Submit error:", error);
+                    }
+                }
+
+                console.log("Submitting exercise:", exercise?.id);
             }}
           >
             Submit
@@ -37,9 +50,18 @@ export function ExerciseTitle({
           <Button
             variant="ghost"
             className="flex items-center gap-2"
-            onClick={() => {
-              console.log("Submitting exercise:", exercise?.id);
-              setPageMode("edit");
+            onClick={async () => {
+                if (exercise?.id != null) {
+                    try {
+                        await submitSolution(exercise.id);
+                        toast.success("Zadanie zostało poprawnie wysłane!");
+                    } catch (error) {
+                        toast.error("Wysyłanie zadania nie powiodło się.");
+                        console.error("Submit error:", error);
+                    }
+                }
+
+                console.log("Submitting exercise:", exercise?.id);
             }}
           >
             Edit exercise

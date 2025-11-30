@@ -101,7 +101,7 @@ export function ExercisePage() {
                   pageMode={pageMode}
                 />
                 <ExerciseSolutionSummary
-                  assignment={
+                    exercise={
                     exercises.find((a) => a.id === selectedAssignmentId) || null
                   }
                 />

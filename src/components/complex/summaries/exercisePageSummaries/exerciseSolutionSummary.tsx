@@ -4,13 +4,20 @@ import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import type { Exercise } from "@/pages/UserPages/ExercisePage.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
+import {AddSolutionFilePopup} from "@/components/complex/popups/files/addSolutionFilePopup.tsx";
+import type {ExerciseBrief} from "@/api/types.ts";
+
+
+
+
+
 
 export function ExerciseSolutionSummary({
-  assignment,
+                                            exercise,
 }: {
-  assignment: ExerciseBrief | null;
+    exercise: Exercise | null;
 }) {
-  const solutionFiles = assignment?.files?.filter(
+  const solutionFiles = exercise?.files?.filter(
     (file) => file.type === "solution",
   );
   const { user } = useUser();
@@ -23,16 +30,20 @@ export function ExerciseSolutionSummary({
       customButton={
         user?.activeRole === "student"
           ? () => (
-              <Button
-                variant="ghost"
-                className="flex items-center gap-2"
-                onClick={() => {
-                  // ...
-                }}
-              >
-                Add
-                <icons.Plus className="w-4 h-4" />
-              </Button>
+                <AddSolutionFilePopup
+                    exerciseId={exercise?.id ?? ""}
+                    classId={exercise?.classId ?? ""}
+                />
+                // <Button
+              //   variant="ghost"
+              //   className="flex items-center gap-2"
+              //   onClick={() => {
+              //    <AddSolutionFilePopup
+              //   }}
+              // >
+              //   Add
+              //   <icons.Plus className="w-4 h-4" />
+              // </Button>
             )
           : undefined
       }
