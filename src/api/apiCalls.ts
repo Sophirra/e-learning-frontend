@@ -430,20 +430,20 @@ export const uploadUserFile = async (file: File): Promise<FileBrief> => {
 };
 
 export const uploadExerciseSolution = async (
-    exerciseId: string,
-    classId: string,
-    file: File
+  exerciseId: string,
+  // classId: string,
+  file: File,
 ): Promise<FileBrief> => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("classId", classId);
+  // formData.append("classId", classId);
 
   const response = await Api.post(
-      `/api/exercises/${exerciseId}/solution`,
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
+    `/api/exercises/${exerciseId}/solution`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
   );
 
   if (response.status === 200 || response.status === 201)
@@ -451,9 +451,6 @@ export const uploadExerciseSolution = async (
 
   throw response.data as ErrorResponse;
 };
-
-
-
 
 /**
  * Fetches a filtered list of files from the backend.
@@ -763,14 +760,14 @@ export async function getStudentUnsolvedExercises(
 }
 
 export async function getExercisesReadyToGrade(
-    studentId: string,
+  studentId: string,
 ): Promise<ExerciseBrief[]> {
   if (!studentId) {
     return [];
   }
 
   const { data } = await Api.get<ExerciseBrief[]>(
-      `/api/teacher/exercises-to-grade`,
+    `/api/teacher/exercises-to-grade`,
   );
 
   return data;
@@ -1068,10 +1065,14 @@ export async function updateQuiz(
   else throw res.data as ErrorResponse;
 }
 
-export async function addClassLink(classId: string, link: string, isMeeting: boolean) {
+export async function addClassLink(
+  classId: string,
+  link: string,
+  isMeeting: boolean,
+) {
   const res = await Api.post(`/api/classes/${classId}/links`, {
-      link,
-      isMeeting
+    link,
+    isMeeting,
   });
   if (res.status === 200 || res.status === 201) return;
   else throw res.data as ErrorResponse;
@@ -1143,9 +1144,10 @@ export async function removeClassLink(linkId: string) {
   else throw res.data as ErrorResponse;
 }
 
-
-export async function  submitSolution(exerciseId: string) {
- const res = await Api.post(`/api/exercises/${exerciseId}/submit`, { exerciseId });
- if (res.status === 200 || res.status === 204) return;
- else throw res.data as ErrorResponse;
+export async function submitSolution(exerciseId: string) {
+  const res = await Api.post(`/api/exercises/${exerciseId}/submit`, {
+    exerciseId,
+  });
+  if (res.status === 200 || res.status === 204) return;
+  else throw res.data as ErrorResponse;
 }
