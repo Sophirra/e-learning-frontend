@@ -746,21 +746,31 @@ export async function getStudentCourses(
 }
 
 export async function getStudentUnsolvedExercises(
-  courseId?: string[],
+  courseIds?: string[],
 ): Promise<ExerciseBrief[]> {
   const studentId = getUserId();
   const { data } = await Api.get(
     `/api/exercises/unsolved-by-user/${studentId}`,
+    {
+      params: {
+        courseIds: courseIds ?? undefined,
+      },
+    },
   );
 
   return data;
 }
 
 export async function getExercisesReadyToGrade(
-  studentId?: string[],
-  courseId?: string[],
+  studentIds?: string[],
+  courseIds?: string[],
 ): Promise<ExerciseBrief[]> {
-  const { data } = await Api.get(`/api/teacher/exercises-to-grade`);
+  const { data } = await Api.get(`/api/teacher/exercises-to-grade`, {
+    params: {
+      studentIds: studentIds ?? undefined,
+      courseIds: courseIds ?? undefined,
+    },
+  });
 
   return data;
 }
