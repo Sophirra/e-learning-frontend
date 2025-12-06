@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/menubar.tsx";
 import { Link } from "react-router-dom";
 import { SpectatorListPopup } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
+import { AddAvailabilityPopup } from "@/components/complex/popups/addAvailabilityPopup.tsx";
 
 export function Header() {
   let { user, changeRole } = useUser();
@@ -50,6 +51,7 @@ export function Header() {
                       </Link>
                     </MenubarItem>
                     <SpectatorListPopup />
+                    {user.activeRole === "teacher" && <AddAvailabilityPopup />}
                   </>
                 ) : null}
                 {user && user.roles.length > 1 && (

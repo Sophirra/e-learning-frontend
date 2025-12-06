@@ -8,6 +8,7 @@ import type {
   ClassSchedule,
   TimeSlot,
 } from "@/api/types.ts";
+import { cn } from "@/lib/utils.ts";
 
 type ScheduleProps = {
   startDate: Date;
@@ -15,7 +16,7 @@ type ScheduleProps = {
   endDate?: Date;
   apiDayAvailability?: ApiDayAvailability[];
   classes?: ClassSchedule[];
-  displayMode: "time" | "class";
+  displayMode: "time" | "class" | "add";
   onSelect: (slot: TimeSlot) => void;
   selectedClassId?: string;
 };
@@ -179,7 +180,7 @@ export default function Schedule({
     }[daysCount] || "grid-cols-1";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-fit">
       <div className="flex items-center justify-between">
         <Button
           variant="outline"
@@ -211,7 +212,7 @@ export default function Schedule({
         </Button>
       </div>
 
-      <div className={"grid " + gridCols + " gap-4"}>
+      <div className={cn("grid ", gridCols, " gap-4")}>
         {weekDays.map((date, dayIndex) => (
           <DaySchedule
             key={dayIndex}

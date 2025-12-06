@@ -114,9 +114,10 @@ export const getTeacherReviews = async (
  * @param teacherId - The unique identifier of the teacher.
  * @returns Promise resolving to an array of TeacherAvailability objects.
  */
-export const getTeacherAvailability = async (
-  teacherId: string,
-): Promise<TeacherAvailability[]> => {
+export const getTeacherAvailability = async (): Promise<
+  TeacherAvailability[]
+> => {
+  const teacherId = getUserId();
   const { data } = await Api.get<TeacherAvailability[]>(
     `/api/teacher/${teacherId}/availability`,
   );
@@ -779,7 +780,7 @@ export async function getStudentWithTeacherExercises(
   teacherId: string,
   studentId: string,
   courseId?: string,
-): Promise<Exercise[]> {
+): Promise<ExerciseBrief[]> {
   if (!studentId) {
     return [];
   }
@@ -848,10 +849,10 @@ export async function getExercises(
 }
 
 export async function getTeacherUpcomingClasses(
-  teacherId: string,
   startParam: string,
   endParam: string,
 ): Promise<ClassSchedule[]> {
+  const teacherId = getUserId();
   if (!teacherId) {
     return [];
   }
@@ -1154,4 +1155,14 @@ export async function submitSolution(exerciseId: string) {
   else throw res.data as ErrorResponse;
 }
 //TODO: no idea what to send
-export async function setupClass() {}
+export async function setupClass(classDate: Date, courseId: string) {}
+
+export async function addAvailability(availability: ApiDayAvailability[]) {
+  const teacherId = getUserId();
+  const res = await Api.post(
+    `/api/teacher/${teacherId}/availability`,
+    availability,
+  );
+  if (res.status === 200 || res.status === 201 || res.status === 204) return;
+  else throw res.data as ErrorResponse;
+}

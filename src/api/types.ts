@@ -11,12 +11,17 @@ export interface PagedResult<T> {
   pageSize: number;
 }
 
-export interface TimeSlot {
+export type TimeSlot = {
   start: number;
   end: number;
   dayIndex: number;
   date: Date;
-}
+  courseName?: string;
+  studentName?: string;
+  classId?: string;
+  defined?: boolean;
+  preSelected?: boolean;
+};
 
 export interface ApiDayAvailability {
   day: string;
@@ -30,17 +35,6 @@ export interface WeekScheduleDialogProps {
   courseId: string;
 }
 
-export interface TimeSlot {
-  start: number;
-  end: number;
-  dayIndex: number;
-  date: Date;
-  courseName?: string;
-  studentName?: string;
-  classId?: string;
-}
-
-//type downloaded from backend - can be moved
 export interface ClassSchedule {
   classId: string;
   studentId: string;
@@ -358,7 +352,8 @@ export type QuizSolution = {
 
 export type ExerciseBrief = {
   id: string;
-  name: string;
+  courseId: string;
+  courseName: string;
   date: Date;
   status: string;
 };

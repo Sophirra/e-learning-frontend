@@ -150,12 +150,11 @@ export function HomePage() {
             key={`${activeRole ?? "none"}-${selectedCourseId ?? "all"}`}
             classes={filteredClasses}
           />
-
+          {/*//TODO: zmapować exBrief na exercise*/}
           {/*<ExerciseSummary*/}
           {/*  exercises={visibleAssignments}*/}
           {/*  student={activeRole === "student" || false}*/}
           {/*/>*/}
-
           <QuizSummary
             quizzes={quizzes}
             student={activeRole === "student" || false}
