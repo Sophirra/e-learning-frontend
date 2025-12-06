@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button.tsx";
 import type { TimeSlot } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
-import { useState } from "react";
-import { Select } from "react-day-picker";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -20,10 +19,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
-import { MenubarItem } from "@/components/ui/menubar.tsx";
-import Schedule from "@/components/complex/schedules/schedule.tsx";
+import {
+  FilterDropdown,
+  type SelectableItem,
+} from "@/components/complex/filterDropdown.tsx";
+import { toast } from "sonner";
 
 type DayScheduleProps = {
+  key: number;
   date: Date;
   timeSlots: TimeSlot[];
   isActive: boolean;
@@ -39,6 +42,7 @@ type DayScheduleProps = {
 };
 
 export function DaySchedule({
+  key,
   date,
   timeSlots,
   isActive,
@@ -52,6 +56,7 @@ export function DaySchedule({
 
   function handleDelete(slot: TimeSlot) {
     if (displayMode !== "add") return;
+    console.log("toDelete");
     if (toDelete.includes(slot)) {
       setToDelete(toDelete.filter((s) => s !== slot));
     } else setToDelete([...toDelete, slot]);
@@ -59,13 +64,37 @@ export function DaySchedule({
 
   function handleAdd(slot: TimeSlot) {
     if (displayMode !== "add") return;
+    console.log("toAdd");
     if (toAdd.includes(slot)) {
       setToAdd(toAdd.filter((s) => s !== slot));
-    } else setToAdd([...toAdd, slot]);
+      timeSlots.splice(timeSlots.indexOf(slot), 1);
+    } else {
+      setToAdd([...toAdd, slot]);
+      timeSlots.push(slot);
+      timeSlots.sort((a, b) => a.start - b.start);
+    }
   }
 
-  const [availableSlots, setAvailableSlots] = useState<number[]>([
-    6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+  const [availableSlots, setAvailableSlots] = useState<
+    { time: number; available: boolean }[]
+  >([
+    { time: 6, available: true },
+    { time: 7, available: true },
+    { time: 8, available: true },
+    { time: 9, available: true },
+    { time: 10, available: true },
+    { time: 11, available: true },
+    { time: 12, available: true },
+    { time: 13, available: true },
+    { time: 14, available: true },
+    { time: 15, available: true },
+    { time: 16, available: true },
+    { time: 17, available: true },
+    { time: 18, available: true },
+    { time: 19, available: true },
+    { time: 20, available: true },
+    { time: 21, available: true },
+    { time: 22, available: true },
   ]);
 
   // -- FUNCTIONS USED TO FORMAT DATA FROM API --
@@ -97,6 +126,30 @@ export function DaySchedule({
         handleDelete(slot);
       }
     }
+  }
+
+  useEffect(() => {
+    if (timeSlots.length == 0) return;
+    setAvailableSlots((prev) =>
+      prev.map((s) =>
+        timeSlots.some((t) => t.start === s.time)
+          ? { ...s, available: false }
+          : s,
+      ),
+    );
+    // for (let slot in timeSlots){
+    //     setAvailableSlots(...)
+    //     availableSlots[slot.time - 7].available = false;
+    // }
+  }, [timeSlots]);
+
+  function createSlotToAdd(startTime: number) {
+    handleAdd({
+      start: startTime,
+      end: startTime + 1,
+      date: date,
+      dayIndex: key,
+    });
   }
 
   return (
@@ -155,36 +208,65 @@ export function DaySchedule({
                 ) : undefined}
               </Button>
             ))}
-            {displayMode == "add" && <AddSlotPopup />}
+            {displayMode == "add" && (
+              <AddSlotPopup
+                onConfirm={createSlotToAdd}
+                availableSlots={availableSlots}
+              />
+            )}
           </div>
         )}
       </CardContent>
     </Card>
   );
 }
-
-function AddSlotPopup() {
+function AddSlotPopup({
+  onConfirm,
+  availableSlots,
+}: {
+  onConfirm: (start: number) => void;
+  availableSlots: { time: number; available: boolean }[];
+}) {
+  const [selectedTime, setSelectedTime] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        setSelectedTime(null);
+      }}
+    >
       <DialogTrigger asChild>
         <Button className={"w-1/1"} variant={"outline"}>
           <icons.Plus />
         </Button>
       </DialogTrigger>
-      <DialogContent className={"min-w-5/7"}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Add class slot</DialogTitle>
           <DialogDescription>Choose time for the slot:</DialogDescription>
         </DialogHeader>
         <div className={"flex flex-col gap-4 pt-2"}>
-          <Schedule
-            startDate={new Date()}
-            daysCount={7}
-            displayMode={"add"}
-            onSelect={() => {}}
-            classes={classes}
-            apiDayAvailability={existingAvailability}
-          />
+          <FilterDropdown
+            searchable={false}
+            multiselect={false}
+            reset={false}
+            placeholder={"Select time slot"}
+            emptyMessage={"No time selected"}
+            items={availableSlots
+              .filter((s) => s.available)
+              .map((s): SelectableItem => {
+                return {
+                  value: String(s.time),
+                  name: `${String(s.time).padStart(2, "0")}:00 - ${String(s.time + 1).padStart(2, "0")}:00`,
+                };
+              })}
+            onSelectionChange={(selected) => {
+              console.log("selected ", Number(selected[0].value));
+              setSelectedTime(Number(selected[0].value));
+            }}
+          ></FilterDropdown>
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
             <DialogClose>
               <Button>Cancel</Button>
@@ -192,8 +274,14 @@ function AddSlotPopup() {
             <Button
               variant={"outline"}
               onClick={() => {
-                setupAvailability();
+                if (selectedTime == null) {
+                  toast.error("Please select time slot");
+                  return;
+                }
+                onConfirm(selectedTime);
+                setOpen(false);
               }}
+              disabled={selectedTime == null}
             >
               Confirm
             </Button>

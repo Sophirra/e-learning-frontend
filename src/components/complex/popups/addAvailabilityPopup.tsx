@@ -117,7 +117,9 @@ export function AddAvailabilityPopup() {
             startDate={new Date()}
             daysCount={7}
             displayMode={"add"}
-            onSelect={() => {}}
+            onSelect={() => {
+              //anytime a slot is modified, get info
+            }}
             classes={classes}
             apiDayAvailability={existingAvailability}
           />
