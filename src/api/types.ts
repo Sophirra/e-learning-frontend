@@ -358,9 +358,11 @@ export type QuizSolution = {
 
 export type ExerciseBrief = {
   id: string;
-  name: string;
-  date: Date;
-  status: string;
+  name?: string;
+  courseId: string;
+  courseName: string;
+  classStartTime: Date;
+  exerciseStatus: "Unsolved" | "SolutionAdded" | "Submitted" | "Graded";
 };
 
 export type Exercise = {

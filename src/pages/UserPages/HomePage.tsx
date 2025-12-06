@@ -2,12 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
-import type {
-  ClassBrief,
-  Exercise,
-  ExerciseBrief,
-  QuizBrief,
-} from "@/api/types.ts";
+import type { ClassBrief, Exercise, QuizBrief } from "@/api/types.ts";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
@@ -19,7 +14,7 @@ import {
   getStudentUnsolvedExercises,
 } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
-import { getRoles, getUserId } from "@/api/api.ts";
+import { getUserId } from "@/api/api.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 
 export function HomePage() {
@@ -31,7 +26,7 @@ export function HomePage() {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
-  const [assignmentsRaw, setAssignmentsRaw] = useState<Exercise[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
   const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
 
@@ -67,34 +62,62 @@ export function HomePage() {
     // brak cleanupu potrzebnego   unieważnianie robi requestIdRef
   }, [activeRole]);
 
-  // Pobranie zadań raz (jeśli mają zależeć od użytkownika/roli, dodaj zależność)
-  // TODO:  Komentarz czatu nie został dostosowany do naszej apki!!!!!
-  //    dla nauczyciela powinna być analogiczna końcówka getTeacherUngradedExercises
   useEffect(() => {
-    const userId = getUserId(); // albo user?.id, jeśli masz w kontekście
-    if (!userId || !activeRole) return;
-
     const fetchUnsolvedExercises = async () => {
       try {
         if (activeRole === "student") {
-          const data = await getStudentUnsolvedExercises(selectedCourseId);
-          setAssignmentsRaw(data);
+          console.log("activeRole", activeRole);
+          const data = await getStudentUnsolvedExercises(
+            selectedCourseId ? [selectedCourseId] : undefined,
+          );
+          setExercises(
+            data.map((e) => {
+              return {
+                id: e.id,
+                name:
+                  e.name ||
+                  e.courseName +
+                    " [" +
+                    e.classStartTime.toString().split("T")[0] +
+                    "]",
+                courseName: e.courseName,
+                status: e.exerciseStatus,
+                graded: false,
+                date: e.classStartTime,
+              };
+            }),
+          );
         } else if (activeRole === "teacher") {
           const data = await getExercisesReadyToGrade(
-            selectedStudentId,
-            selectedCourseId,
+            selectedStudentId ? [selectedStudentId] : undefined,
+            selectedCourseId ? [selectedCourseId] : undefined,
           );
-          setAssignmentsRaw(data);
+          setExercises(
+            data.map((e) => {
+              return {
+                id: e.id,
+                name:
+                  e.name ||
+                  e.courseName +
+                    " [" +
+                    e.classStartTime.toString().split("T")[0] +
+                    "]",
+                courseName: e.courseName,
+                status: e.exerciseStatus,
+                graded: false,
+                date: e.classStartTime,
+              };
+            }),
+          );
         } else {
-          setAssignmentsRaw([]);
+          setExercises([]);
         }
       } catch (e) {
         console.error("Failed to fetch exercises", e);
         toast.error("Error getting exercises");
-        setAssignmentsRaw([]);
+        setExercises([]);
       }
     };
-
     fetchUnsolvedExercises();
   }, [activeRole]);
 
@@ -124,11 +147,6 @@ export function HomePage() {
     return classes.filter((c) => c.courseId === selectedCourseId);
   }, [classes, selectedCourseId]);
 
-  const filteredRaw = useMemo(() => {
-    if (!selectedCourseId) return assignmentsRaw;
-    return assignmentsRaw.filter((ex) => ex.courseId === selectedCourseId);
-  }, [assignmentsRaw, selectedCourseId]);
-
   return (
     <div className="bg-white h-screen">
       <NavigationBar />
@@ -151,10 +169,10 @@ export function HomePage() {
             classes={filteredClasses}
           />
 
-          {/*<ExerciseSummary*/}
-          {/*  exercises={visibleAssignments}*/}
-          {/*  student={activeRole === "student" || false}*/}
-          {/*/>*/}
+          <ExerciseSummary
+            exercises={exercises}
+            student={activeRole === "student" || false}
+          />
 
           <QuizSummary
             quizzes={quizzes}
