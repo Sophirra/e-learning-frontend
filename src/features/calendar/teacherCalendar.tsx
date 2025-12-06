@@ -220,7 +220,12 @@ export function TeacherCalendar() {
             student={false}
             classId={selectedClassId ? selectedClassId : undefined}
           />
-          <FilesSummary files={files} lastCount={5} student={false} />
+          <FilesSummary
+            files={files}
+            lastCount={5}
+            student={false}
+            classId={selectedClassId ? selectedClassId : undefined}
+          />
         </div>
       </div>
     </Content>
