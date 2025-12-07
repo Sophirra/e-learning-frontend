@@ -310,7 +310,10 @@ export function FileGallery({
               <TableCell>
                 {selectedFile?.id === file.id ? (
                   <div className={"flex flex-row align-right"}>
-                    <EditFilePopup file={selectedFile} />
+                    <EditFilePopup 
+                      file={selectedFile} 
+                      onFileUpdated={() => fetchFiles()}
+                    />
                     <DeleteFilePopup file={selectedFile} />
                     <DownloadButton file={selectedFile} />
                   </div>
