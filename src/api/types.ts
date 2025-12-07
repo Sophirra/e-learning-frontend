@@ -273,23 +273,23 @@ export type ClassBriefDto = {
   userId: string;
   courseId: string;
   courseName: string;
-  exercises: {
-    id: string;
-    exerciseStatus: string;
-    grade?: number;
-  }[];
-  quizzes: {
-    id: string;
-    title: string;
-    score?: number;
-  }[];
-  files: {
-    id: string;
-    name: string;
-    path: string;
-    courseName: string;
-    classDate: string;
-  }[];
+  // exercises: {
+  //   id: string;
+  //   exerciseStatus: string;
+  //   grade?: number;
+  // }[];
+  // quizzes: {
+  //   id: string;
+  //   title: string;
+  //   score?: number;
+  // }[];
+  // files: {
+  //   id: string;
+  //   name: string;
+  //   path: string;
+  //   courseName: string;
+  //   classDate: string;
+  // }[];
 };
 
 /**
@@ -358,9 +358,11 @@ export type QuizSolution = {
 
 export type ExerciseBrief = {
   id: string;
-  name: string;
-  date: Date;
-  status: string;
+  name?: string;
+  courseId: string;
+  courseName: string;
+  classStartTime: Date;
+  exerciseStatus: "Unsolved" | "SolutionAdded" | "Submitted" | "Graded";
 };
 
 export type Exercise = {

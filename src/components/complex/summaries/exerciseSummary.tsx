@@ -15,6 +15,7 @@ export function ExerciseSummary({
   student: boolean;
   classId?: string;
 }) {
+  console.log(exercises);
   function composeTaskDetails(exercise: Exercise) {
     let statusLabel = "";
     if (exercise.status == "Unsolved") {
