@@ -28,6 +28,11 @@ export interface ApiDayAvailability {
   timeslots: { timeFrom: string; timeUntil: string }[];
 }
 
+export interface DayAvailability {
+  day: Date;
+  timeslots: { timeFrom: number; timeUntil: number }[];
+}
+
 export interface WeekScheduleDialogProps {
   disabled: boolean;
   onConfirm: (selectedSlot: TimeSlot) => void;
@@ -44,11 +49,6 @@ export interface ClassSchedule {
   classDate: Date;
   classStartTime: string;
   classEndTime: string;
-}
-
-export interface ApiDayAvailability {
-  day: string;
-  timeslots: { timeFrom: string; timeUntil: string }[];
 }
 
 export type FileLink = {
