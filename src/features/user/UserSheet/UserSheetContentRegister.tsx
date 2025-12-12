@@ -30,6 +30,10 @@ let RegistrationSchema = z
       .string()
       .trim()
       .min(9, { message: "Telephone must be at least 9 characters long" }),
+    aboutMe: z
+      .string()
+      .trim()
+      .max(200, { message: "About Me must be at most 200 characters long" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -53,6 +57,7 @@ export function UserSheetContentRegister({
       name: "",
       surname: "",
       phone: "",
+      aboutMe: ""
     },
   });
 
@@ -183,6 +188,19 @@ export function UserSheetContentRegister({
               <FormLabel>Telephone number: </FormLabel>
               <FormControl>
                 <Input type={"tel"} placeholder="000 000 000" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="aboutMe"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>About Me: </FormLabel>
+              <FormControl>
+                <Input placeholder="I love fishing..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
