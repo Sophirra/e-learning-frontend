@@ -198,7 +198,7 @@ export function UserSheetContentRegister({
           name="aboutMe"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>About Me: </FormLabel>
+              <FormLabel>About Me (optional): </FormLabel>
               <FormControl>
                 <Input placeholder="I love fishing..." {...field} />
               </FormControl>
