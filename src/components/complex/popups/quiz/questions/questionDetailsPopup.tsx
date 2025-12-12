@@ -12,18 +12,18 @@ import { Label } from "@/components/ui/label.tsx";
 import { useEffect, useState } from "react";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { Answer, Question, QuestionCategory } from "@/api/types.ts";
-import {
-  createQuestion,
-  getFullQuestion,
-  getUserCategories,
-  updateQuestion,
-} from "@/api/apiCalls.ts";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { CreateQuestionCategoryPopup } from "@/components/complex/popups/quiz/questions/createQuestionCategoryPopup.tsx";
+import {
+  createQuestion,
+  getFullQuestion,
+  getUserCategories,
+  updateQuestion,
+} from "@/api/api calls/apiQuestions.ts";
 
 export function QuestionDetailsPopup({
   questionBrief,
@@ -72,9 +72,7 @@ export function QuestionDetailsPopup({
       toast.error("At least one answer must be correct");
       return;
     }
-    // TODO: Wysłać zaktualizowane pytanie do backendu
     if (!questionBrief) {
-      //send post
       try {
         const output = await createQuestion(
           newContent,
@@ -186,8 +184,6 @@ export function QuestionDetailsPopup({
     if (questionBrief) {
       getQuestionDetails();
     }
-    // if (editing) {
-    // }
   }, [load]);
 
   return (

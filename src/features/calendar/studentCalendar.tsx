@@ -11,16 +11,13 @@ import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.
 import { getUserId } from "@/api/api.ts";
 import { FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
 import { useSearchParams } from "react-router-dom";
-import {
-  getClassExercises,
-  getClassFiles,
-  getClassLinks,
-  getQuizzes,
-  getStudentClasses,
-} from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 import type { Exercise, FileProps, LinkProps, QuizBrief } from "@/api/types.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
+import { getClassFiles, getClassLinks } from "@/api/api calls/apiClasses.ts";
+import { getClassExercises } from "@/api/api calls/apiExercises.ts";
+import { getQuizzes } from "@/api/api calls/apiQuizzes.ts";
+import { getStudentClasses } from "@/api/api calls/apiStudents.ts";
 
 export function StudentCalendar() {
   const [searchParams, setSearchParams] = useSearchParams();

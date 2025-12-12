@@ -5,11 +5,7 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type {
-  ApiDayAvailability,
-  DayAvailability,
-  TimeSlot,
-} from "@/api/types.ts";
+import type { ApiDayAvailability, TimeSlot } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
 import { useEffect, useState } from "react";
@@ -37,12 +33,14 @@ type DayScheduleProps = {
   isSelected: (slot: TimeSlot) => boolean | null;
   onSelect?: (slot: TimeSlot) => void;
   updateDaySlots?: (dayState: DayAvailability) => void;
-  //sets the mode of the tile:
-  //  class: can only select set up class tiles - meant for teacher calendar
-  //  time: can select only empty tile - for student class setup
-  //  add: cannot select tiles with classes, can deselect teacher availability
-  //       tiles and select new slots for availability - for teacher availability
-  //       definition
+  /**
+    sets the mode of the tile:
+    class: can only select set up class tiles - meant for teacher calendar
+    time: can select only empty tile - for student class setup
+    add: cannot select tiles with classes, can deselect teacher availability
+         tiles and select new slots for availability - for teacher availability
+         definition
+  **/
   displayMode: "class" | "time" | "add";
 };
 
@@ -57,28 +55,34 @@ export function DaySchedule({
   updateDaySlots,
 }: DayScheduleProps) {
   const hasSlots = timeSlots.length > 0;
+  const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [toDelete, setToDelete] = useState<TimeSlot[]>([]);
   const [toAdd, setToAdd] = useState<TimeSlot[]>([]);
 
+  useEffect(() => {
+    setSlots([...timeSlots]);
+  }, [timeSlots]);
+
   function setDaySlots() {
+    console.log("setting day slots");
     if (!updateDaySlots) {
       console.log("lost in update day slots: no passed function found");
       return;
     }
-    const daySlots: DayAvailability = {
-      day: date,
+    const daySlots: ApiDayAvailability = {
+      day: date.toISOString().slice(0, 10),
       timeslots: [],
     };
     const hours = Array(24).fill(0);
-    timeSlots.forEach((slot) => {
+    slots.forEach((slot) => {
       hours[slot.start] = 1;
     });
-    toDelete.forEach((slot) => {
-      hours[slot.start] = 0;
-    });
-    toAdd.forEach((slot) => {
-      hours[slot.start] = 1;
-    });
+    // toDelete.forEach((slot) => {
+    //   hours[slot.start] = 0;
+    // });
+    // toAdd.forEach((slot) => {
+    //   hours[slot.start] = 1;
+    // });
     let series = false;
     let start: number = 0;
     let end: number;
@@ -86,7 +90,10 @@ export function DaySchedule({
       if (hours[i] === 0) {
         if (series) {
           end = i;
-          daySlots.timeslots.push({ timeFrom: start, timeUntil: end });
+          daySlots.timeslots.push({
+            timeFrom: start.toString(),
+            timeUntil: end.toString(),
+          });
           console.log("ended series at: ", end, ", started: ", start);
           series = false;
         }
@@ -103,7 +110,13 @@ export function DaySchedule({
     if (displayMode !== "add") return;
     console.log("toDelete");
     if (toDelete.includes(slot)) {
-      setToDelete(toDelete.filter((s) => s !== slot));
+      setToDelete((prev) => {
+        const exists = prev.some((s) => s.start === slot.start);
+        return exists
+          ? prev.filter((s) => s.start !== slot.start)
+          : [...prev, slot];
+      });
+      setSlots((prev) => prev.filter((s) => s.start !== slot.start));
     } else setToDelete([...toDelete, slot]);
     // setDaySlots();
   }
@@ -111,25 +124,37 @@ export function DaySchedule({
   function handleAdd(slot: TimeSlot) {
     if (displayMode !== "add") return;
     console.log("toAdd");
-    if (toAdd.includes(slot)) {
-      setToAdd(toAdd.filter((s) => s !== slot));
-      timeSlots.splice(timeSlots.indexOf(slot), 1);
-      setAvailableSlots((prev) =>
-        prev.map((s) =>
-          s.time === slot.start ? { ...s, available: true } : s,
-        ),
-      );
-    } else {
-      setToAdd([...toAdd, slot]);
-      timeSlots.push(slot);
-      setAvailableSlots((prev) =>
-        prev.map((s) =>
-          s.time === slot.start ? { ...s, available: false } : s,
-        ),
-      );
-      timeSlots.sort((a, b) => a.start - b.start);
-    }
-    // setDaySlots();
+    setToAdd((prev) => {
+      const exists = prev.some((s) => s.start === slot.start);
+      return exists
+        ? prev.filter((s) => s.start !== slot.start)
+        : [...prev, slot];
+    });
+    setSlots((prev) => {
+      const exists = prev.some((s) => s.start === slot.start);
+      return exists
+        ? prev.filter((s) => s.start !== slot.start)
+        : [...prev, slot].sort((a, b) => a.start - b.start);
+    });
+    // if (toAdd.includes(slot)) {
+    //   setToAdd(toAdd.filter((s) => s !== slot));
+    //   timeSlots.splice(timeSlots.indexOf(slot), 1);
+    //   setAvailableSlots((prev) =>
+    //     prev.map((s) =>
+    //       s.time === slot.start ? { ...s, available: true } : s,
+    //     ),
+    //   );
+    // } else {
+    //   setToAdd([...toAdd, slot]);
+    //   timeSlots.push(slot);
+    //   setAvailableSlots((prev) =>
+    //     prev.map((s) =>
+    //       s.time === slot.start ? { ...s, available: false } : s,
+    //     ),
+    //   );
+    //   timeSlots.sort((a, b) => a.start - b.start);
+    // }
+    setDaySlots();
   }
 
   const [availableSlots, setAvailableSlots] = useState<
@@ -183,7 +208,7 @@ export function DaySchedule({
     } else {
       if (toAdd.includes(slot)) {
         handleAdd(slot);
-        setDaySlots();
+        // setDaySlots();
       } else {
         handleDelete(slot);
         setDaySlots();
@@ -200,15 +225,7 @@ export function DaySchedule({
           : s,
       ),
     );
-    // for (let slot in timeSlots){
-    //     setAvailableSlots(...)
-    //     availableSlots[slot.time - 7].available = false;
-    // }
   }, [timeSlots]);
-
-  // useEffect(() => {
-  //   setDaySlots();
-  // }, [toAdd, toDelete]);
 
   function createSlotToAdd(startTime: number) {
     handleAdd({
@@ -244,7 +261,7 @@ export function DaySchedule({
           </div>
         ) : (
           <div className="space-y-1 w-31">
-            {timeSlots.map((slot, slotIndex) => (
+            {slots.map((slot, slotIndex) => (
               <Button
                 key={slotIndex}
                 variant={getVariant(slot)}

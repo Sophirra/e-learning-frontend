@@ -11,13 +11,13 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { CourseWidget, PagedResult } from "@/api/types.ts";
 import { SearchBar } from "@/components/complex/searchBar.tsx";
+import { toast } from "sonner";
 import {
   getCourseCategories,
   getCourseLanguages,
   getCourseLevels,
   getCourses,
-} from "@/api/apiCalls.ts";
-import { toast } from "sonner";
+} from "@/api/api calls/apiCourses.ts";
 
 // === PRZEDZIAŁY CENOWE ===
 const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
@@ -122,7 +122,7 @@ function MainPage() {
   }, [activeFilters]);
 
   //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
-  //odp: przeniesione wszystkie calle do pliku apiCalls.ts
+  //odp: przeniesione wszystkie calle do pliku apiTeacher.ts
   useEffect(() => {
     const loadFilters = async () => {
       try {

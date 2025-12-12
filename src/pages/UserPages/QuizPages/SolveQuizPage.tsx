@@ -11,11 +11,6 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { toast } from "sonner";
 import {
-  getQuizQuestions,
-  getQuiz as getQuizApi,
-  submitQuiz,
-} from "@/api/apiCalls.ts";
-import {
   Dialog,
   DialogClose,
   DialogContent,
@@ -26,6 +21,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
+import {
+  getQuiz as getQuizApi,
+  getQuizQuestions,
+  submitQuiz,
+} from "@/api/api calls/apiQuizzes.ts";
 
 export function SolveQuizPage() {
   const navigate = useNavigate();

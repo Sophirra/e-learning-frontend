@@ -3,10 +3,10 @@ import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { QuizBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { getQuizzes } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuizDetailsPopup } from "@/components/complex/popups/quiz/quizDetailsPopup.tsx";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
+import { getQuizzes } from "@/api/api calls/apiQuizzes.ts";
 
 export function QuizGallery({
   enableSelect,

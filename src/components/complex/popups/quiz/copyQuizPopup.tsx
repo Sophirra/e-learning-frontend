@@ -13,7 +13,8 @@ import { QuizGallery } from "@/components/complex/galleries/quizGallery.tsx";
 import { useState } from "react";
 import type { QuizBrief } from "@/api/types.ts";
 import { toast } from "sonner";
-import { copyQuiz as copyQuizApi } from "@/api/apiCalls.ts";
+
+import { copyQuiz as copyQuizApi } from "@/api/api calls/apiQuizzes.ts";
 
 export function CopyQuizPopup({
   classId,

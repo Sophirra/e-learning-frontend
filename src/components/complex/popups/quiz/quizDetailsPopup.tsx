@@ -13,11 +13,13 @@ import { Label } from "@/components/ui/label.tsx";
 import { useEffect, useState } from "react";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { Quiz, QuizBrief } from "@/api/types.ts";
-import { getQuiz, getStudentById, getTeacherById } from "@/api/apiCalls.ts";
+import { getTeacherById } from "@/api/api calls/apiTeacher.ts";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils.ts";
 import { CreateQuizPopup } from "@/components/complex/popups/quiz/createQuizPopup.tsx";
+import { getQuiz } from "@/api/api calls/apiQuizzes.ts";
+import { getStudentById } from "@/api/api calls/apiStudents.ts";
 
 export function QuizDetailsPopup({
   quizBrief,

@@ -9,9 +9,9 @@ import { ExerciseAttachedFilesSummary } from "@/components/complex/summaries/exe
 import { ExerciseSolutionSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseSolutionSummary.tsx";
 import { ExerciseGradeSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseGradeSummary.tsx";
 import { getUserId } from "@/api/api.ts";
-import { getExercises } from "@/api/apiCalls.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import type { Exercise } from "@/api/types.ts";
+import { getExercises } from "@/api/api calls/apiExercises.ts";
 
 export type Role = "teacher" | "student";
 export type Mode = "view" | "edit";

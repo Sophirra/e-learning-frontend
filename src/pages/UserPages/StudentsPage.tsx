@@ -11,20 +11,18 @@ import type { ClassBrief, CourseBrief, Student } from "@/api/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
-import {
-  getStudentWithTeacherExercises,
-  getStudentWithTeacherQuizzes,
-} from "@/api/apiCalls.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 import { FileGallery } from "@/components/complex/galleries/fileGallery.tsx";
-import {
-  getClassBriefs,
-  getStudentCoursesWithSpecificTeacher,
-  getStudentData,
-} from "@/api/apiCalls.ts";
 import { toast } from "sonner";
 import { getUserId } from "@/api/api.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
+import { getClassBriefs } from "@/api/api calls/apiClasses.ts";
+import { getStudentWithTeacherExercises } from "@/api/api calls/apiExercises.ts";
+import {
+  getStudentCoursesWithSpecificTeacher,
+  getStudentData,
+  getStudentWithTeacherQuizzes,
+} from "@/api/api calls/apiStudents.ts";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
  * and allows switching between class setup and course.tsx details views.

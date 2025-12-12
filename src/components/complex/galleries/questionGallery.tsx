@@ -7,12 +7,15 @@ import {
 } from "@/components/complex/filterDropdown.tsx";
 import type { Question } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { getUserCategories, getUserQuestions } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuestionDetailsPopup } from "@/components/complex/popups/quiz/questions/questionDetailsPopup.tsx";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { cn } from "@/lib/utils.ts";
+import {
+  getUserCategories,
+  getUserQuestions,
+} from "@/api/api calls/apiQuestions.ts";
 
 export function QuestionGallery({
   enableSelect,
@@ -98,10 +101,10 @@ export function QuestionGallery({
                   disabled={user?.activeRole !== "teacher"}
                   variant={"ghost"}
                   className={cn(
-                    "shadow-md flex flex-col gap-1 h-1/1 items-start border-1",
+                    "shadow-md flex flex-col gap-1 h-1/1 items-start border-2",
                     selectedQuestionIds &&
                       selectedQuestionIds.some((q) => q === question.id)
-                      ? "border-slate-300"
+                      ? "border-slate-400"
                       : "border-transparent",
                   )}
                   onClick={() => {

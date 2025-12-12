@@ -16,14 +16,11 @@ import {
   FilterDropdown,
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
-import WeekSchedulePopup, {
-} from "@/components/complex/schedules/weekSchedulePopup.tsx";
-import {
-  getStudentCourses,
-  setupClass as setupClassApi,
-} from "@/api/apiCalls.ts";
+import WeekSchedulePopup from "@/components/complex/schedules/weekSchedulePopup.tsx";
 import { getUserId } from "@/api/api.ts";
 import { toast } from "sonner";
+import { setupClass as setupClassApi } from "@/api/api calls/apiClasses.ts";
+import { getStudentCourses } from "@/api/api calls/apiStudents.ts";
 
 export function SetupNewClassPopup() {
   const [courses, setCourses] = useState<CourseBrief[]>([]);

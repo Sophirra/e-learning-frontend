@@ -11,8 +11,8 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import type { FileData } from "@/api/types.ts";
-import { deleteFile } from "@/api/apiCalls.ts";
-import {toast} from "sonner";
+import { toast } from "sonner";
+import { deleteFile } from "@/api/api calls/apiFiles.ts";
 
 export function DeleteFilePopup({ file }: { file: FileData }) {
   return (
@@ -40,9 +40,9 @@ export function DeleteFilePopup({ file }: { file: FileData }) {
               try {
                 await deleteFile(file.id);
 
-                 toast.success("Plik usunięty");
+                toast.success("Plik usunięty");
               } catch (err) {
-                 toast.error("Nie udało się usunąć pliku");
+                toast.error("Nie udało się usunąć pliku");
               }
             }}
           >

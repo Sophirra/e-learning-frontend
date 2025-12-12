@@ -14,15 +14,15 @@ import type { FileData, FileTag } from "@/api/types.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
-import { getAvailableTags, updateFileData } from "@/api/apiCalls.ts";
 import { NewTagPopup } from "@/components/complex/popups/files/newTagPopup.tsx";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label.tsx";
+import { getAvailableTags, updateFileData } from "@/api/api calls/apiFiles.ts";
 
-export function EditFilePopup({ 
-  file, 
-  onFileUpdated 
-}: { 
+export function EditFilePopup({
+  file,
+  onFileUpdated,
+}: {
   file: FileData;
   onFileUpdated?: () => void;
 }) {
@@ -56,7 +56,7 @@ export function EditFilePopup({
         setAvailableTags(res);
         setLoad(false);
         if (open && file.tags) {
-          const fileTagIds = file.tags.map(t => t.id);
+          const fileTagIds = file.tags.map((t) => t.id);
           const syncedTags = res.filter((tag) => fileTagIds.includes(tag.id));
           setNewTags(syncedTags);
         }
@@ -124,7 +124,10 @@ export function EditFilePopup({
           <div className={"flex flex-row gap-4 pt-2 items-end"}>
             {availableTags.length > 0 && (
               <FilterDropdown
-                key={`${open}-${availableTags.length}-${newTags.map(t => t.id).sort().join(',')}`}
+                key={`${open}-${availableTags.length}-${newTags
+                  .map((t) => t.id)
+                  .sort()
+                  .join(",")}`}
                 placeholder={"file tags"}
                 emptyMessage={"choose file tags"}
                 label={"Available tags:"}

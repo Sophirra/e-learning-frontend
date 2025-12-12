@@ -14,7 +14,8 @@ import { Input } from "@/components/ui/input.tsx";
 import { useState } from "react";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { toast } from "sonner";
-import { createQuestionCategory } from "@/api/apiCalls.ts";
+
+import { createQuestionCategory } from "@/api/api calls/apiQuestions.ts";
 
 export function CreateQuestionCategoryPopup({
   resetLoading,

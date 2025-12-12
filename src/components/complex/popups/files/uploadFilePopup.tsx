@@ -12,9 +12,9 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
-import { uploadUserFile } from "@/api/apiCalls.ts";
 import { toast } from "sonner";
 import type { FileBrief } from "@/api/types.ts";
+import { uploadUserFile } from "@/api/api calls/apiFiles.ts";
 
 export function UploadFilePopup({
   setChosenFile,

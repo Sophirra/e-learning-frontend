@@ -16,18 +16,18 @@ import {
   FilterDropdown,
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
-import { getFiles } from "@/api/apiCalls.ts";
 import type { FileBrief, FileData, FileFilter } from "@/api/types.ts";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { formatDate } from "date-fns";
 import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";
 import { DeleteFilePopup } from "@/components/complex/popups/files/deleteFilePopup.tsx";
-import {
-  getUserFileOwners,
-  getUserFileExtensions,
-  getUserFileTags,
-} from "@/api/apiCalls.ts";
 import { DownloadButton } from "@/components/ui/downloadButton.tsx";
+import {
+  getFiles,
+  getUserFileExtensions,
+  getUserFileOwners,
+  getUserFileTags,
+} from "@/api/api calls/apiFiles.ts";
 
 type SortField = "title" | "dateCreated" | "sharedBy" | "course";
 type SortOrder = "none" | "asc" | "desc";

@@ -13,7 +13,8 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog.tsx";
-import { addSpectator } from "@/api/apiCalls.ts";
+
+import { apiSpectators } from "@/api/api calls/apiSpectators.ts";
 
 /**
  * Popup dialog that allows a student to invite a new spectator by email.
@@ -39,7 +40,7 @@ export function SpectatorSendInvitePopup({
 
     try {
       setLoading(true);
-      await addSpectator(email.trim());
+      await apiSpectators(email.trim());
       toast.success("Spectator invitation sent successfully!");
       setEmail("");
       onInvited?.();

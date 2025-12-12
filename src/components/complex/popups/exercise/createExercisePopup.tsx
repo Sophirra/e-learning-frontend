@@ -16,8 +16,11 @@ import { useState } from "react";
 import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
 import type { Exercise, FileBrief } from "@/api/types.ts";
 import { toast } from "sonner";
-import { createExercise, updateExercise } from "@/api/apiCalls.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
+import {
+  createExercise,
+  updateExercise,
+} from "@/api/api calls/apiExercises.ts";
 
 export function CreateExercisePopup({
   classId,

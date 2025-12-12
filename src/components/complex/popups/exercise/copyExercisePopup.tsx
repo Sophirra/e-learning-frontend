@@ -11,9 +11,9 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { useState } from "react";
 import { toast } from "sonner";
-import { copyExercise as copyExerciseApi } from "@/api/apiCalls.ts";
 import { ExerciseGallery } from "@/components/complex/galleries/exerciseGallery.tsx";
 import type { Exercise } from "@/api/types.ts";
+import { copyExercise as copyExerciseApi } from "@/api/api calls/apiExercises.ts";
 
 export function CopyExercisePopup({
   classId,

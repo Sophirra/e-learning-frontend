@@ -7,12 +7,14 @@ import { useEffect, useRef, useState } from "react";
 import { getUserId } from "@/api/api.ts";
 import { useUser } from "@/features/user/UserContext.tsx";
 import {
-  getStudentCoursesWithSpecificTeacher,
-  getStudentParticipations,
   getTeacherCourses,
   getTeacherStudents,
   getTeacherStudentsWithSpecificCourse,
-} from "@/api/apiCalls.ts";
+} from "@/api/api calls/apiTeacher.ts";
+import {
+  getStudentCoursesWithSpecificTeacher,
+  getStudentParticipations,
+} from "@/api/api calls/apiStudents.ts";
 
 type CourseFilterProps = {
   student: boolean;

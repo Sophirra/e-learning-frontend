@@ -1,8 +1,9 @@
-import {useEffect, useRef} from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
-import { acceptSpectatorInvite } from "@/api/apiCalls";
+
+import { acceptSpectatorInvite } from "@/api/api calls/apiSpectators.ts";
 
 /**
  * React page component responsible for handling spectator invitation acceptance.
@@ -33,51 +34,54 @@ import { acceptSpectatorInvite } from "@/api/apiCalls";
  * @returns {JSX.Element} The loading screen that displays while the invitation is being processed.
  */
 const SpectatorAcceptPage = () => {
-    const [params] = useSearchParams();
-    const navigate = useNavigate();
-    const ran = useRef(false);
-    useEffect(() => {
-        const token = params.get("token")
-        if (!token) {
-            toast.error("Invalid or missing invitation token.");
-            navigate("/", { replace: true });
-            return;
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const ran = useRef(false);
+  useEffect(() => {
+    const token = params.get("token");
+    if (!token) {
+      toast.error("Invalid or missing invitation token.");
+      navigate("/", { replace: true });
+      return;
+    }
+    (async () => {
+      if (ran.current) return; // nie pozwól odpalić drugi raz
+      ran.current = true;
+      try {
+        await acceptSpectatorInvite(token); // backend sam widzi Twoje cookie (refresh/access) i zwróci 401 jeśli trzeba
+        toast.success("Invitation accepted successfully!");
+        navigate("/", { replace: true });
+      } catch (err: any) {
+        const s = err?.response?.status;
+        const msg = err?.response?.data ?? "Could not accept invitation.";
+
+        if (s === 401) {
+          // brak ważnej sesji → zapisz token i przenieś na login
+          Cookies.set("spectatorInviteToken", token, {
+            expires: 1,
+            sameSite: "Lax",
+          });
+          toast.error("You need to log in first.");
+          navigate("/", { replace: true });
+          return;
         }
-        (async () => {
-            if (ran.current) return;     // nie pozwól odpalić drugi raz
-            ran.current = true;
-            try {
-                await acceptSpectatorInvite(token); // backend sam widzi Twoje cookie (refresh/access) i zwróci 401 jeśli trzeba
-                toast.success("Invitation accepted successfully!");
-                navigate("/", { replace: true });
-            } catch (err: any) {
-                const s = err?.response?.status;
-                const msg = err?.response?.data ?? "Could not accept invitation.";
+        if (s === 410) toast.error("Invitation expired.");
+        else if (s === 404) toast.error("Invitation not found.");
+        else if (s === 403) toast.error("Not allowed to accept this invite.");
+        else if (s === 409) toast.info("Invitation already accepted.");
+        else toast.error(msg);
 
-                if (s === 401) {
-                    // brak ważnej sesji → zapisz token i przenieś na login
-                    Cookies.set("spectatorInviteToken", token, { expires: 1, sameSite: "Lax" });
-                    toast.error("You need to log in first.");
-                    navigate("/", { replace: true });
-                    return;
-                }
-                if (s === 410) toast.error("Invitation expired.");
-                else if (s === 404) toast.error("Invitation not found.");
-                else if (s === 403) toast.error("Not allowed to accept this invite.");
-                else if (s === 409) toast.info("Invitation already accepted.");
-                else toast.error(msg);
+        navigate("/", { replace: true });
+      }
+    })();
+  }, [params, navigate]);
 
-                navigate("/", { replace: true });
-            }
-        })();
-    }, [params, navigate]);
-
-    return (
-        <div className="flex flex-col items-center justify-center h-screen text-center">
-            <h2 className="text-xl font-semibold mb-2">Processing invitation...</h2>
-            <p className="text-gray-500">Please wait a moment.</p>
-        </div>
-    );
+  return (
+    <div className="flex flex-col items-center justify-center h-screen text-center">
+      <h2 className="text-xl font-semibold mb-2">Processing invitation...</h2>
+      <p className="text-gray-500">Please wait a moment.</p>
+    </div>
+  );
 };
 
 export default SpectatorAcceptPage;

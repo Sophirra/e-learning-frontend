@@ -3,12 +3,12 @@ import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { Exercise } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { getExercises } from "@/api/apiCalls.ts";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import { getUserId } from "@/api/api.ts";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
+import { getExercises } from "@/api/api calls/apiExercises.ts";
 
 export function ExerciseGallery({
   selected,

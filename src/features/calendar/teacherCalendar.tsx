@@ -2,14 +2,7 @@ import { useState, useEffect } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { getUserId } from "@/api/api.ts";
-import {
-  getClassExercises,
-  getClassFiles,
-  getClassLinks,
-  getQuizzes,
-  getTeacherAvailability,
-  getTeacherUpcomingClasses,
-} from "@/api/apiCalls.ts";
+import { getTeacherAvailability } from "@/api/api calls/apiTeacher.ts";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 import type {
   ApiDayAvailability,
@@ -24,6 +17,13 @@ import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
 import Schedule from "@/components/complex/schedules/schedule.tsx";
+import {
+  getClassFiles,
+  getClassLinks,
+  getTeacherUpcomingClasses,
+} from "@/api/api calls/apiClasses.ts";
+import { getClassExercises } from "@/api/api calls/apiExercises.ts";
+import { getQuizzes } from "@/api/api calls/apiQuizzes.ts";
 
 export function TeacherCalendar() {
   // Course filter

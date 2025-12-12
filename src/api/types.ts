@@ -1,6 +1,6 @@
 /**
  * MISC SECTION
- */
+ **/
 /**
  * Generic interface representing a paginated API response.
  **/
@@ -23,35 +23,28 @@ export type TimeSlot = {
   preSelected?: boolean;
 };
 
-export interface ApiDayAvailability {
+export type ApiDayAvailability = {
   day: string;
   timeslots: { timeFrom: string; timeUntil: string }[];
-}
+};
 
-export interface DayAvailability {
+export type DayAvailability = {
   day: Date;
   timeslots: { timeFrom: number; timeUntil: number }[];
-}
+};
 
-export interface WeekScheduleDialogProps {
+/**
+ * CALENDAR AND TIME SECTION
+ */
+
+export type WeekScheduleDialogProps = {
   disabled: boolean;
   onConfirm: (selectedSlot: TimeSlot) => void;
   classDetails?: string;
   courseId: string;
-}
+};
 
-export interface TimeSlot {
-  start: number;
-  end: number;
-  dayIndex: number;
-  date: Date;
-  courseName?: string;
-  studentName?: string;
-  classId?: string;
-}
-
-//type downloaded from backend - can be moved
-export interface ClassSchedule {
+export type ClassSchedule = {
   classId: string;
   studentId: string;
   studentName: string;
@@ -60,12 +53,99 @@ export interface ClassSchedule {
   classDate: Date;
   classStartTime: string;
   classEndTime: string;
-}
+};
 
-export interface ApiDayAvailability {
-  day: string;
-  timeslots: { timeFrom: string; timeUntil: string }[];
-}
+/**
+ * USERS SECTION
+ */
+export type AuthResponse = {
+  accessToken: string;
+  roles: string[];
+};
+
+export type RegisterUserDto = {
+  accountType: "student" | "teacher";
+  email: string;
+  password: string;
+  confirmPassword: string;
+  name: string;
+  surname: string;
+  phone: string;
+  aboutMe: string;
+};
+
+export type LoginUserDto = {
+  email: string;
+  password: string;
+};
+
+export type aboutUser = {
+  name: string;
+  surname: string;
+  email: string;
+  telephone: string;
+  description: string;
+};
+
+export type ProfilePicture = {
+  fileName: string;
+  url: string;
+  uploadedAt: string;
+};
+
+/**
+ * FILES SECTION
+ */
+
+export type FileData = {
+  id: string;
+  fileName: string;
+  relativePath: string;
+  uploadedAt: string;
+  uploadedBy: string;
+  courses: CourseShortVersion[];
+  tags: FileTag[];
+  ownerInfo: FileOwner;
+};
+
+export type FileBrief = {
+  id: string;
+  name: string;
+  path: string;
+};
+
+export type FileFilter = {
+  query?: string;
+  studentId?: string;
+  courseId?: string;
+  origin?: string[];
+  tagIds?: string[];
+  createdBy?: string[];
+  type?: string[];
+  page?: number;
+  pageSize?: number;
+  //optional: dates (can be added)
+};
+
+export type FileTag = {
+  id: string;
+  name: string;
+  ownerId: string;
+};
+
+export type FileOwner = {
+  id: string;
+  name: string;
+  surname: string;
+};
+
+export type FileProps = {
+  id: string;
+  name: string;
+  filePath: string;
+  associatedCourseName: string;
+  associatedClassDate: string;
+};
 
 export type FileLink = {
   id?: string;
@@ -82,122 +162,31 @@ export type LinkProps = {
   className?: string;
 };
 
-export type FileProps = {
-  id: string;
-  name: string;
-  filePath: string;
-  associatedCourseName: string;
-  associatedClassDate: string;
-};
-
-/**
- * USERS SECTION
- */
-export interface AuthResponse {
-  accessToken: string;
-  roles: string[];
-}
-export interface RegisterUserDto {
-  accountType: "student" | "teacher";
-  email: string;
-  password: string;
-  confirmPassword: string;
-  name: string;
-  surname: string;
-  phone: string;
-  aboutMe: string;
-}
-
-export interface LoginUserDto {
-  email: string;
-  password: string;
-}
-
-export interface aboutUser {
-  name: string;
-  surname: string;
-  email: string;
-  telephone: string;
-  description: string;
-}
-
-export interface ProfilePicture {
-  fileName: string;
-  url: string;
-  uploadedAt: string;
-}
-
-/**
- * FILES SECTION
- */
-
-export interface FileData {
-  id: string;
-  fileName: string;
-  relativePath: string;
-  uploadedAt: string;
-  uploadedBy: string;
-  courses: CourseShortVersion[];
-  tags: FileTag[];
-  ownerInfo: FileOwner;
-}
-
-export type FileBrief = {
-  id: string;
-  name: string;
-  path: string;
-};
-
-export interface FileFilter {
-  query?: string;
-  studentId?: string;
-  courseId?: string;
-  origin?: string[];
-  tagIds?: string[];
-  createdBy?: string[];
-  type?: string[];
-  page?: number;
-  pageSize?: number;
-  //optional: dates (can be added)
-}
-
-export interface FileTag {
-  id: string;
-  name: string;
-  ownerId: string;
-}
-
-export interface FileOwner {
-  id: string;
-  name: string;
-  surname: string;
-}
-
 /**
  * TEACHER SECTION
  */
 
-export interface Teacher {
+export type Teacher = {
   id: string;
   name: string;
   surname: string;
   description: string;
   coursesBrief?: CourseBrief[];
   teacherProfilePictureUrl: string;
-}
+};
 
-export interface TeacherReview {
+export type TeacherReview = {
   id: string;
   reviewerName: string;
   reviewerSurname: string;
   starsNumber: number;
   content: string;
-}
+};
 
-export interface TeacherAvailability {
+export type TeacherAvailability = {
   day: string;
   timeslots: { timeFrom: string; timeUntil: string }[];
-}
+};
 
 /**
  * STUDENTS SECTION
@@ -221,7 +210,7 @@ export type Student = {
  * COURSE SECTION
  */
 
-export interface CourseWidget {
+export type CourseWidget = {
   id: string;
   name: string;
   profilePictureUrl: string;
@@ -234,27 +223,27 @@ export interface CourseWidget {
   teacherId: string;
   teacherName: string;
   teacherSurname: string;
-}
+};
 
-export interface Course {
+export type Course = {
   id: string;
   name: string;
   description: string;
   variants: CourseVariant[];
   profilePictureUrl: string;
   teacher: Teacher;
-}
+};
 
-export interface CourseVariant {
+export type CourseVariant = {
   levelName: string;
   price: number;
   languageName: string;
-}
+};
 
-export interface CourseShortVersion {
+export type CourseShortVersion = {
   id: string;
   name: string;
-}
+};
 
 export type CourseBrief = {
   id: string;
@@ -265,16 +254,15 @@ export type CourseBrief = {
  * CLASS SECTION
  */
 
-export interface ClassBrief {
+export type ClassBrief = {
   id: string;
   startTime: Date;
   courseId: string;
   courseName: string;
   teacherId?: string;
   studentId?: string;
-}
+};
 
-//co to za potwór (z teacher calendar)
 export type ClassBriefDto = {
   id: string;
   startTime: string;
@@ -359,6 +347,7 @@ export type QuestionCategory = {
   name: string;
   description?: string; //imo do wywalenia
 };
+
 export type QuizSolution = {
   quizId: string;
   answers: {
@@ -366,6 +355,10 @@ export type QuizSolution = {
     selectedAnswerIds: string[];
   }[];
 };
+
+/**
+ * EXERCISE SECTION
+ */
 
 export type ExerciseBrief = {
   id: string;
@@ -378,7 +371,7 @@ export type ExerciseBrief = {
 
 export type Exercise = {
   id?: string;
-  name: string; //nie wiem czym jest ale jest zawarte w ExerciseSummary
+  name: string;
   classId?: string;
   courseName: string;
   className?: string;

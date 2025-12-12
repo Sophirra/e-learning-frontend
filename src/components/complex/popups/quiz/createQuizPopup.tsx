@@ -15,12 +15,12 @@ import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
 import { QuestionGallery } from "@/components/complex/galleries/questionGallery.tsx";
+import type { Question, QuizBrief } from "@/api/types.ts";
 import {
   createQuiz as createQuizApi,
   getQuizQuestions,
   updateQuiz as updateQuizApi,
-} from "@/api/apiCalls.ts";
-import type { Question, QuizBrief } from "@/api/types.ts";
+} from "@/api/api calls/apiQuizzes.ts";
 
 export function CreateQuizPopup({
   classId,

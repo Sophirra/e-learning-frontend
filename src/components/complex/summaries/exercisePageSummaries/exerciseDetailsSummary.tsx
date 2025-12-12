@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label.tsx";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { Exercise } from "@/api/types.ts";
 import { CreateExercisePopup } from "@/components/complex/popups/exercise/createExercisePopup.tsx";
-import {submitSolution} from "@/api/apiCalls.ts";
-import {toast} from "sonner";
+import { toast } from "sonner";
+import { submitSolution } from "@/api/api calls/apiExercises.ts";
 
 export function ExerciseDetailsSummary({
   exercise,
@@ -26,17 +26,17 @@ export function ExerciseDetailsSummary({
             variant="ghost"
             className="flex items-center gap-2"
             onClick={async () => {
-                if (exercise?.id != null) {
-                    try {
-                        await submitSolution(exercise.id);
-                        toast.success("Exercise submitted!");
-                    } catch (error) {
-                        toast.error("Error submitting exercise.");
-                        console.error("Submit error:", error);
-                    }
+              if (exercise?.id != null) {
+                try {
+                  await submitSolution(exercise.id);
+                  toast.success("Exercise submitted!");
+                } catch (error) {
+                  toast.error("Error submitting exercise.");
+                  console.error("Submit error:", error);
                 }
+              }
 
-                console.log("Submitting exercise:", exercise?.id);
+              console.log("Submitting exercise:", exercise?.id);
             }}
           >
             Submit

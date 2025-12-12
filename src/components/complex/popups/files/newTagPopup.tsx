@@ -14,7 +14,8 @@ import { Input } from "@/components/ui/input.tsx";
 import { useState } from "react";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { toast } from "sonner";
-import { createNewTag } from "@/api/apiCalls.ts";
+
+import { createNewTag } from "@/api/api calls/apiFiles.ts";
 
 export function NewTagPopup({ resetLoading }: { resetLoading: () => void }) {
   const [name, setName] = useState<string>("");

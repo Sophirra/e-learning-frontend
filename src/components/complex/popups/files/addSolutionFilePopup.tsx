@@ -15,7 +15,8 @@ import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
 import type { FileBrief } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { uploadExerciseSolution } from "@/api/apiCalls";
+
+import { uploadExerciseSolution } from "@/api/api calls/apiExercises.ts";
 
 export function AddSolutionFilePopup({
   setChosenFile,

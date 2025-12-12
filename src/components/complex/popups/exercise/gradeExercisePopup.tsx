@@ -14,7 +14,8 @@ import { Input } from "@/components/ui/input.tsx";
 import { useState } from "react";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { toast } from "sonner";
-import { addExerciseGrade } from "@/api/apiCalls.ts";
+
+import { addExerciseGrade } from "@/api/api calls/apiExercises.ts";
 
 export function GradeExercisePopup({
   exerciseId,
@@ -70,16 +71,16 @@ export function GradeExercisePopup({
 
             <DialogClose asChild>
               <Button
-                  variant={"outline"}
-                  onClick={() => {
-                    if (grade != null) {
-                      apiAddGrade(exerciseId, grade, comments);
-                      toast.success("Grade added successfully.");
-                    } else {
-                      toast.error("Grade is not defined");
-                    }
-                  }}
-                  disabled={grade == null}
+                variant={"outline"}
+                onClick={() => {
+                  if (grade != null) {
+                    apiAddGrade(exerciseId, grade, comments);
+                    toast.success("Grade added successfully.");
+                  } else {
+                    toast.error("Grade is not defined");
+                  }
+                }}
+                disabled={grade == null}
               >
                 Confirm
               </Button>

@@ -21,11 +21,11 @@ import { toast } from "sonner";
 import OpinionTile from "@/components/complex/tiles/opinionTile.tsx";
 import { SearchBar } from "@/components/complex/searchBar.tsx";
 import {
-  getCourseById,
   getTeacherAvailabilityByCourseId,
   getTeacherById,
   getTeacherReviews,
-} from "@/api/apiCalls.ts";
+} from "@/api/api calls/apiTeacher.ts";
+import { getCourseById } from "@/api/api calls/apiCourses.ts";
 
 /**
  * CoursePage component displays detailed information about a specific course.tsx

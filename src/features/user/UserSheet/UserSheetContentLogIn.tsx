@@ -15,11 +15,10 @@ import { loginUser, aboutMe } from "@/api/auth.ts";
 import { useUser } from "@/features/user/UserContext.tsx";
 import type { User } from "@/features/user/user.ts";
 import Cookies from "js-cookie";
-import {acceptSpectatorInvite} from "@/api/apiCalls.ts";
-import {toast} from "sonner";
-
+import { toast } from "sonner";
 
 import { getRoles } from "@/api/api.ts";
+import { acceptSpectatorInvite } from "@/api/api calls/apiSpectators.ts";
 
 let loginSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -65,18 +64,16 @@ export function UserSheetContentLogIn({
       } finally {
         Cookies.remove("spectatorInviteToken");
       }
-
     } catch (e: any) {
-      if (e.message.endsWith("400")){
+      if (e.message.endsWith("400")) {
         toast.error("Check your email and password");
-      }else{
+      } else {
         toast.error(e.message);
       }
 
       // form.setError("root", { message: e.message });
     }
   }
-
 
   return (
     <div className="inline-flex flex-col gap-6 p-8">

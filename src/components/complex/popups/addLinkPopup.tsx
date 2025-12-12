@@ -15,8 +15,8 @@ import { useState } from "react";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { toast } from "sonner";
-import {addClassLink} from "@/api/apiCalls.ts";
 
+import { addClassLink } from "@/api/api calls/apiClasses.ts";
 
 export function AddLinkPopup(classId?: string) {
   const [link, setLink] = useState<string>("");
@@ -25,8 +25,6 @@ export function AddLinkPopup(classId?: string) {
   // function apiAddLink(link: string, isMeeting: boolean, classId: string) {
   //   //TODO: add link via api
   // }
-
-
 
   return (
     <Dialog>
@@ -68,7 +66,7 @@ export function AddLinkPopup(classId?: string) {
               variant={"outline"}
               onClick={() => {
                 if (classId != null) {
-                  addClassLink(classId,link,isMeeting);
+                  addClassLink(classId, link, isMeeting);
                 } else {
                   toast.error("Class id is not defined");
                 }

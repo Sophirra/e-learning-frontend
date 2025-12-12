@@ -14,8 +14,7 @@ import { toast } from "sonner";
 import {
   addAvailability,
   getTeacherAvailability,
-  getTeacherUpcomingClasses,
-} from "@/api/apiCalls.ts";
+} from "@/api/api calls/apiTeacher.ts";
 import { useEffect, useState } from "react";
 import type {
   ApiDayAvailability,
@@ -23,6 +22,7 @@ import type {
   DayAvailability,
 } from "@/api/types.ts";
 import Schedule from "@/components/complex/schedules/schedule.tsx";
+import { getTeacherUpcomingClasses } from "@/api/api calls/apiClasses.ts";
 
 // type selectedSlots = {
 //   date: Date;
@@ -125,8 +125,9 @@ export function AddAvailabilityPopup() {
             daysCount={7}
             displayMode={"add"}
             updateDaySlots={(av: DayAvailability) => {
+              console.log("update:", av);
               setUpdateAvailability((prev) => {
-                const exists = prev.some((d) => (d.day = av.day));
+                const exists = prev.some((d) => d.day === av.day);
                 if (exists) {
                   return prev.map((d) => (d.day === av.day ? av : d));
                 }
