@@ -5,7 +5,11 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type { TimeSlot } from "@/api/types.ts";
+import type {
+  ApiDayAvailability,
+  DayAvailability,
+  TimeSlot,
+} from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
 import { useEffect, useState } from "react";
@@ -31,7 +35,8 @@ type DayScheduleProps = {
   timeSlots: TimeSlot[];
   isActive: boolean;
   isSelected: (slot: TimeSlot) => boolean | null;
-  onSelect: (slot: TimeSlot) => void;
+  onSelect?: (slot: TimeSlot) => void;
+  updateDaySlots?: (dayState: DayAvailability) => void;
   //sets the mode of the tile:
   //  class: can only select set up class tiles - meant for teacher calendar
   //  time: can select only empty tile - for student class setup
@@ -49,10 +54,50 @@ export function DaySchedule({
   isSelected,
   onSelect,
   displayMode,
+  updateDaySlots,
 }: DayScheduleProps) {
   const hasSlots = timeSlots.length > 0;
   const [toDelete, setToDelete] = useState<TimeSlot[]>([]);
   const [toAdd, setToAdd] = useState<TimeSlot[]>([]);
+
+  function setDaySlots() {
+    if (!updateDaySlots) {
+      console.log("lost in update day slots: no passed function found");
+      return;
+    }
+    const daySlots: DayAvailability = {
+      day: date,
+      timeslots: [],
+    };
+    const hours = Array(24).fill(0);
+    timeSlots.forEach((slot) => {
+      hours[slot.start] = 1;
+    });
+    toDelete.forEach((slot) => {
+      hours[slot.start] = 0;
+    });
+    toAdd.forEach((slot) => {
+      hours[slot.start] = 1;
+    });
+    let series = false;
+    let start: number = 0;
+    let end: number;
+    for (let i: number = 0; i < hours.length; i++) {
+      if (hours[i] === 0) {
+        if (series) {
+          end = i;
+          daySlots.timeslots.push({ timeFrom: start, timeUntil: end });
+          console.log("ended series at: ", end, ", started: ", start);
+          series = false;
+        }
+      } else if (!series) {
+        series = true;
+        start = i;
+      }
+    }
+    console.log("updated day", daySlots);
+    updateDaySlots(daySlots);
+  }
 
   function handleDelete(slot: TimeSlot) {
     if (displayMode !== "add") return;
@@ -60,6 +105,7 @@ export function DaySchedule({
     if (toDelete.includes(slot)) {
       setToDelete(toDelete.filter((s) => s !== slot));
     } else setToDelete([...toDelete, slot]);
+    // setDaySlots();
   }
 
   function handleAdd(slot: TimeSlot) {
@@ -68,11 +114,22 @@ export function DaySchedule({
     if (toAdd.includes(slot)) {
       setToAdd(toAdd.filter((s) => s !== slot));
       timeSlots.splice(timeSlots.indexOf(slot), 1);
+      setAvailableSlots((prev) =>
+        prev.map((s) =>
+          s.time === slot.start ? { ...s, available: true } : s,
+        ),
+      );
     } else {
       setToAdd([...toAdd, slot]);
       timeSlots.push(slot);
+      setAvailableSlots((prev) =>
+        prev.map((s) =>
+          s.time === slot.start ? { ...s, available: false } : s,
+        ),
+      );
       timeSlots.sort((a, b) => a.start - b.start);
     }
+    // setDaySlots();
   }
 
   const [availableSlots, setAvailableSlots] = useState<
@@ -117,13 +174,19 @@ export function DaySchedule({
   }
 
   function handleSelect(slot: TimeSlot) {
+    if (!onSelect) {
+      console.log("lost in handle select: no passed function found");
+      return;
+    }
     if (displayMode !== "add") {
       onSelect(slot);
     } else {
       if (toAdd.includes(slot)) {
         handleAdd(slot);
+        setDaySlots();
       } else {
         handleDelete(slot);
+        setDaySlots();
       }
     }
   }
@@ -142,6 +205,10 @@ export function DaySchedule({
     //     availableSlots[slot.time - 7].available = false;
     // }
   }, [timeSlots]);
+
+  // useEffect(() => {
+  //   setDaySlots();
+  // }, [toAdd, toDelete]);
 
   function createSlotToAdd(startTime: number) {
     handleAdd({

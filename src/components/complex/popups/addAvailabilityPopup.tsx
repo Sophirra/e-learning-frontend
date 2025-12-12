@@ -17,52 +17,59 @@ import {
   getTeacherUpcomingClasses,
 } from "@/api/apiCalls.ts";
 import { useEffect, useState } from "react";
-import type { ApiDayAvailability, ClassSchedule } from "@/api/types.ts";
+import type {
+  ApiDayAvailability,
+  ClassSchedule,
+  DayAvailability,
+} from "@/api/types.ts";
 import Schedule from "@/components/complex/schedules/schedule.tsx";
 
-type selectedSlots = {
-  date: Date;
-  slots: number[];
-};
+// type selectedSlots = {
+//   date: Date;
+//   slots: number[];
+// };
 
 export function AddAvailabilityPopup() {
-  const [slots, setSlots] = useState<selectedSlots[]>([]);
+  // const [slots, setSlots] = useState<selectedSlots[]>([]);
   const [classes, setClasses] = useState<ClassSchedule[]>([]);
   const [existingAvailability, setExistingAvailability] = useState<
     ApiDayAvailability[]
   >([]);
+  const [updateAvailability, setUpdateAvailability] = useState<
+    DayAvailability[]
+  >([]);
 
   function setupAvailability() {
     try {
-      const mappedSlots = slots.map((slot): ApiDayAvailability => {
-        // const timeslots = slot.slots.map((slot) => {})
-        const sorted = slot.slots.sort();
-        const timeslots = sorted.reduce(
-          (acc, slot) => {
-            const prev = acc[acc.length - 1];
-
-            if (!prev) {
-              acc.push({ from: slot, to: slot + 1 });
-            }
-            if (slot === prev.to) {
-              prev.to = slot + 1;
-            } else {
-              acc.push({ from: slot, to: slot + 1 });
-            }
-            return acc;
-          },
-          [] as { from: number; to: number }[],
-        );
-        return {
-          day: slot.date.toISOString().slice(0, 10),
-          timeslots: timeslots.map((r) => ({
-            timeFrom: `${r.from}:00`,
-            timeUntil: `${r.to}:00`,
-          })),
-        };
-      });
-      console.log(mappedSlots);
-      addAvailability(mappedSlots);
+      // const mappedSlots = slots.map((slot): ApiDayAvailability => {
+      //   // const timeslots = slot.slots.map((slot) => {})
+      //   const sorted = slot.slots.sort();
+      //   const timeslots = sorted.reduce(
+      //     (acc, slot) => {
+      //       const prev = acc[acc.length - 1];
+      //
+      //       if (!prev) {
+      //         acc.push({ from: slot, to: slot + 1 });
+      //       }
+      //       if (slot === prev.to) {
+      //         prev.to = slot + 1;
+      //       } else {
+      //         acc.push({ from: slot, to: slot + 1 });
+      //       }
+      //       return acc;
+      //     },
+      //     [] as { from: number; to: number }[],
+      //   );
+      //   return {
+      //     day: slot.date.toISOString().slice(0, 10),
+      //     timeslots: timeslots.map((r) => ({
+      //       timeFrom: `${r.from}:00`,
+      //       timeUntil: `${r.to}:00`,
+      //     })),
+      //   };
+      // });
+      console.log(updateAvailability);
+      addAvailability(updateAvailability);
       toast.success("Availability added successfully");
     } catch (e: any) {
       toast.error(e.message);
@@ -117,8 +124,14 @@ export function AddAvailabilityPopup() {
             startDate={new Date()}
             daysCount={7}
             displayMode={"add"}
-            onSelect={() => {
-              //anytime a slot is modified, get info
+            updateDaySlots={(av: DayAvailability) => {
+              setUpdateAvailability((prev) => {
+                const exists = prev.some((d) => (d.day = av.day));
+                if (exists) {
+                  return prev.map((d) => (d.day === av.day ? av : d));
+                }
+                return [...prev, av];
+              });
             }}
             classes={classes}
             apiDayAvailability={existingAvailability}

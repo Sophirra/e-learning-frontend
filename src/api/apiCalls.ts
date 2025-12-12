@@ -29,6 +29,7 @@ import type {
   FileProps,
   LinkProps,
   ExerciseBrief,
+  DayAvailability,
 } from "@/api/types.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
 import type { Role } from "@/features/user/user.ts";
@@ -1157,7 +1158,7 @@ export async function submitSolution(exerciseId: string) {
 //TODO: no idea what to send
 export async function setupClass(classDate: Date, courseId: string) {}
 
-export async function addAvailability(availability: ApiDayAvailability[]) {
+export async function addAvailability(availability: DayAvailability[]) {
   const teacherId = getUserId();
   const res = await Api.post(
     `/api/teacher/${teacherId}/availability`,
