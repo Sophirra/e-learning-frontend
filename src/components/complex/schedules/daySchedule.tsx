@@ -5,11 +5,7 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type {
-  ApiDayAvailability,
-  DayAvailability,
-  TimeSlot,
-} from "@/api/types.ts";
+import type { DayAvailability, TimeSlot } from "@/api/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
 import { useEffect, useState } from "react";
@@ -37,12 +33,14 @@ type DayScheduleProps = {
   isSelected: (slot: TimeSlot) => boolean | null;
   onSelect?: (slot: TimeSlot) => void;
   updateDaySlots?: (dayState: DayAvailability) => void;
-  //sets the mode of the tile:
-  //  class: can only select set up class tiles - meant for teacher calendar
-  //  time: can select only empty tile - for student class setup
-  //  add: cannot select tiles with classes, can deselect teacher availability
-  //       tiles and select new slots for availability - for teacher availability
-  //       definition
+  /**
+    sets the mode of the tile:
+    class: can only select set up class tiles - meant for teacher calendar
+    time: can select only empty tile - for student class setup
+    add: cannot select tiles with classes, can deselect teacher availability
+         tiles and select new slots for availability - for teacher availability
+         definition
+  **/
   displayMode: "class" | "time" | "add";
 };
 
@@ -200,15 +198,7 @@ export function DaySchedule({
           : s,
       ),
     );
-    // for (let slot in timeSlots){
-    //     setAvailableSlots(...)
-    //     availableSlots[slot.time - 7].available = false;
-    // }
   }, [timeSlots]);
-
-  // useEffect(() => {
-  //   setDaySlots();
-  // }, [toAdd, toDelete]);
 
   function createSlotToAdd(startTime: number) {
     handleAdd({

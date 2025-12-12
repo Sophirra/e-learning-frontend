@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { NavigationBar } from "@/components/complex/navigationBar.tsx";
 import type {
-  AnyTask,
   ClassBrief,
-  QuizTask,
+  Exercise,
+  QuizBrief,
   StudentBrief,
 } from "@/api/types.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
@@ -24,8 +24,8 @@ import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
 export function SpectatorPage() {
   const [students, setStudents] = useState<StudentBrief[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<string>();
-  const [exercises, setExercises] = useState<AnyTask[]>([]);
-  const [quizzes, setQuizzes] = useState<AnyTask[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
   const [classes, setClasses] = useState<ClassBrief[]>([]);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export function SpectatorPage() {
     async function getSpectated() {
       try {
         const data = await getSpectatedApi();
-        setStudents(data);
+        setStudents([data]);
       } catch (e: any) {
         toast.error("Failed to fetch spectated students: " + e.message);
       }
@@ -50,18 +50,25 @@ export function SpectatorPage() {
     }
     async function fetchUnsolvedExercises() {
       try {
-        const data = await getStudentUnsolvedExercises(selectedStudentId || "");
-        const mapped: AnyTask[] = data.map((e) => ({
-          id: e.id,
-          name: `Exercise ${e.courseName} [${e.classStartTime.slice(0, 10)}]`,
-          courseName: e.courseName,
-          className: undefined,
-          completed: false,
-          type: "assignment",
-          status: e.exerciseStatus === "completed" ? "good" : "behind",
-          graded: false,
-        }));
-        setExercises(mapped);
+        if (!selectedStudentId) return;
+        const data = await getStudentUnsolvedExercises([], selectedStudentId);
+        setExercises(
+          data.map((e) => {
+            return {
+              id: e.id,
+              name:
+                e.name ||
+                e.courseName +
+                  " [" +
+                  e.classStartTime.toString().split("T")[0] +
+                  "]",
+              courseName: e.courseName,
+              status: e.exerciseStatus,
+              graded: false,
+              date: e.classStartTime,
+            };
+          }),
+        );
       } catch (e: any) {
         toast.error("Failed to fetch exercises: " + e.message);
       }
@@ -69,19 +76,8 @@ export function SpectatorPage() {
 
     async function fetchQuizzes() {
       try {
-        const data = await getQuizzes(selectedStudentId, undefined);
-        const mapped = data.map(
-          (q) =>
-            ({
-              id: q.id,
-              name: q.name,
-              courseName: q.courseName,
-              className: undefined,
-              completed: q.completed,
-              type: "quiz",
-            }) satisfies QuizTask,
-        );
-        setQuizzes(mapped);
+        const data = await getQuizzes(selectedStudentId);
+        setQuizzes(data);
       } catch (e: any) {
         toast.error("Failed to fetch quizzes: " + e.message);
       }

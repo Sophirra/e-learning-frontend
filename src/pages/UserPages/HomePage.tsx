@@ -28,7 +28,6 @@ export function HomePage() {
   );
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
-  const [loadingCourses, setLoadingCourses] = useState(false);
 
   // Unieważnianie starych odpowiedzi (race condition guard)
   const requestIdRef = useRef(0);
@@ -36,11 +35,8 @@ export function HomePage() {
   // Refetch kursów przy każdej zmianie roli
   useEffect(() => {
     const currentReqId = ++requestIdRef.current;
-
-    // natychmiast wyczyść widok po zmianie roli
     setClasses([]);
     setSelectedCourseId(null);
-    setLoadingCourses(true);
 
     const fetchClasses = async () => {
       try {
@@ -53,8 +49,6 @@ export function HomePage() {
         // brak toasta przy 204 jest obsłużony w getCourseBriefs -> zwróci []
         // pokaż błąd tylko dla faktycznych błędów
         toast.error("Failed to load courses. Please try again later.");
-      } finally {
-        if (currentReqId === requestIdRef.current) setLoadingCourses(false);
       }
     };
 

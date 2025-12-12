@@ -749,8 +749,11 @@ export async function getStudentCourses(
 
 export async function getStudentUnsolvedExercises(
   courseIds?: string[],
+  studentId?: string,
 ): Promise<ExerciseBrief[]> {
-  const studentId = getUserId();
+  if (!studentId) {
+    studentId = getUserId();
+  }
   const { data } = await Api.get(
     `/api/exercises/unsolved-by-user/${studentId}`,
     {

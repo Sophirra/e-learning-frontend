@@ -72,9 +72,7 @@ export function QuestionDetailsPopup({
       toast.error("At least one answer must be correct");
       return;
     }
-    // TODO: Wysłać zaktualizowane pytanie do backendu
     if (!questionBrief) {
-      //send post
       try {
         const output = await createQuestion(
           newContent,
@@ -186,8 +184,6 @@ export function QuestionDetailsPopup({
     if (questionBrief) {
       getQuestionDetails();
     }
-    // if (editing) {
-    // }
   }, [load]);
 
   return (
