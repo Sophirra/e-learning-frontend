@@ -19,12 +19,18 @@ import { NewTagPopup } from "@/components/complex/popups/files/newTagPopup.tsx";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label.tsx";
 
-export function EditFilePopup({ file }: { file: FileData }) {
+export function EditFilePopup({ 
+  file, 
+  onFileUpdated 
+}: { 
+  file: FileData;
+  onFileUpdated?: () => void;
+}) {
   const [load, setLoad] = useState<boolean>(false);
-  const [tags] = useState<FileTag[]>(file.tags ? file.tags : []);
+  const initialTags = file.tags ? file.tags : [];
   const [nameError, setNameError] = useState<boolean>(false);
   const [newFileName, setNewFileName] = useState<string>(file.fileName);
-  const [newTags, setNewTags] = useState<FileTag[]>(tags);
+  const [newTags, setNewTags] = useState<FileTag[]>(initialTags);
   const [open, setOpen] = useState<boolean>(false);
 
   const [availableTags, setAvailableTags] = useState<FileTag[]>([]);
@@ -37,6 +43,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
       });
       toast.success("File updated successfully");
       setOpen(false);
+      onFileUpdated?.();
     } catch (error: any) {
       toast.error("Failed to update file");
     }
@@ -44,18 +51,23 @@ export function EditFilePopup({ file }: { file: FileData }) {
 
   useEffect(() => {
     async function fetchAvailableTags() {
-      if (load) {
+      if (load || open) {
         const res = await getAvailableTags();
         setAvailableTags(res);
         setLoad(false);
+        if (open && file.tags) {
+          const fileTagIds = file.tags.map(t => t.id);
+          const syncedTags = res.filter((tag) => fileTagIds.includes(tag.id));
+          setNewTags(syncedTags);
+        }
       }
     }
     fetchAvailableTags();
-  }, [load]);
+  }, [load, open, file.tags]);
 
   function resetChanges() {
     setNewFileName(file.fileName);
-    setNewTags(tags);
+    setNewTags(initialTags);
   }
 
   return (
@@ -64,7 +76,7 @@ export function EditFilePopup({ file }: { file: FileData }) {
       onOpenChange={(open) => {
         setOpen(open);
         if (open) {
-          // setLoad(false);
+          setLoad(true);
           resetChanges();
         }
       }}
@@ -110,25 +122,27 @@ export function EditFilePopup({ file }: { file: FileData }) {
             )}
           </div>
           <div className={"flex flex-row gap-4 pt-2 items-end"}>
-            <FilterDropdown
-              placeholder={"file tags"}
-              emptyMessage={"choose file tags"}
-              label={"Available tags:"}
-              reset={false}
-              items={availableTags.map((tag) => {
-                return { name: tag.name, value: tag.id };
-              })}
-              onSelectionChange={(selectedTags) => {
-                const selectedIds = selectedTags.map((tag) => tag.value);
-                const updatedTags = availableTags.filter((tag) =>
-                  selectedIds.includes(tag.id),
-                );
-                setNewTags(updatedTags);
-                console.log("new tags:", newTags);
-              }}
-              defaultValues={tags.map((tag) => tag.id)}
-              className={"w-1/1"}
-            ></FilterDropdown>
+            {availableTags.length > 0 && (
+              <FilterDropdown
+                key={`${open}-${availableTags.length}-${newTags.map(t => t.id).sort().join(',')}`}
+                placeholder={"file tags"}
+                emptyMessage={"choose file tags"}
+                label={"Available tags:"}
+                reset={false}
+                items={availableTags.map((tag) => {
+                  return { name: tag.name, value: tag.id };
+                })}
+                onSelectionChange={(selectedTags) => {
+                  const selectedIds = selectedTags.map((tag) => tag.value);
+                  const updatedTags = availableTags.filter((tag) =>
+                    selectedIds.includes(tag.id),
+                  );
+                  setNewTags(updatedTags);
+                }}
+                defaultValues={newTags.map((tag) => tag.id)}
+                className={"w-1/1"}
+              ></FilterDropdown>
+            )}
             <div className={"w-1/1 text-right"}>
               <NewTagPopup resetLoading={() => setLoad(true)} />
             </div>

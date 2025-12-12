@@ -105,6 +105,7 @@ export interface RegisterUserDto {
   name: string;
   surname: string;
   phone: string;
+  aboutMe: string;
 }
 
 export interface LoginUserDto {

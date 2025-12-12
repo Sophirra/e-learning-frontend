@@ -12,7 +12,7 @@ export function QuizPage() {
       <Content>
         <QuizGallery enableSelect={false} />
         {user?.activeRole === "teacher" && (
-          <QuestionGallery enableSelect={true} />
+          <QuestionGallery enableSelect={false} />
         )}
       </Content>
     </div>
