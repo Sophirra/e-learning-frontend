@@ -6,8 +6,10 @@ import { addMonths } from "date-fns";
 import type {
   ApiDayAvailability,
   ClassSchedule,
+  DayAvailability,
   TimeSlot,
 } from "@/api/types.ts";
+import { cn } from "@/lib/utils.ts";
 
 type ScheduleProps = {
   startDate: Date;
@@ -15,8 +17,9 @@ type ScheduleProps = {
   endDate?: Date;
   apiDayAvailability?: ApiDayAvailability[];
   classes?: ClassSchedule[];
-  displayMode: "time" | "class";
-  onSelect: (slot: TimeSlot) => void;
+  displayMode: "time" | "class" | "add";
+  onSelect?: (slot: TimeSlot) => void;
+  updateDaySlots?: (dayState: DayAvailability) => void;
   selectedClassId?: string;
 };
 
@@ -29,6 +32,7 @@ export default function Schedule({
   classes,
   onSelect,
   selectedClassId,
+  updateDaySlots,
 }: ScheduleProps) {
   const [intervalOffset, setIntervalOffset] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
@@ -160,7 +164,7 @@ export default function Schedule({
     selectedSlot.date.toDateString() === slot.date.toDateString();
 
   const handleSlotSelect = (slot: TimeSlot) => {
-    if (isDateTooFar(slot.date)) return;
+    if (isDateTooFar(slot.date) || !onSelect) return;
     setSelectedSlot(slot);
     onSelect(slot);
   };
@@ -179,7 +183,7 @@ export default function Schedule({
     }[daysCount] || "grid-cols-1";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-fit">
       <div className="flex items-center justify-between">
         <Button
           variant="outline"
@@ -211,7 +215,7 @@ export default function Schedule({
         </Button>
       </div>
 
-      <div className={"grid " + gridCols + " gap-4"}>
+      <div className={cn("grid ", gridCols, " gap-4")}>
         {weekDays.map((date, dayIndex) => (
           <DaySchedule
             key={dayIndex}
@@ -220,6 +224,7 @@ export default function Schedule({
             isActive={!isDateTooFar(date)}
             isSelected={isSlotSelected}
             onSelect={handleSlotSelect}
+            updateDaySlots={updateDaySlots}
             displayMode={displayMode}
           />
         ))}

@@ -61,7 +61,7 @@ export function TeacherCalendar() {
 
     // Fetch availability
     const fetchAvailability = async () => {
-      const data = await getTeacherAvailability(teacherId);
+      const data = await getTeacherAvailability();
       setAvailability(data);
     };
 
@@ -69,11 +69,7 @@ export function TeacherCalendar() {
 
     // Fetch upcoming classes
     const fetchClasses = async () => {
-      const data = await getTeacherUpcomingClasses(
-        teacherId,
-        startParam,
-        endParam,
-      );
+      const data = await getTeacherUpcomingClasses(startParam, endParam);
       setAllScheduledClasses(data);
       setScheduledClasses(data);
     };

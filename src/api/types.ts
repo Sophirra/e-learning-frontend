@@ -11,16 +11,26 @@ export interface PagedResult<T> {
   pageSize: number;
 }
 
-export interface TimeSlot {
+export type TimeSlot = {
   start: number;
   end: number;
   dayIndex: number;
   date: Date;
-}
+  courseName?: string;
+  studentName?: string;
+  classId?: string;
+  defined?: boolean;
+  preSelected?: boolean;
+};
 
 export interface ApiDayAvailability {
   day: string;
   timeslots: { timeFrom: string; timeUntil: string }[];
+}
+
+export interface DayAvailability {
+  day: Date;
+  timeslots: { timeFrom: number; timeUntil: number }[];
 }
 
 export interface WeekScheduleDialogProps {
