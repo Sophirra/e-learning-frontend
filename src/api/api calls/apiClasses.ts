@@ -5,9 +5,9 @@ import type {
   FileProps,
   LinkProps,
 } from "@/api/types.ts";
-import Api, {getUserId} from "@/api/api.ts";
-import type {ErrorResponse} from "react-router-dom";
-import type {Role} from "@/features/user/user.ts";
+import Api, { getUserId } from "@/api/api.ts";
+import type { ErrorResponse } from "react-router-dom";
+import type { Role } from "@/features/user/user.ts";
 
 /**
  * Fetches all upcoming classes (within the next 14 days) for the currently
@@ -187,5 +187,27 @@ export async function removeClassLink(linkId: string) {
   else throw res.data as ErrorResponse;
 }
 
-//TODO: no idea what to send
-export async function setupClass(classDate: Date, courseId: string) {}
+export async function setupFirstClass(
+  startTime: string,
+  courseId: string,
+  languageId: string,
+  levelId: string,
+) {
+  const res = await Api.post(`/api/classes`, {
+    courseId,
+    startTime,
+    languageId,
+    levelId,
+  });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
+}
+
+export async function setupNextClass(startTime: string, courseId: string) {
+  const res = await Api.post(`/api/classes/`, {
+    courseId,
+    startTime,
+  });
+  if (res.status === 201 || res.status === 200) return;
+  else throw res.data as ErrorResponse;
+}

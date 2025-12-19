@@ -236,8 +236,10 @@ export type Course = {
 
 export type CourseVariant = {
   levelName: string;
+  levelId: string;
   price: number;
   languageName: string;
+  languageId: string;
 };
 
 export type CourseShortVersion = {

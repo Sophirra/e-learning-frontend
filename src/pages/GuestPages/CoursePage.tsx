@@ -26,6 +26,7 @@ import {
   getTeacherReviews,
 } from "@/api/api calls/apiTeacher.ts";
 import { getCourseById } from "@/api/api calls/apiCourses.ts";
+import { setupFirstClass } from "@/api/api calls/apiClasses.ts";
 
 /**
  * CoursePage component displays detailed information about a specific course.tsx
@@ -175,7 +176,7 @@ export function CoursePage() {
                         c.languageName,
                         {
                           name: c.languageName,
-                          value: c.languageName,
+                          value: c.languageId,
                         },
                       ]),
                     ).values(),
@@ -195,7 +196,7 @@ export function CoursePage() {
                         c.levelName,
                         {
                           name: c.levelName,
-                          value: c.levelName,
+                          value: c.levelId,
                         },
                       ]),
                     ).values(),
@@ -228,6 +229,21 @@ export function CoursePage() {
                   }
                   onConfirm={(slot) => {
                     console.log("Wybrany slot:", slot);
+                    if (
+                      !user ||
+                      !selectedVariant ||
+                      !selectedLanguage.length ||
+                      !selectedLevel.length
+                    )
+                      return;
+                    let classDate = slot.date;
+                    classDate.setHours(slot.start);
+                    setupFirstClass(
+                      courseId,
+                      classDate.toISOString(),
+                      selectedLanguage[0].value,
+                      selectedLevel[0].value,
+                    );
                   }}
                   classDetails={
                     selectedVariant
