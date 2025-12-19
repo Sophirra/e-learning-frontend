@@ -53,8 +53,6 @@ export function CoursePage() {
   let [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>([]);
   let [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
 
-  //TODO: wszystkie calle do oddzielnego pliku i z wykorzystaniem api.ts
-
   useEffect(() => {
     if (!teacherId) return;
 
@@ -62,10 +60,10 @@ export function CoursePage() {
       try {
         const data = await getTeacherById(teacherId);
         setTeacher(data);
-        console.log("Fetched Teacher:", data);
+        console.log("Fetched teacher:", data);
       } catch (err) {
-        console.error("Error fetching Teacher:", err);
-        toast.error("Could not load Teacher data.");
+        console.error("Error fetching teacher:", err);
+        toast.error("Could not load teacher data.");
       }
     };
 
@@ -161,8 +159,6 @@ export function CoursePage() {
                 description={course.description}
                 teacher={teacherId}
                 profilePictureUrl={course.profilePictureUrl}
-                //TODO: warianty zdecydowanie nie są opcjonalne
-                // odp: podpięte varianty
                 variants={course.variants ?? []}
               />
             )}
@@ -225,6 +221,7 @@ export function CoursePage() {
               {courseId && (
                 <WeekSchedulePopup
                   disabled={
+                    !user ||
                     selectedLanguage.length === 0 ||
                     selectedLevel.length === 0 ||
                     !selectedVariant
@@ -244,8 +241,6 @@ export function CoursePage() {
             <div className="grid grid-cols-2 gap-8 ">
               {teacherReviews?.map((review) => (
                 <OpinionTile
-                  //TODO: dodać id do review - potrzebny bo korzystamy z listy
-                  // odp: dodane
                   key={review.id}
                   authorName={
                     review.reviewerName + " " + review.reviewerSurname

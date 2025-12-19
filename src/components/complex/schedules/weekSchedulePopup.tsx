@@ -102,7 +102,7 @@ export default function WeekSchedulePopup({
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger disabled={disabled} asChild>
         <Button disabled={disabled}>Setup class</Button>
       </DialogTrigger>
       <DialogContent className="overflow-y-auto sm:max-w-6xl gap-4">
