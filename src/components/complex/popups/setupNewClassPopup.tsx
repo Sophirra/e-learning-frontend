@@ -19,25 +19,13 @@ import {
 import WeekSchedulePopup from "@/components/complex/schedules/weekSchedulePopup.tsx";
 import { getUserId } from "@/api/api.ts";
 import { toast } from "sonner";
-import { setupClass as setupClassApi } from "@/api/api calls/apiClasses.ts";
+import { setupNextClass } from "@/api/api calls/apiClasses.ts";
 import { getStudentCourses } from "@/api/api calls/apiStudents.ts";
 
 export function SetupNewClassPopup() {
   const [courses, setCourses] = useState<CourseBrief[]>([]);
 
   const [selectedCourse, setSelectedCourse] = useState<SelectableItem[]>([]);
-  // () => {
-  // if (courseId) {
-  //   const foundCourse = courses.find((c) => c.id === courseId);
-  //   console.log(foundCourse);
-  //   return foundCourse
-  //     ?
-  //   [{ value: foundCourse.id, name: foundCourse.name }]
-  // : [];
-  // }
-  // return [];
-  // }
-  // const selectedFrom: string = courseId ? "outside" : "inside";
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -47,10 +35,11 @@ export function SetupNewClassPopup() {
     fetchCourses();
   }, []);
 
-  //TODO: send the request to backend
   async function setupClass(timeslot: TimeSlot) {
     try {
-      await setupClassApi();
+      let classDate = timeslot.date;
+      classDate.setHours(timeslot.start);
+      await setupNextClass(selectedCourse[0].value, classDate.toISOString());
     } catch (e: any) {
       toast.error("Failed to setup class: " + e.message);
     }
