@@ -37,7 +37,7 @@ export function SetupNewClassPopup() {
 
   async function setupClass(timeslot: TimeSlot) {
     try {
-      let classDate = timeslot.date;
+      const classDate = timeslot.date;
       classDate.setHours(timeslot.start);
       await setupNextClass(selectedCourse[0].value, classDate.toISOString());
     } catch (e: any) {

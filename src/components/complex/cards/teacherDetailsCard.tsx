@@ -27,7 +27,7 @@ export function TeacherDetailsCard({
   image,
   name,
 }: TeacherDetailsCardProps) {
-  let week = [
+  const week = [
     "Monday",
     "Tuesday",
     "Wednesday",
@@ -36,7 +36,7 @@ export function TeacherDetailsCard({
     "Saturday",
     "Sunday",
   ];
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <Card className="bg-slate-100 rounded-lg p-6">
       <CardHeader className={"flex-col gap-4 text-left"}>

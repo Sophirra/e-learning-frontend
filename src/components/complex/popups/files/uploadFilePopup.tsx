@@ -45,12 +45,6 @@ export function UploadFilePopup({
 
     try {
       setUploading(true);
-      // toast.promise automatycznie obsługuje loading / success / error
-      // const result = await toast.promise(uploadUserFile(selectedFile), {
-      //   loading: "Uploading file...",
-      //   success: (res) => `File uploaded successfully: ${res.name}`,
-      //   error: "Upload failed. Please try again.",
-      // });
       const result = await uploadUserFile(selectedFile);
       setChosenFile && setChosenFile(result);
       setOpen(false);

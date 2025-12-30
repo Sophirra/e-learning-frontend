@@ -41,9 +41,7 @@ export function QuizDetailsPopup({
     courseName: "",
     teacherId: "11111111-1111-1111-1111-111111111111",
     studentId: "11111111-1111-1111-1111-111111111111",
-    // questions: Question[];
     isMultipleChoice: true,
-    // score: 6
     maxScore: 0,
   });
 
@@ -57,7 +55,6 @@ export function QuizDetailsPopup({
       console.log("load", load);
       if (load) {
         console.log("Loading quiz details...");
-        //TODO: odkomentować jak będzie działał backend
         const quizData = await getQuiz(quizBrief.id);
         setQuiz(quizData);
         console.log("Set quiz:", quiz);

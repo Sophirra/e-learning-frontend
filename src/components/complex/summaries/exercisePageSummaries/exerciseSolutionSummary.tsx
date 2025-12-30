@@ -26,18 +26,7 @@ export function ExerciseSolutionSummary({
           ? () => (
                 <AddSolutionFilePopup
                     exerciseId={exercise?.id ?? ""}
-                    //classId={exercise?.classId ?? ""}
                 />
-                // <Button
-              //   variant="ghost"
-              //   className="flex items-center gap-2"
-              //   onClick={() => {
-              //    <AddSolutionFilePopup
-              //   }}
-              // >
-              //   Add
-              //   <icons.Plus className="w-4 h-4" />
-              // </Button>
             )
           : undefined
       }
@@ -57,11 +46,6 @@ export function ExerciseSolutionSummary({
               >
                 <Button variant="link">{file.name}</Button>
               </a>
-              {/*<a href={file.path} target="_blank" rel="noopener noreferrer">*/}
-              {/*  <Button variant="link" className="pl-0">*/}
-              {/*    {file.name}*/}
-              {/*  </Button>*/}
-              {/*</a>*/}
               <Label className="font-light">
                 uploaded{" "}
                 {file?.uploadDate &&

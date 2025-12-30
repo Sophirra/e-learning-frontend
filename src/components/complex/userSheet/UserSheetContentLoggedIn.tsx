@@ -7,7 +7,7 @@ export function UserSheetContentLoggedIn({
 }: {
   onLogout: () => void;
 }) {
-  let { user, changeRole } = useUser();
+  const { user, changeRole } = useUser();
   if (!user) return null;
   console.log(user);
   return (

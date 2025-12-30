@@ -24,11 +24,6 @@ import type {
 import Schedule from "@/components/complex/schedules/schedule.tsx";
 import { getTeacherUpcomingClasses } from "@/api/api calls/apiClasses.ts";
 
-// type selectedSlots = {
-//   date: Date;
-//   slots: number[];
-// };
-
 export function AddAvailabilityPopup() {
   // const [slots, setSlots] = useState<selectedSlots[]>([]);
   const [classes, setClasses] = useState<ClassSchedule[]>([]);

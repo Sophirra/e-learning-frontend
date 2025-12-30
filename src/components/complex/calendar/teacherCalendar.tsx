@@ -86,7 +86,7 @@ export function TeacherCalendar() {
       return;
     }
 
-    const teacherId = getUserId(); // assuming this returns teacherId
+    const teacherId = getUserId();
     if (!teacherId) return;
 
     async function fetchExercises() {

@@ -20,7 +20,7 @@ import { getRoles } from "@/api/api.ts";
 import { acceptSpectatorInvite } from "@/api/api calls/apiSpectators.ts";
 import type {User} from "@/types.ts";
 
-let loginSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
   password: z.string(),
 });
@@ -30,8 +30,8 @@ export function UserSheetContentLogIn({
 }: {
   switchToRegister: () => void;
 }) {
-  let { setUser } = useUser();
-  let form = useForm<z.infer<typeof loginSchema>>({
+  const { setUser } = useUser();
+  const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -40,7 +40,7 @@ export function UserSheetContentLogIn({
   });
   async function onSubmit(userData: z.infer<typeof loginSchema>) {
     try {
-      const resLogin = await loginUser(userData);
+      await loginUser(userData);
       const resUser = await aboutMe();
       const resRoles = getRoles();
 
@@ -71,7 +71,6 @@ export function UserSheetContentLogIn({
         toast.error(e.message);
       }
 
-      // form.setError("root", { message: e.message });
     }
   }
 
@@ -82,27 +81,6 @@ export function UserSheetContentLogIn({
           onSubmit={form.handleSubmit(onSubmit)}
           className={"flex flex-col gap-4"}
         >
-          {/*<FormField*/}
-          {/*  name="role"*/}
-          {/*  render={({ field }) => (*/}
-          {/*    <FormItem>*/}
-          {/*      <FormLabel>Log in as:</FormLabel>*/}
-          {/*      <FormControl>*/}
-          {/*        <RadioGroup*/}
-          {/*          className={"flex flex-row"}*/}
-          {/*          onValueChange={field.onChange}*/}
-          {/*          value={field.value}*/}
-          {/*          defaultValue={"student"}*/}
-          {/*        >*/}
-          {/*          <RadioGroupItem value={"student"} id={"student"} />*/}
-          {/*          <Label htmlFor={"student"}>Student</Label>*/}
-          {/*          <RadioGroupItem value={"teacher"} id={"teacher"} />*/}
-          {/*          <Label htmlFor={"teacher"}>Teacher</Label>*/}
-          {/*        </RadioGroup>*/}
-          {/*      </FormControl>*/}
-          {/*    </FormItem>*/}
-          {/*  )}*/}
-          {/*/>*/}
           <FormField
             control={form.control}
             name="email"
@@ -136,7 +114,6 @@ export function UserSheetContentLogIn({
             <Button
               variant="default"
               type="submit"
-              //onSubmit={() => onSubmit(form.getValues())}
             >
               Log in
             </Button>

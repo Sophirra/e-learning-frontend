@@ -14,7 +14,7 @@ export function StudentTile({
   const { id, name, surname } = student;
 
   const handleSelect = () => {
-    setSelectedStudentId(selectedStudentId === id ? null : id);
+    setSelectedStudentId(selectedStudentId === id ? undefined : id);
   };
   return (
     <div

@@ -4,7 +4,6 @@ import { Divider } from "@/components/ui/divider.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Header } from "@/components/complex/bars/header.tsx";
 
-//TODO: przegadać to: po co search w headerze? Wystarczy tylko setSearch na PRZYCISK
 interface SearchBarProps {
   searchQuery?: string;
   setSearchQuery?: (val: string) => void;

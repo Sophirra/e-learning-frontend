@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { Content } from "@/components/ui/content.tsx";
-/* import Summary from "@/components/complex/summaries/summary.tsx";
-import { iconLibrary as icons } from "@/components/iconLibrary.tsx"; */
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import ClassTile, {
   type ClassTileProps,
@@ -153,17 +151,6 @@ export function StudentCalendar() {
     fetchFiles().then();
     fetchLinks().then();
   }, [selectedClassId]);
-
-  // Auto-scroll do wybranej kafelki (gdy przyszło z URL lub po kliknięciu)
-  /*useEffect(() => {
-    if (!selectedClassId) return;
-    const el = document.getElementById(`class-${selectedClassId}`);
-    if (el) {
-      requestAnimationFrame(() => {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      });
-    }
-  }, [classes, selectedClassId]);*/
 
   return (
     <Content>

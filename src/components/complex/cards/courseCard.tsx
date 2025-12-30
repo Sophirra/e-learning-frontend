@@ -59,7 +59,7 @@ export function CourseCard({
                     filled
                       ? "fill-yellow-200 text-yellow-300"
                       : halfFilled
-                        ? "fill-yellow-200 text-yellow-300/50" //TODO: ten half filled nie działa??
+                        ? "fill-yellow-200 text-yellow-300/50" 
                         : "text-gray-300"
                   }`}
                 />

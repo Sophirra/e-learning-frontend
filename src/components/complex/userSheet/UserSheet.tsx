@@ -15,9 +15,9 @@ import { MenubarItem } from "@/components/ui/menubar.tsx";
 import { logoutUser } from "@/api/auth.ts";
 
 export function UserSheet() {
-  let [state, setState] = useState<"login" | "register">("login");
-  let { user, setUser } = useUser();
-  let logout = () => {
+  const [state, setState] = useState<"login" | "register">("login");
+  const { user, setUser } = useUser();
+  const logout = () => {
     logoutUser();
     setUser(null);
     setState("login");
@@ -47,7 +47,7 @@ export function UserSheet() {
         ) : state === "register" ? (
           <UserSheetContentRegister
             onCancel={() => setState("login")}
-            onRegister={() => setState("login")} //TODO: registration logic
+            onRegister={() => setState("login")}
           />
         ) : (
           <UserSheetContentLogIn

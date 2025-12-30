@@ -78,31 +78,6 @@ export default function CourseFilter({
     };
   }, [user, userId]);
 
-  // FOR TEACHER: fetch courses for selected student
-  // FOR TEACHER: fetch students for selected course
-  /*useEffect(() => {
-        if (!userId || user?.activeRole !== "teacher") return;
-
-        const fetchRelatedData = async () => {
-            try {
-                if (selectedStudentId) {
-                    const res = await api.get(`/api/teacher/${userId}/students/${selectedStudentId}/courses`);
-                    const courseList: CourseBrief[] = (res.data ?? [])
-                        .map((c: any) => mapApiCourseToCourseBrief(c, userId))
-                        .filter((c): c is CourseBrief => !!c);
-                    setCourses(courseList);
-                } else if (selectedCourseId) {
-                    const res = await api.get(`/api/teacher/${userId}/courses/${selectedCourseId}/students`);
-                    setStudents(res.data ?? []);
-                }
-            } catch (err) {
-                console.error("Could not load related data:", err);
-            }
-        };
-
-        fetchRelatedData();
-    }, [selectedStudentId, selectedCourseId, user?.activeRole, userId]);*/
-
   // A STUDENT WAS SELECTED -> LOAD ONLY THEIR COURSES
   useEffect(() => {
     if (!userId || user?.activeRole !== "teacher") return;
@@ -177,7 +152,7 @@ export default function CourseFilter({
 
         setStudents(studentList);
 
-        // A selected student is no longer valid? Clear it.
+        // A selected student is no longer valid - clear it.
         if (
           selectedStudentId &&
           !studentList.some((s) => s.id === selectedStudentId)
@@ -274,7 +249,7 @@ export default function CourseFilter({
         </Button>
       </div>
       {setupClassButton ? (
-        <SetupNewClassPopup courseId={selectedCourseId ?? ""} />
+        <SetupNewClassPopup />
       ) : null}
     </div>
   );

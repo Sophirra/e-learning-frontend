@@ -13,7 +13,6 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 interface StudentDetailsCardProps {
   id: string;
   name: string;
-  // image?: string;
   courses: CourseBrief[];
   selectedCourseId: string | null;
   setSelectedCourseId: (courseId: string) => void;
@@ -31,11 +30,6 @@ export function StudentDetailsCard({
   return (
     <Card className="bg-slate-100 rounded-lg p-6">
       <CardHeader className={"flex-col text-left"}>
-        {/*<img*/}
-        {/*  src={image}*/}
-        {/*  alt={"profile picture"}*/}
-        {/*  className={"aspect-square text-left rounded-full"}*/}
-        {/*/>*/}
         <CardTitle className={"text-xl"}>{name}</CardTitle>
       </CardHeader>
       <CardContent className={"space-y-2 text-left"}>
@@ -76,9 +70,7 @@ export function StudentDetailsCard({
           ]
             //filter to remove null from the list
             .filter(Boolean)
-            //ignore warnings - null is filtered out
-            // @ts-ignore
-            .map(({ to, icon: Icon, label }) => {
+            .map(({ to, icon: Icon }) => {
               return (
                 <Button
                   onClick={() =>
@@ -91,7 +83,6 @@ export function StudentDetailsCard({
                   className={"text-gray-500 hover:text-gray-700 !shrink"}
                 >
                   <Icon />
-                  {/*<span className={"text-sm"}>{label}</span>*/}
                 </Button>
               );
             })}

@@ -15,7 +15,7 @@ import { SpectatorListPopup } from "@/components/complex/popups/spectators/spect
 import { AddAvailabilityPopup } from "@/components/complex/popups/addAvailabilityPopup.tsx";
 
 export function Header() {
-  let { user, changeRole } = useUser();
+  const { user, changeRole } = useUser();
   return (
     <header>
       <div className="px-26 py-6 flex justify-between items-left bg-white">

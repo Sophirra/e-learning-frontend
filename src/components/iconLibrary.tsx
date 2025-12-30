@@ -59,6 +59,7 @@ import {
   ContactRound as Spectate,
 } from "lucide-react";
 import { cn } from "@/lib/utils.ts";
+import React from "react";
 
 export let iconLibrary = {
   Plus: wrapIcon(Plus),

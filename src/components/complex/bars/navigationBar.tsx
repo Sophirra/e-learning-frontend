@@ -5,7 +5,7 @@ import { useUser } from "@/lib/user/UserContext.tsx";
 import { Header } from "@/components/complex/bars/header.tsx";
 
 export function NavigationBar() {
-  let { user } = useUser();
+  const { user } = useUser();
   return (
     <header className="fixed top-0 left-0 w-full z-50">
       <Header />
@@ -35,7 +35,7 @@ export function NavigationBar() {
             //ignore warnings - null is filtered out
             // @ts-ignore
             .map(({ to, icon: Icon, label }) => {
-              let isActive = useLocation().pathname === to;
+              const isActive = useLocation().pathname === to;
               return (
                 <Link
                   key={to}

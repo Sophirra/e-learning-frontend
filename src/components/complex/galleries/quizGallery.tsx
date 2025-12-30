@@ -18,17 +18,12 @@ export function QuizGallery({
   setSelected?: (quiz: QuizBrief) => void;
 }) {
   const { user } = useUser();
-  // const [searchQuery, setSearchQuery] = useState("");
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
   const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
 
-  // const resetFilters = () => {
-  //   setSelectedStudentId(null);
-  //   setSelectedCourseId(null);
-  // };
 
   useEffect(() => {
     fetchQuizzes();
@@ -39,7 +34,6 @@ export function QuizGallery({
       const data = await getQuizzes(
         selectedStudentId ? selectedStudentId : undefined,
         selectedCourseId ? selectedCourseId : undefined,
-        // searchQuery,
       );
       setQuizzes(data);
       console.log("set quizzes: ", data);

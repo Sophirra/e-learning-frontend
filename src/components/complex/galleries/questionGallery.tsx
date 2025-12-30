@@ -1,4 +1,3 @@
-// import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/user/UserContext.tsx";
 import {
@@ -27,7 +26,6 @@ export function QuestionGallery({
   setSelectedQuestionIds?: (questionId: string[]) => void;
 }) {
   const { user } = useUser();
-  // const navigate = useNavigate();
   const [questionCategories, setQuestionCategories] = useState<
     SelectableItem[]
   >([]);

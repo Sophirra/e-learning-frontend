@@ -20,7 +20,7 @@ export default function Summary({
   customButton: CustomButton,
   children,
 }: SummaryProps) {
-  let [open, setOpen] = useState<boolean>(true);
+  const [open, setOpen] = useState<boolean>(true);
   return (
     <div className={"flex flex-col gap-1"}>
       <div className="flex items-center justify-between gap-2">

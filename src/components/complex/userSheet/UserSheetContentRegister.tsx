@@ -47,7 +47,7 @@ export function UserSheetContentRegister({
   onCancel: () => void;
   onRegister: () => void;
 }) {
-  let form = useForm<z.infer<typeof RegistrationSchema>>({
+  const form = useForm<z.infer<typeof RegistrationSchema>>({
     resolver: zodResolver(RegistrationSchema),
     defaultValues: {
       accountType: "student",

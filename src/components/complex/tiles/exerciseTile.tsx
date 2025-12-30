@@ -16,7 +16,7 @@ export default function ExerciseTile({
   const { id, name, date, status } = exercise;
 
   const handleSelect = () => {
-    setSelectedExerciseId(id);
+    setSelectedExerciseId(id || null);
   };
 
   const getStatusIcon = () => {
