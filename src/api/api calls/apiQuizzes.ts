@@ -7,18 +7,17 @@ import type { Question, Quiz, QuizBrief, QuizSolution } from "@/types.ts";
  * @param studentId
  * @param courseId
  * @param searchQuery
+ * @param classId
  */
 export async function getQuizzes(
   studentId?: string,
   courseId?: string,
-  // multichoice?: boolean,
   searchQuery?: string,
   classId?: string,
 ): Promise<QuizBrief[]> {
   const params = new URLSearchParams();
   studentId && params.append("studentId", studentId);
   courseId && params.append("courseId", courseId);
-  // multichoice && params.append("multichoice", String(multichoice));
   searchQuery && params.append("searchQuery", searchQuery);
   classId && params.append("classId", classId);
 
@@ -46,7 +45,7 @@ export async function getQuiz(quizId: string): Promise<Quiz> {
  * @param quizId
  */
 export async function getQuizQuestions(quizId: string): Promise<Question[]> {
-  const res = await Api.get(`/api/quizzes/${quizId}/questions`); //TODO: ustawić link
+  const res = await Api.get(`/api/quizzes/${quizId}/questions`);
   return res.data;
 }
 

@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 
 import type {Role} from "@/types.ts";
 
-let api = axios.create({
+const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
@@ -82,7 +82,7 @@ async function doRefresh() {
 
 // --- Interceptors ---
 
-//adding access token to all request going through
+//adding access token to all requests going through
 api.interceptors.request.use((config) => {
     if (accessToken) {
         config.headers = config.headers ?? {};
@@ -136,8 +136,8 @@ interface JwtPayload {
 //additional method to get roles from access token
 export function getRoles() {
   if (!accessToken) return [];
-  let decoded = jwtDecode<JwtPayload>(accessToken);
-  let output: Role[] = [];
+  const decoded = jwtDecode<JwtPayload>(accessToken);
+  const output: Role[] = [];
   decoded.roles.forEach((role) => {
     output.push(role as Role);
   });

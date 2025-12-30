@@ -44,7 +44,6 @@ export const uploadUserFile = async (file: File): Promise<FileBrief> => {
  * @param filters - Optional filtering parameters.
  * @returns Promise resolving to an array of Course objects.
  */
-//TODO: modify according to backend (created based on getCourses)
 export const getFiles = async (
   filter?: FileFilter,
 ): Promise<PagedResult<FileData>> => {
@@ -86,7 +85,7 @@ export async function updateFileData(
  */
 export async function getAvailableTags(): Promise<FileTag[]> {
   const userId = getUserId();
-  const { data } = await Api.get(`/api/tags/by-user/${userId}`); //TODO?? robione na czuja
+  const { data } = await Api.get(`/api/tags/by-user/${userId}`);
   return data;
 }
 

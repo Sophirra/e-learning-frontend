@@ -24,9 +24,6 @@ import type { ErrorResponse } from "react-router-dom";
  * - `startTime`   class start date and time (converted from an ISO string to a native `Date`).
  * - `teacherId`   identifier of the teacher assigned to the course.
  *
- * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming classes.
- * If no role is found in cookies or the API returns no data, an empty array is returned.
- * @param {Role | undefined} activeRole - The current user's role, determining which endpoint to query.
  * @returns {Promise<ClassBrief[]>} A promise resolving to a list of upcoming classes.
  * @param {Role | undefined} activeRole - The current user's role, determining
  * which endpoint to query.
@@ -38,24 +35,6 @@ import type { ErrorResponse } from "react-router-dom";
  * - The API response is type-checked to handle both AxiosResponse and plain arrays.
  * - The `startTime` field is converted into a `Date` object for easier frontend handling.
  */
-// export const getCourseBriefs = async (): Promise<CourseBrief[]> => {
-//
-//   const role: Role | undefined =
-//       typeof window !== "undefined" ? readPersistedRole() : undefined;
-//
-//
-//   if (!role) {
-//     console.warn("getCourseBriefs: no active role found in cookies");
-//     return [];
-//   }
-//
-//   const url =
-//       role === "teacher"
-//           ? "/api/classes/upcoming-as-teacher"
-//           : "/api/classes/upcoming-as-student";
-//
-//   try {
-//     const resp = await Api.get<CourseBrief[]>(url);
 
 export const getClassBriefs = async (
   activeRole: Role | undefined,
@@ -133,16 +112,6 @@ export async function getStudentTimeline(
     `/api/students/${studentId}/timeline`,
     { params },
   );
-
-  return data;
-}
-
-export async function getClassBrief(classId: string): Promise<ClassBriefDto> {
-  if (!classId) {
-    return Promise.reject("No classId provided");
-  }
-
-  const { data } = await Api.get<ClassBriefDto>(`/api/classes/${classId}`);
 
   return data;
 }

@@ -58,8 +58,8 @@ export const removeSpectator = async (spectatorId: string): Promise<void> => {
  * - **403 Forbidden**   the user is not a student.
  * - **404 Not Found**   spectator not found or relationship already exists.
  *
- * @param {string} spectatorId - The unique identifier (GUID) of the spectator to be added.
  * @returns {Promise<void>} Resolves when the spectator is successfully added.
+ * @param spectatorEmail
  */
 export const apiSpectators = async (spectatorEmail: string): Promise<void> => {
   await Api.post("/api/spectators", { spectatorEmail });

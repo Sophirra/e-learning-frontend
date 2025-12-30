@@ -73,7 +73,6 @@ export const getTeacherReviews = async (
  * Fetches the weekly or daily availability of a teacher
  * by their unique identifier.
  *
- * @param teacherId - The unique identifier of the teacher.
  * @returns Promise resolving to an array of TeacherAvailability objects.
  */
 export const getTeacherAvailability = async (): Promise<
@@ -83,23 +82,8 @@ export const getTeacherAvailability = async (): Promise<
   const { data } = await Api.get<TeacherAvailability[]>(
     `/api/teacher/${teacherId}/availability`,
   );
-
-  /*const mapped: ApiDayAvailability[] = res.data.map((day) => ({
-    day: day.day,
-    timeslots: day.timeslots.map((slot) => ({
-      timeFrom: slot.timeFrom.slice(0, 5),
-      timeUntil: slot.timeUntil.slice(0, 5),
-    })),
-  }));*/
-
   return data ?? [];
 };
-
-//   } catch (err) {
-//     console.error("getCourseBriefs: error fetching data", err);
-//     return [];
-//   }
-// };
 
 /**
  * Fetches all classes taught by the currently authenticated teacher (taken from JWT),

@@ -72,8 +72,8 @@ export const getCourseLanguages = async (): Promise<string[]> => {
  */
 
 export const getCourses = async (filters?: {
-  pageSize: any;
-  pageNumber: any;
+  pageSize: number;
+  pageNumber: number;
   categories?: string[];
   levels?: string[];
   languages?: string[];

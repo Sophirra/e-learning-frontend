@@ -4,12 +4,10 @@ import type { ErrorResponse } from "react-router-dom";
 
 export const uploadExerciseSolution = async (
   exerciseId: string,
-  // classId: string,
   file: File,
 ): Promise<FileBrief> => {
   const formData = new FormData();
   formData.append("file", file);
-  // formData.append("classId", classId);
 
   const response = await Api.post(
     `/api/exercises/${exerciseId}/solution`,
@@ -31,7 +29,7 @@ export const uploadExerciseSolution = async (
  * @param grade
  * @param comments
  */
-export async function addExerciseGrade( //TODO: check
+export async function addExerciseGrade(
   assignmentId: string,
   grade: number,
   comments?: string,
@@ -50,7 +48,8 @@ export async function getStudentUnsolvedExercises(
   studentId?: string,
 ): Promise<ExerciseBrief[]> {
   if (!studentId) {
-    studentId = getUserId();
+    studentId = getUserId() || undefined;
+    if(!studentId) throw ("No student id found")
   }
   const { data } = await Api.get(
     `/api/exercises/unsolved-by-user/${studentId}`,
