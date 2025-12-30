@@ -22,11 +22,11 @@ import {
 // === PRZEDZIAŁY CENOWE ===
 const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
   { label: "Free (0 $/h)", from: 0, to: 0 },
-  { label: "1 20 $/h", from: 1, to: 20 },
-  { label: "21 40 $/h", from: 21, to: 40 },
-  { label: "41 60 $/h", from: 41, to: 60 },
-  { label: "61 80 $/h", from: 61, to: 80 },
-  { label: "81 100 $/h", from: 81, to: 100 },
+  { label: "1 - 20 $/h", from: 1, to: 20 },
+  { label: "21 - 40 $/h", from: 21, to: 40 },
+  { label: "41 - 60 $/h", from: 41, to: 60 },
+  { label: "61 - 80 $/h", from: 61, to: 80 },
+  { label: "81 - 100 $/h", from: 81, to: 100 },
   { label: "101+ $/h", from: 101 }, // brak górnego limitu
 ];
 
@@ -74,34 +74,6 @@ function MainPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredCourses, setFilteredCourses] = useState<CourseWidget[]>([]);
 
-  /*useEffect(() => {
-          if (!courses.length) {
-            setFilteredCourses([]);
-            return;
-          }
-
-          const fuse = new Fuse(courses, {
-            keys: [
-              "name",
-              "description",
-              "levelVariants",
-              "languageVariants",
-              "teacherName",
-              "teacherSurname",
-            ],
-            threshold: 0.3, // dopasowanie fuzzy
-          });
-
-          if (searchQuery.trim() === "") {
-            setFilteredCourses(courses);
-          } else {
-            const results = fuse.search(searchQuery);
-            setFilteredCourses(results.map(r => r.item));
-          }
-        }, [searchQuery, courses]);*/
-
-  //TODO: opisać do czego to służy i dlaczego są dwa
-  // przy starcie (opcjonalnie)
   useEffect(() => {
     fetchCourses({ query: searchQuery });
   }, [searchQuery]);

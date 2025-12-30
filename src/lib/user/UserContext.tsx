@@ -7,7 +7,7 @@
  * @module UserContext
  */
 
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { aboutMe } from "@/api/auth.ts";
 import { getRoles } from "@/api/api.ts";
 import {clearPersistedRole, persistRole, readPersistedRole} from "@/lib/user/RolePersistence.ts";
@@ -29,12 +29,12 @@ interface UserContextType {
  * React context for managing user state
  * @type {React.Context<UserContextType | undefined>}
  */
-const UserContext = createContext<UserContextType | undefined>(undefined);
+const UserContext: React.Context<UserContextType | undefined> = createContext<UserContextType | undefined>(undefined);
 
 /**
  * Hook to access the user context
  * @returns {UserContextType} The user context value
- * @throws {Error} When used outside of UserProvider
+ * @throws {Error} When used outside UserProvider
  */
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
@@ -93,8 +93,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   function changeRole(role: Role) {
     setUser((prev) => {
       if (!prev) return prev;
-      if (prev.activeRole === role) return prev; // no-op
-      // opcjonalnie: upewnij się, że rola należy do użytkownika
+      if (prev.activeRole === role) return prev;
       if (!prev.roles.includes(role)) return prev;
       const updated = { ...prev, activeRole: role };
       persistRole(role);

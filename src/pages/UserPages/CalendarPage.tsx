@@ -5,7 +5,7 @@ import { TeacherCalendar } from "@/components/complex/calendar/teacherCalendar.t
 import ErrorPage from "@/pages/ErrorPage.tsx";
 
 export function CalendarPage() {
-  let { user } = useUser();
+  const { user } = useUser();
 
   return (
     <div className="bg-white h-screen">

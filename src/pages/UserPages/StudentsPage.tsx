@@ -7,7 +7,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentDetailsCard } from "@/components/complex/cards/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type { ClassBrief, CourseBrief, Student } from "@/types.ts";
+import type {ClassBrief, CourseBrief, ExerciseBrief, Quiz, Student} from "@/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
@@ -37,20 +37,14 @@ export function StudentsPage() {
     null,
   );
   const [studentBrief, setStudentBrief] = useState<Student>();
-  //courses for specific student from current teacher (user)
+  //courses for a specific student from current teacher (user)
   const [courses, setCourses] = useState<CourseBrief[]>([]);
-  const [assignments, setAssignments] = useState<AssignmentTask[]>([]);
-  const [quizzes, setQuizzes] = useState<QuizTask[]>([]);
+  const [assignments, setAssignments] = useState<ExerciseBrief[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [upcomingClasses, setUpcomingClasses] = useState<ClassBrief[]>([]);
 
   /** The course.tsx identifier extracted from the URL parameters */
   let { courseId } = useParams();
-  /** To be downloaded from backend*/
-  // let [course, setCourse] = useState<Course>(sampleCourse);
-  /** Using string array because filter dropdown is universal*/
-
-  //TODO: get student data to display in student card. Can be here or in StudentCard component.
-
   useEffect(() => {
     selectedStudentId && fetchStudent(selectedStudentId);
     if (upcomingClasses.length === 0) {
@@ -98,7 +92,7 @@ export function StudentsPage() {
     try {
       const data = await getStudentData(studentId);
       setStudentBrief(data);
-      let coursesData = await getStudentCoursesWithSpecificTeacher(studentId);
+      const coursesData = await getStudentCoursesWithSpecificTeacher(studentId);
       setCourses(coursesData);
       console.log("Fetched student:", data, data.courses);
       // data = await getStudentCourses(studentId);

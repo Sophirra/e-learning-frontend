@@ -50,7 +50,7 @@ export function CoursePage() {
   const [teacherAvailability, setTeacherAvailability] = useState<
     TeacherAvailability[] | null
   >(null);
-  /** Using string array because filter dropdown is universal*/
+  /** Using a string array because filter dropdown is universal*/
   const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>([]);
   const [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
 

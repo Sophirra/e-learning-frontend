@@ -13,9 +13,6 @@ import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import type { Exercise } from "@/types.ts";
 import { getExercises } from "@/api/api calls/apiExercises.ts";
 
-export type Role = "teacher" | "student";
-export type Mode = "view" | "edit";
-
 export function ExercisePage() {
   const { user } = useUser();
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
@@ -62,7 +59,6 @@ export function ExercisePage() {
           setupClassButton={false}
         />
         <div className="flex flex-row gap-8 p-4">
-          {/*overflow-y-auto">*/}
           <div className="w-1/4 sticky top-0 self-start h-fit space-y-2">
             {exercises === null ||
             exercises === undefined ||

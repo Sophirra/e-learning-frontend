@@ -20,7 +20,7 @@ import SpectatorAcceptPage from "@/components/complex/popups/spectators/spectato
 import { SpectatorPage } from "@/pages/UserPages/SpectatorPage.tsx";
 
 function ProtectedRoute() {
-  let { loading, user } = useUser();
+  const { loading, user } = useUser();
   if (loading) {
     return <div>Loading...</div>;
   }
