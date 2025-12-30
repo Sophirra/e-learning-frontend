@@ -1,5 +1,5 @@
 import Api from "@/api/api.ts";
-import type { Course, CourseWidget, PagedResult } from "@/api/types.ts";
+import type { Course, CourseWidget, PagedResult } from "@/types.ts";
 
 /**
  * Fetches detailed course data by courseID.

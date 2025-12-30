@@ -1,4 +1,4 @@
-import type { Answer, Question, QuestionCategory } from "@/api/types.ts";
+import type { Answer, Question, QuestionCategory } from "@/types.ts";
 import Api from "@/api/api.ts";
 import type {ErrorResponse} from "react-router-dom";
 

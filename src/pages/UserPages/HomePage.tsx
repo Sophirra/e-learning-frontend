@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
-import { NavigationBar } from "@/components/complex/navigationBar.tsx";
-import type { ClassBrief, Exercise, QuizBrief } from "@/api/types.ts";
+import { useUser } from "@/lib/user/UserContext.tsx";
+import { NavigationBar } from "@/components/complex/bars/navigationBar.tsx";
+import type { ClassBrief, Exercise, QuizBrief } from "@/types.ts";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";

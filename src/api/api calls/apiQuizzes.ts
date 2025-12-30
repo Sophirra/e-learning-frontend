@@ -1,6 +1,6 @@
 import Api from "@/api/api.ts";
 import type {ErrorResponse} from "react-router-dom";
-import type { Question, Quiz, QuizBrief, QuizSolution } from "@/api/types.ts";
+import type { Question, Quiz, QuizBrief, QuizSolution } from "@/types.ts";
 
 /**
  * Gets all teacher/student quizzes to display in the gallery

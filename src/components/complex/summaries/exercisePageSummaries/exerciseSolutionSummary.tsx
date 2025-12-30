@@ -2,8 +2,8 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
-import type { Exercise } from "@/api/types.ts";
+import { useUser } from "@/lib/user/UserContext.tsx";
+import type { Exercise } from "@/types.ts";
 import {AddSolutionFilePopup} from "@/components/complex/popups/files/addSolutionFilePopup.tsx";
 
 export function ExerciseSolutionSummary({

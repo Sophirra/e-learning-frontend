@@ -8,7 +8,7 @@ import type {
     Teacher,
     TeacherAvailability,
     TeacherReview,
-} from "@/api/types.ts";
+} from "@/types.ts";
 import {mapApiCourseToCourseBrief,} from "@/mappers/courseMappers.ts";
 import type {ErrorResponse} from "react-router-dom";
 

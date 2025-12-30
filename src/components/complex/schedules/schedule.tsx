@@ -8,7 +8,7 @@ import type {
   ClassSchedule,
   DayAvailability,
   TimeSlot,
-} from "@/api/types.ts";
+} from "@/types.ts";
 import { cn } from "@/lib/utils.ts";
 
 type ScheduleProps = {

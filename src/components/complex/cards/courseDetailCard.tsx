@@ -1,11 +1,11 @@
-import type { Course } from "@/api/types.ts";
+import type { Course } from "@/types.ts";
 import {
   Card,
   CardContent,
   CardDescription,
   CardTitle,
 } from "@/components/ui/card.tsx";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 export function CourseDetailCard({ description, name, profilePictureUrl }: Course) {

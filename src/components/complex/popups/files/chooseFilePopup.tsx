@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { FileGallery } from "@/components/complex/galleries/fileGallery.tsx";
 import { useState } from "react";
-import type { FileBrief } from "@/api/types.ts";
+import type { FileBrief } from "@/types.ts";
 
 export function ChooseFilePopup({
   setChosenFile,

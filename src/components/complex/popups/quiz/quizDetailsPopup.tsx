@@ -11,8 +11,8 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { useEffect, useState } from "react";
-import { useUser } from "@/features/user/UserContext.tsx";
-import type { Quiz, QuizBrief } from "@/api/types.ts";
+import { useUser } from "@/lib/user/UserContext.tsx";
+import type { Quiz, QuizBrief } from "@/types.ts";
 import { getTeacherById } from "@/api/api calls/apiTeacher.ts";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";

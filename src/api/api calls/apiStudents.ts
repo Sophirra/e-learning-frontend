@@ -1,4 +1,4 @@
-import type {CourseBrief, Quiz, Student} from "@/api/types.ts";
+import type {CourseBrief, Quiz, Student} from "@/types.ts";
 import Api, { getUserId } from "@/api/api.ts";
 import {
   mapApiCourseToCourseBrief,

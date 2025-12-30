@@ -1,6 +1,7 @@
 
 import Cookies from "js-cookie";
-import type { Role } from "@/features/user/user.ts";
+
+import type {Role} from "@/types.ts";
 
 const COOKIE_KEY = "activeRole";
 

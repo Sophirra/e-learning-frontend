@@ -1,6 +1,7 @@
 import axios, {type AxiosError, type AxiosRequestConfig} from "axios";
 import { jwtDecode } from "jwt-decode";
-import type { Role } from "@/features/user/user.ts";
+
+import type {Role} from "@/types.ts";
 
 let api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

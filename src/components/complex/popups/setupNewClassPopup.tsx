@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type { CourseBrief, TimeSlot } from "@/api/types.ts";
+import type { CourseBrief, TimeSlot } from "@/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useEffect, useState } from "react";
 import {

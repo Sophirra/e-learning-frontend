@@ -5,7 +5,7 @@ import type {
   FileOwner,
   FileTag,
   PagedResult,
-} from "@/api/types.ts";
+} from "@/types.ts";
 import Api, {getUserId} from "@/api/api.ts";
 import type {ErrorResponse} from "react-router-dom";
 

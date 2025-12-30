@@ -4,8 +4,8 @@ import type {
   LoginUserDto,
   AuthResponse,
   aboutUser,
-} from "./types";
-import {clearPersistedRole} from "@/features/user/RolePersistence.ts";
+} from "../types.ts";
+import {clearPersistedRole} from "@/lib/user/RolePersistence.ts";
 
 
 export let registerUser = async (userData: RegisterUserDto): Promise<void> => {

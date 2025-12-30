@@ -7,12 +7,11 @@
  * @module UserContext
  */
 
-import type { Role, User } from "@/features/user/user.ts";
 import { createContext, useContext, useEffect, useState } from "react";
 import { aboutMe } from "@/api/auth.ts";
 import { getRoles } from "@/api/api.ts";
-import Cookies from "js-cookie";
-import {clearPersistedRole, persistRole} from "@/features/user/RolePersistence.ts";
+import {clearPersistedRole, persistRole, readPersistedRole} from "@/lib/user/RolePersistence.ts";
+import type {Role, User} from "@/types.ts";
 /**
  * Interface for the user context value
  * @interface UserContextType
@@ -30,15 +29,15 @@ interface UserContextType {
  * React context for managing user state
  * @type {React.Context<UserContextType | undefined>}
  */
-let UserContext = createContext<UserContextType | undefined>(undefined);
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 /**
  * Hook to access the user context
  * @returns {UserContextType} The user context value
  * @throws {Error} When used outside of UserProvider
  */
-export let useUser = (): UserContextType => {
-  let context = useContext(UserContext);
+export const useUser = (): UserContextType => {
+  const context = useContext(UserContext);
   if (!context) {
     throw new Error("useUser must be used within a UserProvider");
   }
@@ -46,20 +45,15 @@ export let useUser = (): UserContextType => {
 };
 
 
-const readPersistedRole = (): Role | undefined => {
-  const r = Cookies.get("activeRole");
-  return r as Role | undefined;
-};
-
 /**
  * Provider component for the user context
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Child components to wrap with the provider
  * @returns {JSX.Element} Provider component with children
  */
-export let UserProvider = ({ children }: { children: React.ReactNode }) => {
-  let [user, setUser] = useState<User | null>(null);
-  let [loading, setLoading] = useState<boolean>(true);
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   //effect for retaining session
   // - get user info from about me and roles from access token

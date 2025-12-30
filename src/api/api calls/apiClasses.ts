@@ -3,11 +3,10 @@ import type {
   ClassBriefDto,
   ClassSchedule,
   FileProps,
-  LinkProps,
-} from "@/api/types.ts";
+  LinkProps, Role,
+} from "@/types.ts";
 import Api, { getUserId } from "@/api/api.ts";
 import type { ErrorResponse } from "react-router-dom";
-import type { Role } from "@/features/user/user.ts";
 
 /**
  * Fetches all upcoming classes (within the next 14 days) for the currently

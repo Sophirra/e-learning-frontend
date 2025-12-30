@@ -1,8 +1,8 @@
-import { Button } from "../ui/button.tsx";
+import { Button } from "../../ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { Divider } from "@/components/ui/divider.tsx";
 import { Input } from "@/components/ui/input.tsx";
-import { Header } from "@/components/complex/header.tsx";
+import { Header } from "@/components/complex/bars/header.tsx";
 
 //TODO: przegadać to: po co search w headerze? Wystarczy tylko setSearch na PRZYCISK
 interface SearchBarProps {
@@ -16,7 +16,7 @@ export function SearchBar({ searchQuery, setSearchQuery }: SearchBarProps) {
       <div className="flex items-center justify-between py-6 px-26 bg-slate-200">
         <div className="flex gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <a href="/">
+            <a href="/public">
               <icons.House />
             </a>
           </Button>

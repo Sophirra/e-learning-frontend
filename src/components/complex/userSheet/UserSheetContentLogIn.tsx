@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/form.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUser, aboutMe } from "@/api/auth.ts";
-import { useUser } from "@/features/user/UserContext.tsx";
-import type { User } from "@/features/user/user.ts";
+import { useUser } from "@/lib/user/UserContext.tsx";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 
 import { getRoles } from "@/api/api.ts";
 import { acceptSpectatorInvite } from "@/api/api calls/apiSpectators.ts";
+import type {User} from "@/types.ts";
 
 let loginSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),

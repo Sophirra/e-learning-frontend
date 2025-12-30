@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import type { FileData } from "@/api/types.ts";
+import type { FileData } from "@/types.ts";
 
 interface DownloadButtonProps {
     file: FileData;

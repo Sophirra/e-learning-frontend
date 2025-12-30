@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
-import type { Exercise } from "@/api/types.ts";
+import { useUser } from "@/lib/user/UserContext.tsx";
+import type { Exercise } from "@/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";

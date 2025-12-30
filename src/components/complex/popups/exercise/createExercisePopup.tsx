@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label.tsx";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { useState } from "react";
 import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
-import type { Exercise, FileBrief } from "@/api/types.ts";
+import type { Exercise, FileBrief } from "@/types.ts";
 import { toast } from "sonner";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import {
@@ -119,8 +119,8 @@ export function CreateExercisePopup({
           <DialogTitle>
             {edit
               ? selectedExercise
-                ? "Create new exercise"
-                : "Edit exercise"
+                ? "Edit exercise"
+                    : "Create new exercise"
               : "Exercise details"}
           </DialogTitle>
           <DialogDescription>

@@ -1,4 +1,4 @@
-import type { Exercise, ExerciseBrief, FileBrief } from "@/api/types.ts";
+import type { Exercise, ExerciseBrief, FileBrief } from "@/types.ts";
 import Api, { getUserId } from "@/api/api.ts";
 import type { ErrorResponse } from "react-router-dom";
 

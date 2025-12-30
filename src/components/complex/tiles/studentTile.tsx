@@ -1,4 +1,4 @@
-import type { StudentBrief } from "@/api/types.ts";
+import type { StudentBrief } from "@/types.ts";
 
 type StudentTileProps = {
   student: StudentBrief;

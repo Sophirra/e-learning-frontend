@@ -1,4 +1,4 @@
-import { Header } from "@/components/complex/header.tsx";
+import { Header } from "@/components/complex/bars/header.tsx";
 import { Content } from "@/components/ui/content.tsx";
 import { Button } from "@/components/ui/button.tsx";
 

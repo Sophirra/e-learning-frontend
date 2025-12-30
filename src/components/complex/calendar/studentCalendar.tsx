@@ -12,7 +12,7 @@ import { getUserId } from "@/api/api.ts";
 import { FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
 import { useSearchParams } from "react-router-dom";
 import { QuizSummary } from "@/components/complex/summaries/quizSummary.tsx";
-import type { Exercise, FileProps, LinkProps, QuizBrief } from "@/api/types.ts";
+import type { Exercise, FileProps, LinkProps, QuizBrief } from "@/types.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import { getClassFiles, getClassLinks } from "@/api/api calls/apiClasses.ts";
 import { getClassExercises } from "@/api/api calls/apiExercises.ts";

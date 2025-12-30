@@ -12,7 +12,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { useState } from "react";
-import type { FileData } from "@/api/types.ts";
+import type { FileData } from "@/types.ts";
 
 export function AddFilePopup(classId?: string) {
   const [chosenFile, setChosenFile] = useState<FileData | null>(null);

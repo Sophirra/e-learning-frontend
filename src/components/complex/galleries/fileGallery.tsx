@@ -16,7 +16,7 @@ import {
   FilterDropdown,
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
-import type { FileBrief, FileData, FileFilter } from "@/api/types.ts";
+import type { FileBrief, FileData, FileFilter } from "@/types.ts";
 import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { formatDate } from "date-fns";
 import { EditFilePopup } from "@/components/complex/popups/files/editFilePopup.tsx";

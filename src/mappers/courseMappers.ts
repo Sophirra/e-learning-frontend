@@ -1,5 +1,5 @@
 // src/utils/mappers/courseMappers.ts
-import type { CourseBrief } from "@/api/types.tsx";
+import type { CourseBrief } from "@/types.ts";
 
 export function toDateOrNow(value: unknown): Date {
   try {

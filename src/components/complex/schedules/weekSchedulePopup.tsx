@@ -16,7 +16,7 @@ import type {
   ApiDayAvailability,
   TimeSlot,
   WeekScheduleDialogProps,
-} from "@/api/types.ts";
+} from "@/types.ts";
 import { ClassPaymentPopup } from "@/components/complex/popups/classPaymentPopup.tsx";
 
 export default function WeekSchedulePopup({

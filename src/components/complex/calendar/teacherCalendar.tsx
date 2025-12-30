@@ -12,7 +12,7 @@ import type {
   LinkProps,
   QuizBrief,
   TimeSlot,
-} from "@/api/types.ts";
+} from "@/types.ts";
 import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
@@ -189,7 +189,7 @@ export function TeacherCalendar() {
         resetExternal={resetFilters}
       />
       <div className="flex flex-row gap-8 p-4">
-        <div className="w-3/5 sticky top-0 self-start h-fit space-y-2">
+        <div className="w-1/2 sticky top-0 self-start h-fit space-y-2">
           <Schedule
             daysCount={3}
             startDate={new Date()}
@@ -200,7 +200,7 @@ export function TeacherCalendar() {
             selectedClassId={selectedClassId ?? undefined}
           />
         </div>
-        <div className="w-2/5 space-y-8">
+        <div className="w-1/2 space-y-8">
           <LinksSummary
             links={links}
             student={false}

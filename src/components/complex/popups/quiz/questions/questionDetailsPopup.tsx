@@ -10,8 +10,8 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { useEffect, useState } from "react";
-import { useUser } from "@/features/user/UserContext.tsx";
-import type { Answer, Question, QuestionCategory } from "@/api/types.ts";
+import { useUser } from "@/lib/user/UserContext.tsx";
+import type { Answer, Question, QuestionCategory } from "@/types.ts";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";

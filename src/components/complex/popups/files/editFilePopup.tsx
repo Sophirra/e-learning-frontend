@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { useEffect, useState } from "react";
-import type { FileData, FileTag } from "@/api/types.ts";
+import type { FileData, FileTag } from "@/types.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";

@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { icons } from "lucide-react";
 import { AddFilePopup } from "@/components/complex/popups/files/addFilePopup.tsx";
-import type { FileProps } from "@/api/types.ts";
+import type { FileProps } from "@/types.ts";
 
 export function FilesSummary({
   classId,

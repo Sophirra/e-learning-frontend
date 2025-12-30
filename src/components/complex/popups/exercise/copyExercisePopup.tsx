@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ExerciseGallery } from "@/components/complex/galleries/exerciseGallery.tsx";
-import type { Exercise } from "@/api/types.ts";
+import type { Exercise } from "@/types.ts";
 import { copyExercise as copyExerciseApi } from "@/api/api calls/apiExercises.ts";
 
 export function CopyExercisePopup({

@@ -7,19 +7,19 @@ import {
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
 import { Content } from "@/components/ui/content.tsx";
-import { TeacherDetailsCard } from "@/components/complex/teacherDetailsCard.tsx";
+import { TeacherDetailsCard } from "@/components/complex/cards/teacherDetailsCard.tsx";
 import type {
   Course,
   Teacher,
   TeacherAvailability,
   TeacherReview,
-} from "@/api/types.ts";
-import { CourseDetailCard } from "@/features/course/courseDetailCard.tsx";
+} from "@/types.ts";
+import { CourseDetailCard } from "@/components/complex/cards/courseDetailCard.tsx";
 import WeekSchedulePopup from "@/components/complex/schedules/weekSchedulePopup.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
 import { toast } from "sonner";
 import OpinionTile from "@/components/complex/tiles/opinionTile.tsx";
-import { SearchBar } from "@/components/complex/searchBar.tsx";
+import { SearchBar } from "@/components/complex/bars/searchBar.tsx";
 import {
   getTeacherAvailabilityByCourseId,
   getTeacherById,
@@ -29,17 +29,17 @@ import { getCourseById } from "@/api/api calls/apiCourses.ts";
 import { setupFirstClass } from "@/api/api calls/apiClasses.ts";
 
 /**
- * CoursePage component displays detailed information about a specific course.tsx
- * and allows switching between class setup and course.tsx details views.
+ * CoursePage component displays detailed information about a specific course
+ * and allows switching between class setup and course details views.
  * It includes filtering options for language, level, and price,
- * as well as a detailed card showing course.tsx information.
+ * as well as a detailed card showing course information.
  */
 
 export function CoursePage() {
   const location = useLocation();
   const { teacherId } = location.state || {};
 
-  let { user } = useUser();
+  const { user } = useUser();
   const { courseId } = useParams();
   /** To be downloaded from backend*/
   const [course, setCourse] = useState<Course | null>(null);
@@ -51,8 +51,8 @@ export function CoursePage() {
     TeacherAvailability[] | null
   >(null);
   /** Using string array because filter dropdown is universal*/
-  let [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>([]);
-  let [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>([]);
+  const [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
 
   useEffect(() => {
     if (!teacherId) return;
@@ -125,8 +125,8 @@ export function CoursePage() {
   const selectedVariant =
     course?.variants.find(
       (v) =>
-        v.languageName === selectedLanguage[0]?.value &&
-        v.levelName === selectedLevel[0]?.value,
+        v.languageId === selectedLanguage[0]?.value &&
+        v.levelId === selectedLevel[0]?.value,
     ) ?? null;
 
   return (
@@ -236,7 +236,7 @@ export function CoursePage() {
                       !selectedLevel.length
                     )
                       return;
-                    let classDate = slot.date;
+                    const classDate = slot.date;
                     classDate.setHours(slot.start);
                     setupFirstClass(
                       courseId,
@@ -247,7 +247,7 @@ export function CoursePage() {
                   }}
                   classDetails={
                     selectedVariant
-                      ? `${selectedLevel[0].value ?? ""} ${course?.name ?? ""} class in ${selectedLanguage[0].value ?? ""}`
+                      ? `${selectedLevel[0].name ?? ""} ${course?.name ?? ""} class in ${selectedLanguage[0].name ?? ""}`
                       : undefined
                   }
                   courseId={courseId}

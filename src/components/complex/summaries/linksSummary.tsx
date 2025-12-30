@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Link } from "react-router-dom";
 import { AddLinkPopup } from "@/components/complex/popups/addLinkPopup.tsx";
-import type { LinkProps } from "@/api/types.ts";
+import type { LinkProps } from "@/types.ts";
 
 export function LinksSummary({
   links,

@@ -3,7 +3,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { AddExercisePopup } from "@/components/complex/popups/exercise/addExercisePopup.tsx";
-import type { Exercise } from "@/api/types.ts";
+import type { Exercise } from "@/types.ts";
 import { CreateExercisePopup } from "@/components/complex/popups/exercise/createExercisePopup.tsx";
 
 export function ExerciseSummary({

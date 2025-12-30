@@ -1,11 +1,11 @@
 // import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useUser } from "@/features/user/UserContext.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
 import {
   FilterDropdown,
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
-import type { Question } from "@/api/types.ts";
+import type { Question } from "@/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuestionDetailsPopup } from "@/components/complex/popups/quiz/questions/questionDetailsPopup.tsx";

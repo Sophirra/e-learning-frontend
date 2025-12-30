@@ -20,7 +20,7 @@ import type {
   ApiDayAvailability,
   ClassSchedule,
   DayAvailability,
-} from "@/api/types.ts";
+} from "@/types.ts";
 import Schedule from "@/components/complex/schedules/schedule.tsx";
 import { getTeacherUpcomingClasses } from "@/api/api calls/apiClasses.ts";
 

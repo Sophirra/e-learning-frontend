@@ -1,5 +1,5 @@
 import { Content } from "@/components/ui/content.tsx";
-import { NavigationBar } from "@/components/complex/navigationBar.tsx";
+import { NavigationBar } from "@/components/complex/bars/navigationBar.tsx";
 
 export function ChatsPage() {
   return (

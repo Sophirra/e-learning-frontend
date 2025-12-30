@@ -1,6 +1,6 @@
 import Api, { getUserId } from "@/api/api.ts";
 import type { Spectator } from "@/components/complex/popups/spectators/spectatorListPopup.tsx";
-import type { StudentBrief } from "@/api/types.ts";
+import type { StudentBrief } from "@/types.ts";
 
 /**
  * Fetches all spectators for the currently authenticated student from the API.

@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button.tsx";
-import type { CourseBrief, StudentBrief } from "@/api/types.tsx";
+import type { CourseBrief, StudentBrief } from "@/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
 import { SetupNewClassPopup } from "@/components/complex/popups/setupNewClassPopup.tsx";
 import { useEffect, useRef, useState } from "react";
 import { getUserId } from "@/api/api.ts";
-import { useUser } from "@/features/user/UserContext.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
 import {
   getTeacherCourses,
   getTeacherStudents,

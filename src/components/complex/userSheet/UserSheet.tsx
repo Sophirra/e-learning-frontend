@@ -5,12 +5,12 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "../../../components/ui/sheet.tsx";
+} from "../../ui/sheet.tsx";
 import { useState } from "react";
-import { UserSheetContentLogIn } from "@/features/user/UserSheet/UserSheetContentLogIn.tsx";
-import { UserSheetContentLoggedIn } from "@/features/user/UserSheet/UserSheetContentLoggedIn.tsx";
-import { UserSheetContentRegister } from "@/features/user/UserSheet/UserSheetContentRegister.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
+import { UserSheetContentLogIn } from "@/components/complex/userSheet/UserSheetContentLogIn.tsx";
+import { UserSheetContentLoggedIn } from "@/components/complex/userSheet/UserSheetContentLoggedIn.tsx";
+import { UserSheetContentRegister } from "@/components/complex/userSheet/UserSheetContentRegister.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
 import { MenubarItem } from "@/components/ui/menubar.tsx";
 import { logoutUser } from "@/api/auth.ts";
 

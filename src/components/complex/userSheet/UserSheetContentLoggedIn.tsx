@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
 import { Link } from "react-router-dom";
 
 export function UserSheetContentLoggedIn({

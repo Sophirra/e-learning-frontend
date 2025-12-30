@@ -1,8 +1,8 @@
-import { Button } from "../ui/button.tsx";
+import { Button } from "../../ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { Divider } from "@/components/ui/divider.tsx";
-import { UserSheet } from "@/features/user/UserSheet/UserSheet.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
+import { UserSheet } from "@/components/complex/userSheet/UserSheet.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
 import {
   Menubar,
   MenubarContent,

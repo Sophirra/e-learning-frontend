@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import type { FileData } from "@/api/types.ts";
+import type { FileData } from "@/types.ts";
 import { toast } from "sonner";
 import { deleteFile } from "@/api/api calls/apiFiles.ts";
 

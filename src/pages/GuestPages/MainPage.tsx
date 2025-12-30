@@ -6,11 +6,11 @@ import {
 } from "@/components/complex/filterDropdown.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { CourseCard } from "@/features/course/courseCard.tsx";
+import { CourseCard } from "@/components/complex/cards/courseCard.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import type { CourseWidget, PagedResult } from "@/api/types.ts";
-import { SearchBar } from "@/components/complex/searchBar.tsx";
+import type { CourseWidget, PagedResult } from "@/types.ts";
+import { SearchBar } from "@/components/complex/bars/searchBar.tsx";
 import { toast } from "sonner";
 import {
   getCourseCategories,

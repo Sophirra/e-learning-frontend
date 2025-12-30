@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
-import { NavigationBar } from "@/components/complex/navigationBar.tsx";
+import { NavigationBar } from "@/components/complex/bars/navigationBar.tsx";
 import type {
   ClassBrief,
   Exercise,
   QuizBrief,
   StudentBrief,
-} from "@/api/types.ts";
+} from "@/types.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import { StudentTile } from "@/components/complex/tiles/studentTile.tsx";
 import { toast } from "sonner";

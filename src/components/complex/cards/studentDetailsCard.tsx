@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useNavigate } from "react-router-dom";
-import type { CourseBrief } from "@/api/types.ts";
+import type { CourseBrief } from "@/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 interface StudentDetailsCardProps {

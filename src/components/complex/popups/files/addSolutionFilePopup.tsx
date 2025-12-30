@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
-import type { FileBrief } from "@/api/types.ts";
+import type { FileBrief } from "@/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 
 import { uploadExerciseSolution } from "@/api/api calls/apiExercises.ts";

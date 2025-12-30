@@ -2,7 +2,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type { Exercise } from "@/api/types.ts";
+import type { Exercise } from "@/types.ts";
 
 export function ExerciseAttachedFilesSummary({
   exercise,

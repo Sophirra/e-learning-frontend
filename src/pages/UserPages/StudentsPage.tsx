@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Content } from "@/components/ui/content.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
-import { NavigationBar } from "@/components/complex/navigationBar.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
+import { NavigationBar } from "@/components/complex/bars/navigationBar.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import { StudentDetailsCard } from "@/components/complex/studentDetailsCard.tsx";
+import { StudentDetailsCard } from "@/components/complex/cards/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type { ClassBrief, CourseBrief, Student } from "@/api/types.ts";
+import type { ClassBrief, CourseBrief, Student } from "@/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";

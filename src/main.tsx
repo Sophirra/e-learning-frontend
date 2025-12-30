@@ -8,7 +8,7 @@ import { FilesPage } from "@/pages/UserPages/FilesPage.tsx";
 import "./index.css";
 import { SolveQuizPage } from "@/pages/UserPages/QuizPages/SolveQuizPage.tsx";
 import { QuizPage } from "@/pages/UserPages/QuizPages/QuizPage.tsx";
-import { UserProvider, useUser } from "@/features/user/UserContext.tsx";
+import { UserProvider, useUser } from "@/lib/user/UserContext.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
 import { StudentsPage } from "@/pages/UserPages/StudentsPage.tsx";
 import { CalendarPage } from "@/pages/UserPages/CalendarPage.tsx";

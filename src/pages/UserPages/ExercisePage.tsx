@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
-import { useUser } from "@/features/user/UserContext.tsx";
-import { NavigationBar } from "@/components/complex/navigationBar.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
+import { NavigationBar } from "@/components/complex/bars/navigationBar.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
 import ExerciseTile from "@/components/complex/tiles/exerciseTile.tsx";
 import { ExerciseDetailsSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseDetailsSummary.tsx";
@@ -10,7 +10,7 @@ import { ExerciseSolutionSummary } from "@/components/complex/summaries/exercise
 import { ExerciseGradeSummary } from "@/components/complex/summaries/exercisePageSummaries/exerciseGradeSummary.tsx";
 import { getUserId } from "@/api/api.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
-import type { Exercise } from "@/api/types.ts";
+import type { Exercise } from "@/types.ts";
 import { getExercises } from "@/api/api calls/apiExercises.ts";
 
 export type Role = "teacher" | "student";

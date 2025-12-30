@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
-import type { Exercise } from "@/api/types.ts";
+import type { Exercise } from "@/types.ts";
 
 type ExerciseTileProps = {
   exercise: Exercise;

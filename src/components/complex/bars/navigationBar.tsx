@@ -1,8 +1,8 @@
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { Divider } from "@/components/ui/divider.tsx";
 import { Link, useLocation } from "react-router-dom";
-import { useUser } from "@/features/user/UserContext.tsx";
-import { Header } from "@/components/complex/header.tsx";
+import { useUser } from "@/lib/user/UserContext.tsx";
+import { Header } from "@/components/complex/bars/header.tsx";
 
 export function NavigationBar() {
   let { user } = useUser();

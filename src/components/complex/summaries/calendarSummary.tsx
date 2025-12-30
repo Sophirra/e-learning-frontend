@@ -2,7 +2,7 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import type { ClassBrief } from "@/api/types.ts";
+import type { ClassBrief } from "@/types.ts";
 import { Link } from "react-router-dom";
 
 export function CalendarSummary({ classes }: { classes: ClassBrief[] }) {

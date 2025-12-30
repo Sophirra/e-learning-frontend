@@ -393,3 +393,16 @@ export type ExerciseFile = {
   type: "solution" | "content";
   uploadDate?: Date;
 };
+
+/**
+ *  USER SECTION
+ */
+
+export interface User {
+    name: string;
+    surname: string;
+    roles: Role[];
+    activeRole: Role;
+}
+
+export type Role = "student" | "teacher";
