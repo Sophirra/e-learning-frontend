@@ -113,7 +113,7 @@ export function HomePage() {
       }
     };
     fetchUnsolvedExercises();
-  }, [activeRole]);
+  }, [activeRole, selectedCourseId, selectedStudentId]);
 
   useEffect(() => {
     let studentId = getUserId();

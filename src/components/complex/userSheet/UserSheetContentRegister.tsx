@@ -98,7 +98,7 @@ export function UserSheetContentRegister({
                         {value === "student" ? (
                           <icons.StudentIcon />
                         ) : (
-                          <icons.TeacherIcon />
+                          <icons.BookOpen />
                         )}
                         {value}
                       </Button>

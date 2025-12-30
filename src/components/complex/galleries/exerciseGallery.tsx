@@ -37,8 +37,8 @@ export function ExerciseGallery({
       const data = await getExercises(
         userId,
         user?.activeRole,
+          selectedCourseId ? selectedCourseId : undefined,
         selectedStudentId ? selectedStudentId : undefined,
-        selectedCourseId ? selectedCourseId : undefined,
       );
       setExercises(data);
       console.log("set quizzes: ", data);
