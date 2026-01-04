@@ -9,7 +9,7 @@ WORKDIR /app
 # Kopiuj package.json i package-lock.json z e-learning-frontend
 COPY package.json package-lock.json* ./
 
-# Zainstaluj zaleĹĽnoĹ›ci
+# Zainstaluj zeleżności
 RUN if [ -f package-lock.json ]; then \
       echo "Found package-lock.json, using npm ci"; \
       npm ci; \
@@ -18,7 +18,7 @@ RUN if [ -f package-lock.json ]; then \
       npm install; \
     fi
 
-# Skopiuj wszystkie pliki ĹşrĂłdĹ‚owe z e-learning-frontend
+# Skopiuj wszystkie pliki  z e-learning-frontend
 COPY . .
 
 # Expose port dla Vite dev server
