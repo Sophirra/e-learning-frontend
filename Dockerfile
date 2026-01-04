@@ -7,7 +7,7 @@ RUN apk add --no-cache curl
 WORKDIR /app
 
 # Kopiuj package.json i package-lock.json z e-learning-frontend
-COPY e-learning-frontend/package.json e-learning-frontend/package-lock.json* ./
+COPY package.json package-lock.json* ./
 
 # Zainstaluj zaleĹĽnoĹ›ci
 RUN if [ -f package-lock.json ]; then \
