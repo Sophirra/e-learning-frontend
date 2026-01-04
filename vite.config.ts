@@ -21,14 +21,6 @@ export default defineConfig({
       clientPort: 443,
       protocol: "wss",
     },
-
-    proxy: {
-      "/api": {
-        target: "http://109.206.201.198:997",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
   },
 
   preview: {
