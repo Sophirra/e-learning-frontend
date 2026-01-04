@@ -15,7 +15,7 @@ export function SearchBar({ searchQuery, setSearchQuery }: SearchBarProps) {
       <div className="flex items-center justify-between py-6 px-26 bg-slate-200">
         <div className="flex gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <a href="/public">
+            <a href="/">
               <icons.House />
             </a>
           </Button>

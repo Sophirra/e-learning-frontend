@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type {ApiDayAvailability, DayAvailability, TimeSlot} from "@/types.ts";
+import type { ApiDayAvailability, DayAvailability, TimeSlot } from "@/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
 import { useEffect, useState } from "react";
@@ -250,7 +250,7 @@ export function DaySchedule({
         <p className="text-xs text-muted-foreground">{formatDate(date)}</p>
       </CardHeader>
 
-      <CardContent className="space-y-2 w-fit">
+      <CardContent className="space-y-1 w-fit">
         {!isActive ? (
           <div className="text-xs text-center text-muted-foreground py-4">
             Cannot book classes more than a month forward
@@ -260,13 +260,13 @@ export function DaySchedule({
             No time slots available
           </div>
         ) : (
-          <div className="space-y-1 w-31">
+          <div className="space-y-1 w-fit">
             {slots.map((slot, slotIndex) => (
               <Button
                 key={slotIndex}
                 variant={getVariant(slot)}
                 size="sm"
-                className="text-xs h-fit min-h-8 w-full max-w-60 p-1"
+                className="text-xs h-fit min-h-8 w-full max-w-50 p-1"
                 onClick={() => handleSelect(slot)}
                 disabled={
                   displayMode == "class"
@@ -322,7 +322,7 @@ function AddSlotPopup({
       }}
     >
       <DialogTrigger asChild>
-        <Button className={"w-1/1"} variant={"outline"}>
+        <Button className={"w-1/1 min-w-30"} variant={"outline"}>
           <icons.Plus />
         </Button>
       </DialogTrigger>

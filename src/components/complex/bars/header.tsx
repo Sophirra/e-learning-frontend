@@ -50,7 +50,7 @@ export function Header() {
                         To your courses
                       </Link>
                     </MenubarItem>
-                    <SpectatorListPopup />
+                    {user.activeRole === "student" && <SpectatorListPopup />}
                     {user.activeRole === "teacher" && <AddAvailabilityPopup />}
                   </>
                 ) : null}
