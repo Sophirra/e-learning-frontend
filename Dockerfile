@@ -19,7 +19,7 @@ RUN if [ -f package-lock.json ]; then \
     fi
 
 # Skopiuj wszystkie pliki ĹşrĂłdĹ‚owe z e-learning-frontend
-COPY e-learning-frontend/ .
+COPY . .
 
 # Expose port dla Vite dev server
 EXPOSE 5173
