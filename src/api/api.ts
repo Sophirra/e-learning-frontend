@@ -1,20 +1,27 @@
 import axios, {type AxiosError, type AxiosRequestConfig} from "axios";
 import { jwtDecode } from "jwt-decode";
+import type { Role } from "@/features/user/user.ts";
 
-import type {Role} from "@/types.ts";
+// W trybie dev używaj pustego baseURL - ścieżki w apiCalls.ts już mają /api/
+// Nginx przekieruje /api/* do backendu
+const apiBaseURL = import.meta.env.DEV
+    ? ""
+    : (import.meta.env.VITE_API_URL || "");
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
+// console.log("API Base URL:", apiBaseURL, "VITE_API_URL:", import.meta.env.VITE_API_URL);
+
+let api = axios.create({
+    baseURL: apiBaseURL,
+    headers: {
+        "Content-Type": "application/json",
+    },
+    withCredentials: true,
 });
 
 //storing access token in RAM
 let accessToken: string | null = null;
 export function setAccessToken(token: string | null) {
-  accessToken = token;
+    accessToken = token;
 }
 
 /**
@@ -66,7 +73,7 @@ function rejectQueuedRequests(err: any) {
 
 // Separate client for refresh (no interceptors) to avoid refresh loops.
 const refreshClient = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    baseURL: apiBaseURL,
     withCredentials: true,
 });
 
@@ -82,7 +89,7 @@ async function doRefresh() {
 
 // --- Interceptors ---
 
-//adding access token to all requests going through
+//adding access token to all request going through
 api.interceptors.request.use((config) => {
     if (accessToken) {
         config.headers = config.headers ?? {};
@@ -125,23 +132,23 @@ api.interceptors.response.use(
 );
 
 interface JwtPayload {
-  unique_name: string;
-  nameid: string;
-  roles: string[];
-  nbf: number;
-  exp: number;
-  iat: number;
+    unique_name: string;
+    nameid: string;
+    roles: string[];
+    nbf: number;
+    exp: number;
+    iat: number;
 }
 
 //additional method to get roles from access token
 export function getRoles() {
-  if (!accessToken) return [];
-  const decoded = jwtDecode<JwtPayload>(accessToken);
-  const output: Role[] = [];
-  decoded.roles.forEach((role) => {
-    output.push(role as Role);
-  });
-  return output;
+    if (!accessToken) return [];
+    let decoded = jwtDecode<JwtPayload>(accessToken);
+    let output: Role[] = [];
+    decoded.roles.forEach((role) => {
+        output.push(role as Role);
+    });
+    return output;
 }
 
 /**
@@ -154,18 +161,18 @@ export function getRoles() {
  */
 
 export function getUserId(): string | null {
-  try {
-    if (!accessToken) return null;
+    try {
+        if (!accessToken) return null;
 
-    const decoded = jwtDecode<JwtPayload>(accessToken);
-    if (decoded?.nameid && /^[0-9a-fA-F-]{36}$/.test(decoded.nameid)) {
-      return decoded.nameid;
+        const decoded = jwtDecode<JwtPayload>(accessToken);
+        if (decoded?.nameid && /^[0-9a-fA-F-]{36}$/.test(decoded.nameid)) {
+            return decoded.nameid;
+        }
+        return null;
+    } catch (err) {
+        console.error("Failed to decode user ID from token:", err);
+        return null;
     }
-    return null;
-  } catch (err) {
-    console.error("Failed to decode user ID from token:", err);
-    return null;
-  }
 }
 
 export default api;
