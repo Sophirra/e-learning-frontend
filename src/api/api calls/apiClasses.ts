@@ -3,7 +3,8 @@ import type {
   ClassBriefDto,
   ClassSchedule,
   FileProps,
-  LinkProps, Role,
+  LinkProps,
+  Role,
 } from "@/types.ts";
 import Api, { getUserId } from "@/api/api.ts";
 import type { ErrorResponse } from "react-router-dom";
@@ -156,8 +157,8 @@ export async function removeClassLink(linkId: string) {
 }
 
 export async function setupFirstClass(
-  startTime: string,
   courseId: string,
+  startTime: string,
   languageId: string,
   levelId: string,
 ) {

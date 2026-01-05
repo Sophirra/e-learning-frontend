@@ -51,7 +51,9 @@ export function CoursePage() {
     TeacherAvailability[] | null
   >(null);
   /** Using a string array because filter dropdown is universal*/
-  const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>(
+    [],
+  );
   const [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
 
   useEffect(() => {
@@ -237,7 +239,7 @@ export function CoursePage() {
                     )
                       return;
                     const classDate = slot.date;
-                    classDate.setHours(slot.start);
+                    classDate.setHours(slot.start, 0, 0);
                     setupFirstClass(
                       courseId,
                       classDate.toISOString(),
