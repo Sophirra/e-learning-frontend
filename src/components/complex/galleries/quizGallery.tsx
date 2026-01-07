@@ -24,7 +24,6 @@ export function QuizGallery({
   );
   const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
 
-
   useEffect(() => {
     fetchQuizzes();
   }, [selectedStudentId, selectedCourseId]);
@@ -32,6 +31,7 @@ export function QuizGallery({
   async function fetchQuizzes() {
     try {
       const data = await getQuizzes(
+        user?.activeRole || "student",
         selectedStudentId ? selectedStudentId : undefined,
         selectedCourseId ? selectedCourseId : undefined,
       );

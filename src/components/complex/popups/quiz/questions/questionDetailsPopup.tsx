@@ -36,7 +36,7 @@ export function QuestionDetailsPopup({
   selected?: boolean;
   setSelected?: (selected: boolean) => void;
 }) {
-  console.log("select:", selected);
+  // console.log("select:", selected);
   const { user } = useUser();
   const [load, setLoad] = useState(false);
   const [editing, setEditing] = useState(false);

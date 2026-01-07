@@ -1,6 +1,7 @@
 import Api from "@/api/api.ts";
-import type {ErrorResponse} from "react-router-dom";
+import type { ErrorResponse } from "react-router-dom";
 import type { Question, Quiz, QuizBrief, QuizSolution } from "@/types.ts";
+import { useUser } from "@/lib/user/UserContext.tsx";
 
 /**
  * Gets all teacher/student quizzes to display in the gallery
@@ -10,6 +11,7 @@ import type { Question, Quiz, QuizBrief, QuizSolution } from "@/types.ts";
  * @param classId
  */
 export async function getQuizzes(
+  role: string,
   studentId?: string,
   courseId?: string,
   searchQuery?: string,
@@ -21,9 +23,20 @@ export async function getQuizzes(
   searchQuery && params.append("searchQuery", searchQuery);
   classId && params.append("classId", classId);
 
-  const res = await Api.get(
-    `/api/quizzes/${params ? `?${params.toString()}` : ""}`,
-  );
+  let res;
+  if (role == "teacher") {
+    res = await Api.get(
+      `/api/quizzes/teacher/${params ? `?${params.toString()}` : ""}`,
+    );
+  } else {
+    res = await Api.get(
+      `/api/quizzes/student/${params ? `?${params.toString()}` : ""}`,
+    );
+  }
+
+  // const res = await Api.get(
+  //   `/api/quizzes/${params ? `?${params.toString()}` : ""}`,
+  // );
 
   if (res.status === 204 || !res.data) return [];
 
