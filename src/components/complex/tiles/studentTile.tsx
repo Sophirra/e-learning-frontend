@@ -11,23 +11,25 @@ export function StudentTile({
   selectedStudentId,
   setSelectedStudentId,
 }: StudentTileProps) {
-  const { id, name, surname } = student;
+  console.log("student in tile:", student);
 
   const handleSelect = () => {
-    setSelectedStudentId(selectedStudentId === id ? undefined : id);
+    setSelectedStudentId(
+      selectedStudentId === student.id ? undefined : student.id,
+    );
   };
   return (
     <div
       className={
         "flex flex-row items-center gap-2 p-4 bg-slate-100 rounded-lg shadow-md hover:bg-slate-200 transition-all text-xs " +
-        (selectedStudentId === id
+        (selectedStudentId === student.id
           ? "bg-slate-300 font-semibold"
           : "font-normal")
       }
-      key={id}
+      key={student.id}
       onClick={handleSelect}
     >
-      <p className="self-end">{name + " " + surname}</p>
+      <p className="self-end">{student.name + " " + student.surname}</p>
     </div>
   );
 }

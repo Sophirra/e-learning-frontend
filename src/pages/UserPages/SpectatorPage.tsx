@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { Content } from "@/components/ui/content.tsx";
 import { NavigationBar } from "@/components/complex/bars/navigationBar.tsx";
-import type {
-  ClassBrief,
-  Exercise,
-  QuizBrief,
-  StudentBrief,
-} from "@/types.ts";
+import type { ClassBrief, Exercise, QuizBrief, StudentBrief } from "@/types.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import { StudentTile } from "@/components/complex/tiles/studentTile.tsx";
 import { toast } from "sonner";
@@ -32,7 +27,9 @@ export function SpectatorPage() {
     async function getSpectated() {
       try {
         const data = await getSpectatedApi();
-        setStudents([data]);
+        // @ts-ignore
+        setStudents(data);
+        console.log("students on download:", data);
       } catch (e: any) {
         toast.error("Failed to fetch spectated students: " + e.message);
       }
@@ -102,13 +99,16 @@ export function SpectatorPage() {
             students.length === 0 ? (
               <LoadingTile text={"No spectated students found."} />
             ) : (
-              students.map((student) => (
-                <StudentTile
-                  student={student}
-                  selectedStudentId={selectedStudentId}
-                  setSelectedStudentId={setSelectedStudentId}
-                />
-              ))
+              students.map((student) => {
+                console.log("student in map:", student);
+                return (
+                  <StudentTile
+                    student={student}
+                    selectedStudentId={selectedStudentId}
+                    setSelectedStudentId={setSelectedStudentId}
+                  />
+                );
+              })
             )}
           </div>
 

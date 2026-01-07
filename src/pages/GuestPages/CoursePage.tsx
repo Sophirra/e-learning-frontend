@@ -15,7 +15,7 @@ import type {
   TeacherReview,
 } from "@/types.ts";
 import { CourseDetailCard } from "@/components/complex/cards/courseDetailCard.tsx";
-import WeekSchedulePopup from "@/components/complex/schedules/weekSchedulePopup.tsx";
+import WeekSchedulePopup from "@/components/complex/calendar/schedules/weekSchedulePopup.tsx";
 import { useUser } from "@/lib/user/UserContext.tsx";
 import { toast } from "sonner";
 import OpinionTile from "@/components/complex/tiles/opinionTile.tsx";
@@ -41,7 +41,6 @@ export function CoursePage() {
 
   const { user } = useUser();
   const { courseId } = useParams();
-  /** To be downloaded from backend*/
   const [course, setCourse] = useState<Course | null>(null);
   const [teacher, setTeacher] = useState<Teacher | null>(null);
   const [teacherReviews, setTeacherReviews] = useState<TeacherReview[] | null>(
@@ -50,7 +49,6 @@ export function CoursePage() {
   const [teacherAvailability, setTeacherAvailability] = useState<
     TeacherAvailability[] | null
   >(null);
-  /** Using a string array because filter dropdown is universal*/
   const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>(
     [],
   );
