@@ -3,12 +3,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { DaySchedule } from "./daySchedule.tsx";
 import { addMonths } from "date-fns";
-import type {
-  ApiDayAvailability,
-  ClassSchedule,
-  DayAvailability,
-  TimeSlot,
-} from "@/types.ts";
+import type { ApiDayAvailability, ClassSchedule, TimeSlot } from "@/types.ts";
 import { cn } from "@/lib/utils.ts";
 
 type ScheduleProps = {
@@ -19,7 +14,7 @@ type ScheduleProps = {
   classes?: ClassSchedule[];
   displayMode: "time" | "class" | "add";
   onSelect?: (slot: TimeSlot) => void;
-  updateDaySlots?: (dayState: DayAvailability) => void;
+  updateDaySlots?: (dayState: ApiDayAvailability) => void;
   selectedClassId?: string;
 };
 

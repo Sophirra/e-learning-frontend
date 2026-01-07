@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
 import { getApiDayAvailability } from "@/api/api calls/apiTeacher.ts";
-import Schedule from "@/components/complex/schedules/schedule.tsx";
+import Schedule from "@/components/complex/calendar/schedules/schedule.tsx";
 import type {
   ApiDayAvailability,
   TimeSlot,
