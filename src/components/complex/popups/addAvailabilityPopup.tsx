@@ -16,12 +16,8 @@ import {
   getTeacherAvailability,
 } from "@/api/api calls/apiTeacher.ts";
 import { useEffect, useState } from "react";
-import type {
-  ApiDayAvailability,
-  ClassSchedule,
-  DayAvailability,
-} from "@/types.ts";
-import Schedule from "@/components/complex/schedules/schedule.tsx";
+import type { ApiDayAvailability, ClassSchedule } from "@/types.ts";
+import Schedule from "@/components/complex/calendar/schedules/schedule.tsx";
 import { getTeacherUpcomingClasses } from "@/api/api calls/apiClasses.ts";
 
 export function AddAvailabilityPopup() {
@@ -31,7 +27,7 @@ export function AddAvailabilityPopup() {
     ApiDayAvailability[]
   >([]);
   const [updateAvailability, setUpdateAvailability] = useState<
-    DayAvailability[]
+    ApiDayAvailability[]
   >([]);
 
   function setupAvailability() {
@@ -119,7 +115,7 @@ export function AddAvailabilityPopup() {
             startDate={new Date()}
             daysCount={7}
             displayMode={"add"}
-            updateDaySlots={(av: DayAvailability) => {
+            updateDaySlots={(av: ApiDayAvailability) => {
               console.log("update:", av);
               setUpdateAvailability((prev) => {
                 const exists = prev.some((d) => d.day === av.day);

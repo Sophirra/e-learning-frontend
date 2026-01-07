@@ -16,7 +16,7 @@ import type {
 import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
-import Schedule from "@/components/complex/schedules/schedule.tsx";
+import Schedule from "@/components/complex/calendar/schedules/schedule.tsx";
 import {
   getClassFiles,
   getClassLinks,

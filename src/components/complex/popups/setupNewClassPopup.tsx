@@ -16,7 +16,7 @@ import {
   FilterDropdown,
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
-import WeekSchedulePopup from "@/components/complex/schedules/weekSchedulePopup.tsx";
+import WeekSchedulePopup from "@/components/complex/calendar/schedules/weekSchedulePopup.tsx";
 import { getUserId } from "@/api/api.ts";
 import { toast } from "sonner";
 import { setupNextClass } from "@/api/api calls/apiClasses.ts";
@@ -38,7 +38,7 @@ export function SetupNewClassPopup() {
   async function setupClass(timeslot: TimeSlot) {
     try {
       const classDate = timeslot.date;
-      classDate.setHours(timeslot.start);
+      classDate.setHours(timeslot.start, 0, 0, 0);
       await setupNextClass(selectedCourse[0].value, classDate.toISOString());
     } catch (e: any) {
       toast.error("Failed to setup class: " + e.message);

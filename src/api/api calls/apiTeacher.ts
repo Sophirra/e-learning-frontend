@@ -155,7 +155,7 @@ export async function getTeacherStudentsWithSpecificCourse(
   return data;
 }
 
-export async function addAvailability(availability: DayAvailability[]) {
+export async function addAvailability(availability: ApiDayAvailability[]) {
   const teacherId = getUserId();
   const res = await Api.post(
     `/api/teacher/${teacherId}/availability`,
