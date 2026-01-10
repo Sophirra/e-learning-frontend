@@ -1,16 +1,15 @@
-import Api, {getUserId} from "@/api/api.ts";
+import Api, { getUserId } from "@/api/api.ts";
 import type {
-    ApiDayAvailability,
-    ClassWithStudentsDTO,
-    CourseBrief,
-    DayAvailability,
-    StudentBrief,
-    Teacher,
-    TeacherAvailability,
-    TeacherReview,
+  ApiDayAvailability,
+  ClassWithStudentsDTO,
+  CourseBrief,
+  StudentBrief,
+  Teacher,
+  TeacherAvailability,
+  TeacherReview,
 } from "@/types.ts";
-import {mapApiCourseToCourseBrief,} from "@/mappers/courseMappers.ts";
-import type {ErrorResponse} from "react-router-dom";
+import { mapApiCourseToCourseBrief } from "@/mappers/courseMappers.ts";
+import type { ErrorResponse } from "react-router-dom";
 
 /**
  * Fetches teacher availability associated with a specific course.
@@ -161,6 +160,7 @@ export async function addAvailability(availability: ApiDayAvailability[]) {
     `/api/teacher/${teacherId}/availability`,
     availability,
   );
+  console.log(res);
   if (res.status === 200 || res.status === 201 || res.status === 204) return;
   else throw res.data as ErrorResponse;
 }
