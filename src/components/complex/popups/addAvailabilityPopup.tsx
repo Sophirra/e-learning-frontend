@@ -98,7 +98,7 @@ export function AddAvailabilityPopup() {
         <div className={"flex flex-col gap-4 pt-2"}>
           <Schedule
             startDate={new Date()}
-            daysCount={3}
+            daysCount={7}
             displayMode={"add"}
             updateDaySlots={(newAv: ApiDayAvailability) => {
               // console.log("update:", av);
