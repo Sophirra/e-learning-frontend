@@ -198,9 +198,15 @@ export function DaySchedule({
   //to download actual slots
   useEffect(() => {
     if (timeSlots.length != 0 && slots.length != 0) return;
-    console.log(slots);
+    // console.log(slots);
     setSlots([...timeSlots]);
   }, [timeSlots]);
+
+  useEffect(() => {
+    setSlots(timeSlots);
+    setToDelete([]);
+    setToAdd([]);
+  }, [date]);
 
   //to update available slots for adding new
   useEffect(() => {
