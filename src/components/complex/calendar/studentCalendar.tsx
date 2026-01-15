@@ -115,6 +115,7 @@ export function StudentCalendar() {
       if (!selectedClassId) return;
       try {
         const data = await getQuizzes(
+          "student",
           undefined,
           undefined,
           undefined,

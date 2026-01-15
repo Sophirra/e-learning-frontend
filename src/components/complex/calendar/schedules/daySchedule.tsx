@@ -70,20 +70,25 @@ export function DaySchedule({
     let series = false;
     let start: number = 0;
     let end: number;
-    for (let i: number = 0; i < hours.length; i++) {
-      if (hours[i] === 0) {
-        if (series) {
-          end = i;
-          daySlots.timeslots.push({
-            timeFrom: start.toString() + ":00:00",
-            timeUntil: end.toString() + ":00:00",
-          });
-          // console.log("ended series at: ", end, ", started: ", start);
-          series = false;
+    if (hours.includes(0)) {
+      daySlots.timeslots = [];
+    } else {
+      console.log("hours: ", hours);
+      for (let i: number = 0; i < hours.length; i++) {
+        if (hours[i] === 0) {
+          if (series) {
+            end = i;
+            daySlots.timeslots.push({
+              timeFrom: start.toString() + ":00:00",
+              timeUntil: end.toString() + ":00:00",
+            });
+            // console.log("ended series at: ", end, ", started: ", start);
+            series = false;
+          }
+        } else if (!series) {
+          series = true;
+          start = i;
         }
-      } else if (!series) {
-        series = true;
-        start = i;
       }
     }
     // console.log("updated day", daySlots);
@@ -247,11 +252,11 @@ export function DaySchedule({
 
       <CardContent className="space-y-1 w-fit">
         {!isActive ? (
-          <div className="text-xs text-center text-muted-foreground py-4">
+          <div className="text-xs text-center text-muted-foreground py-4 w-32">
             Cannot book classes more than a month forward
           </div>
         ) : !hasSlots && !(displayMode == "add") ? (
-          <div className="text-xs text-center text-muted-foreground py-4">
+          <div className="text-xs text-center text-muted-foreground py-4 w-32">
             No time slots available
           </div>
         ) : (
@@ -261,7 +266,7 @@ export function DaySchedule({
                 key={slotIndex}
                 variant={getVariant(slot)}
                 size="sm"
-                className="text-xs h-fit min-h-8 w-full max-w-50 p-1"
+                className="text-xs h-fit min-h-8 w-full max-w-50 min-w-32 p-1"
                 onClick={() => handleSelect(slot)}
                 disabled={
                   displayMode == "class"

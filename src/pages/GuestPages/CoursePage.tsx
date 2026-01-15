@@ -254,6 +254,9 @@ export function CoursePage() {
                 />
               )}
             </div>
+            <p className={"text-xl font-semibold text-left"}>
+              Teacher reviews:
+            </p>
             <div className="grid grid-cols-2 gap-8 ">
               {teacherReviews?.map((review) => (
                 <OpinionTile

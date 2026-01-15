@@ -103,6 +103,7 @@ export function TeacherCalendar() {
       if (!selectedClassId) return;
       try {
         const data = await getQuizzes(
+          "teacher",
           undefined,
           undefined,
           undefined,
