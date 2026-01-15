@@ -3,20 +3,20 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { AddQuizPopup } from "@/components/complex/popups/quiz/addQuizPopup.tsx";
-import type { AnyTask } from "@/types.ts";
+import type { QuizBrief } from "@/types.ts";
 
 export function QuizSummary({
   quizzes,
   student,
   classId,
 }: {
-  quizzes: AnyTask[];
+  quizzes: QuizBrief[];
   student: boolean;
   classId?: string;
 }) {
-  function composeTaskDetails(task: AnyTask) {
+  function composeTaskDetails(quiz: QuizBrief) {
     let statusLabel = "";
-    if (!task.completed) {
+    if (!quiz.completed) {
       statusLabel = "To be solved";
     } else {
       statusLabel = "Completed";
@@ -47,7 +47,7 @@ export function QuizSummary({
             No quizzes available for the selected courses/classes
           </Label>
         ) : (
-          quizzes?.map((task: AnyTask) => (
+          quizzes?.map((task: QuizBrief) => (
             <div
               className={"flex flex-row gap-0"}
               key={task.id}

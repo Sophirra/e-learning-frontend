@@ -38,7 +38,6 @@ export function QuestionDetailsPopup({
 }) {
   // console.log("select:", selected);
   const { user } = useUser();
-  const [load, setLoad] = useState(false);
   const [editing, setEditing] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
   const [question, setQuestion] = useState<Question>(
@@ -154,43 +153,41 @@ export function QuestionDetailsPopup({
     }
   }
 
-  useEffect(() => {
-    async function getQuestionDetails() {
-      if (load && question) {
-        if (!question.id)
-          toast.error("No question id found. Cannot download data.");
-        else {
-          const questionData = await getFullQuestion(question.id);
-          setQuestion(questionData);
-          setNewContent(questionData.content);
-          setNewCategories(questionData.categories || []);
-          setNewAnswers(questionData.answers || []);
-          setLoad(false);
+  async function getQuestionDetails() {
+    if (!question.id)
+      toast.error("No question id found. Cannot download data.");
+    else {
+      const questionData = await getFullQuestion(question.id);
+      setQuestion(questionData);
+      setNewContent(questionData.content);
+      setNewCategories(questionData.categories || []);
+      setNewAnswers(questionData.answers || []);
 
-          console.log("categories: ", newCategories);
-          if (!questionData.answers) {
-            toast.error("No answers returned");
-          }
-        }
+      console.log("categories: ", newCategories);
+      if (!questionData.answers) {
+        toast.error("No answers returned");
       }
     }
-    async function getCategories() {
-      if (load) {
-        const categoriesData = await getUserCategories();
-        setAvailableCategories(categoriesData);
-      }
-    }
+  }
+  async function getCategories() {
+    const categoriesData = await getUserCategories();
+    setAvailableCategories(categoriesData);
+  }
+
+  useEffect(() => {
+    if (!open) return;
     getCategories();
     if (questionBrief) {
       getQuestionDetails();
+    } else {
+      setEditing(true);
     }
-  }, [load]);
+  }, [open]);
 
   return (
     <Dialog
       open={open}
       onOpenChange={() => {
-        setLoad(true);
         setOpen(!open);
         if (!open) {
           if (!questionBrief) {
@@ -219,7 +216,6 @@ export function QuestionDetailsPopup({
               if (selected !== undefined && setSelected) {
                 setSelected(!selected);
               } else {
-                setLoad(true);
                 setOpen(true);
               }
             }}
@@ -246,7 +242,6 @@ export function QuestionDetailsPopup({
             disabled={user?.activeRole !== "teacher"}
             variant={"ghost"}
             onClick={() => {
-              setLoad(true);
               setOpen(true);
             }}
           >
@@ -318,7 +313,7 @@ export function QuestionDetailsPopup({
                 // setNewCategories(updatedCategories);
                 defaultValues={newCategories.map((cat) => cat.id)}
               />
-              <CreateQuestionCategoryPopup resetLoading={() => setLoad(true)} />
+              <CreateQuestionCategoryPopup onCreate={() => getCategories} />
             </div>
           )}
 

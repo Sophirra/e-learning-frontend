@@ -92,7 +92,7 @@ export function CreateQuizPopup({
           {editingQuiz ? "Edit" : "Create"}
         </Button>
       </DialogTrigger>
-      <DialogContent className={"min-w-fit max-h-4/5"}>
+      <DialogContent className={"min-w-3/5 max-h-4/5"}>
         <DialogHeader>
           <DialogTitle>
             {editingQuiz ? "Edit quiz" : "Create new quiz"}
@@ -118,11 +118,13 @@ export function CreateQuizPopup({
           }}
           className={cn(nameError ? "border-red-300" : "")}
         ></Input>
-        <QuestionGallery
-          enableSelect={true}
-          selectedQuestionIds={questionIds}
-          setSelectedQuestionIds={setQuestionIds}
-        />
+        <div className={"h-120 overflow-y-auto pt-2"}>
+          <QuestionGallery
+            enableSelect={true}
+            selectedQuestionIds={questionIds}
+            setSelectedQuestionIds={setQuestionIds}
+          />
+        </div>
         <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
           <DialogClose>
             <Button>Cancel</Button>

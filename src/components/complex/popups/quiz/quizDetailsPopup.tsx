@@ -113,12 +113,7 @@ export function QuizDetailsPopup({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{quiz.name}</DialogTitle>
-            <DialogDescription>
-              {quiz.courseName}
-              {user?.activeRole === "teacher"
-                ? " for " + student
-                : " by " + teacher}
-            </DialogDescription>
+            <DialogDescription>{quiz.courseName}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <Label>
@@ -127,7 +122,9 @@ export function QuizDetailsPopup({
             </Label>
             <Label>
               Score:{" "}
-              {quiz.score ? quiz.score + "/" + quiz.maxScore : "not solved yet"}
+              {quiz.score
+                ? `${Math.floor(quiz.score)}` + "/100%"
+                : "not solved yet"}
             </Label>
           </div>
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
@@ -144,6 +141,7 @@ export function QuizDetailsPopup({
                 onClick={() => {
                   navigate("/quizzes/" + quiz.id + "/solve");
                 }}
+                disabled={!!quiz.score}
               >
                 Solve
               </Button>
