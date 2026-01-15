@@ -6,8 +6,8 @@ import type {
   FileTag,
   PagedResult,
 } from "@/types.ts";
-import Api, {getUserId} from "@/api/api.ts";
-import type {ErrorResponse} from "react-router-dom";
+import Api, { getUserId } from "@/api/api.ts";
+import type { ErrorResponse } from "react-router-dom";
 
 /**
  * Uploads a file for the currently authenticated user.
@@ -113,4 +113,11 @@ export async function getUserFileExtensions(): Promise<string[]> {
 export async function getUserFileOwners(): Promise<FileOwner[]> {
   const { data } = await Api.get<FileOwner[]>("/api/user/files/owners");
   return data ?? [];
+}
+
+export async function addFileToClass(fileId: string, classId: string) {
+  const res = await Api.post(`/api/classes/${classId}/files/`, fileId);
+  if (res.status === 201 || res.status === 200 || res.status === 204)
+    return res.data;
+  else return res.data as ErrorResponse;
 }
