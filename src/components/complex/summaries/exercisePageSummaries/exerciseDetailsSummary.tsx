@@ -23,6 +23,9 @@ export function ExerciseDetailsSummary({
       customButton={() =>
         user?.activeRole === "student" ? (
           <Button
+            disabled={
+              exercise?.status === "Submitted" || exercise?.status === "Graded"
+            }
             variant="ghost"
             className="flex items-center gap-2"
             onClick={async () => {
