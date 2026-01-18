@@ -29,7 +29,7 @@ export default function WeekSchedulePopup({
   const [apiDayAvailability, setApiDayAvailability] = useState<
     ApiDayAvailability[]
   >([]);
-
+  const [open, setOpen] = useState(false);
   const today = new Date();
   const oneMonthFromToday = new Date(today);
   oneMonthFromToday.setMonth(today.getMonth() + 1);
@@ -93,6 +93,7 @@ export default function WeekSchedulePopup({
     if (selectedSlot) {
       onConfirm(selectedSlot);
       setSelectedSlot(null);
+      setOpen(false);
     }
   };
 
@@ -101,11 +102,11 @@ export default function WeekSchedulePopup({
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger disabled={disabled} asChild>
         <Button disabled={disabled}>Setup class</Button>
       </DialogTrigger>
-      <DialogContent className="overflow-y-auto sm:max-w-6xl gap-4">
+      <DialogContent className="overflow-y-auto sm:max-w-340 gap-4">
         <DialogHeader>
           <DialogTitle>Select a time slot for {classDetails}</DialogTitle>
         </DialogHeader>

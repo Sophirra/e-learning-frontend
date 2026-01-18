@@ -22,6 +22,7 @@ import { getTeacherUpcomingClasses } from "@/api/api calls/apiClasses.ts";
 
 export function AddAvailabilityPopup() {
   // const [slots, setSlots] = useState<selectedSlots[]>([]);
+  const [open, setOpen] = useState(false);
   const [classes, setClasses] = useState<ClassSchedule[]>([]);
   const [existingAvailability, setExistingAvailability] = useState<
     ApiDayAvailability[]
@@ -32,9 +33,6 @@ export function AddAvailabilityPopup() {
 
   async function setupAvailability() {
     try {
-      console.log("original:", existingAvailability);
-      console.log("updated:", updateAvailability);
-
       setUpdateAvailability(
         updateAvailability.filter(
           (update: ApiDayAvailability, i: number) =>
@@ -43,6 +41,7 @@ export function AddAvailabilityPopup() {
       );
       await addAvailability(updateAvailability);
       toast.success("Availability added successfully");
+      setOpen(false);
     } catch (e: any) {
       toast.error(e.message);
     }
@@ -78,8 +77,10 @@ export function AddAvailabilityPopup() {
 
   return (
     <Dialog
+      open={open}
       onOpenChange={() => {
         setUpdateAvailability([]);
+        setOpen(!open);
       }}
     >
       <DialogTrigger asChild>

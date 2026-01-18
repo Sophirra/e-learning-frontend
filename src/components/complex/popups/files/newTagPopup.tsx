@@ -16,22 +16,39 @@ import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { toast } from "sonner";
 
 import { createNewTag } from "@/api/api calls/apiFiles.ts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function NewTagPopup({ resetLoading }: { resetLoading: () => void }) {
+export function NewTagPopup() {
   const [name, setName] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
 
-  async function apiAddTag(name: string) {
-    try {
-      await createNewTag(name);
+  const queryClient = useQueryClient();
+
+  const createTagMutation = useMutation({
+    mutationFn: createNewTag,
+    onSuccess: () => {
       toast.success("Tag created successfully");
-      resetLoading();
+      queryClient.invalidateQueries({ queryKey: ["fileTags"] });
+      setName("");
       setOpen(false);
-    } catch (e: any) {
+    },
+    onError: (e: any) => {
       if (e.message.includes("409")) toast.error("Tag already exists");
       else toast.error("Failed to create tag: " + e.message);
-    }
-  }
+    },
+  });
+
+  // async function apiAddTag(name: string) {
+  //   try {
+  //     await createNewTag(name);
+  //     toast.success("Tag created successfully");
+  //     // resetLoading();
+  //     setOpen(false);
+  //   } catch (e: any) {
+  //     if (e.message.includes("409")) toast.error("Tag already exists");
+  //     else toast.error("Failed to create tag: " + e.message);
+  //   }
+  // }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -64,10 +81,11 @@ export function NewTagPopup({ resetLoading }: { resetLoading: () => void }) {
             </DialogClose>
             <Button
               variant={"outline"}
-              onClick={async () => {
-                console.log("creating..");
-                await apiAddTag(name);
-              }}
+              // onClick={async () => {
+              //   console.log("creating..");
+              //   await apiAddTag(name);
+              // }}
+              onClick={() => createTagMutation.mutate(name)}
               disabled={name.trim().length == 0}
             >
               Create

@@ -145,7 +145,20 @@ export default function Schedule({
       }
     }
     slots.sort((a, b) => a.start - b.start);
-    return slots;
+
+    //slicing from multiple hour periods into a single ones
+    const sliced: TimeSlot[] = [];
+
+    for (const slot of slots) {
+      for (let h = slot.start; h < slot.end; h++) {
+        sliced.push({
+          ...slot,
+          start: h,
+          end: h + 1,
+        });
+      }
+    }
+    return sliced;
   };
 
   //to prevent user from going too far in the list

@@ -70,27 +70,27 @@ export function DaySchedule({
     let series = false;
     let start: number = 0;
     let end: number;
-    if (hours.includes(0)) {
-      daySlots.timeslots = [];
-    } else {
-      console.log("hours: ", hours);
-      for (let i: number = 0; i < hours.length; i++) {
-        if (hours[i] === 0) {
-          if (series) {
-            end = i;
-            daySlots.timeslots.push({
-              timeFrom: start.toString() + ":00:00",
-              timeUntil: end.toString() + ":00:00",
-            });
-            // console.log("ended series at: ", end, ", started: ", start);
-            series = false;
-          }
-        } else if (!series) {
-          series = true;
-          start = i;
+    // if (hours.includes(0)) {
+    //   daySlots.timeslots = [];
+    // } else {
+    //   console.log("hours: ", hours);
+    for (let i: number = 0; i < hours.length; i++) {
+      if (hours[i] === 0) {
+        if (series) {
+          end = i;
+          daySlots.timeslots.push({
+            timeFrom: start.toString() + ":00:00",
+            timeUntil: end.toString() + ":00:00",
+          });
+          console.log("ended series at: ", end, ", started: ", start);
+          series = false;
         }
+      } else if (!series) {
+        series = true;
+        start = i;
       }
     }
+    // }
     // console.log("updated day", daySlots);
     updateDaySlots(daySlots);
   }

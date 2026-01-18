@@ -24,7 +24,7 @@ import { getStudentCourses } from "@/api/api calls/apiStudents.ts";
 
 export function SetupNewClassPopup() {
   const [courses, setCourses] = useState<CourseBrief[]>([]);
-
+  const [open, setOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<SelectableItem[]>([]);
 
   useEffect(() => {
@@ -39,14 +39,15 @@ export function SetupNewClassPopup() {
     try {
       const classDate = timeslot.date;
       classDate.setHours(timeslot.start, 0, 0, 0);
-      await setupNextClass(selectedCourse[0].value, classDate.toISOString());
+      await setupNextClass(classDate.toISOString(), selectedCourse[0].value);
+      setOpen(false);
     } catch (e: any) {
       toast.error("Failed to setup class: " + e.message);
     }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant={"outline"}>
           Setup new class
