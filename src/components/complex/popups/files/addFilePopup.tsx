@@ -10,11 +10,11 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { ChooseFilePopup } from "@/components/complex/popups/files/chooseFilePopup.tsx";
-import { UploadFilePopup } from "@/components/complex/popups/files/uploadFilePopup.tsx";
 import { useState } from "react";
 import type { FileBrief } from "@/types.ts";
 import { addFileToClass } from "@/api/api calls/apiFiles.ts";
 import { toast } from "sonner";
+import {UploadFilePopup} from "@/components/complex/popups/files/uploadFilePopup.tsx";
 
 export function AddFilePopup(classId?: string) {
   const [chosenFile, setChosenFile] = useState<FileBrief | null>(null);
@@ -68,8 +68,10 @@ export function AddFilePopup(classId?: string) {
             variant={"outline"}
             disabled={!chosenFile}
             onClick={() => {
-              console.log("chosen file:", chosenFile);
-              chosenFile && handleAddFile(chosenFile);
+              if(chosenFile){
+                console.log("chosen file:", chosenFile);
+                handleAddFile(chosenFile);
+              }
             }}
           >
             Add
