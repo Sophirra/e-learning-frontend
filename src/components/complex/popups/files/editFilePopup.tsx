@@ -13,7 +13,10 @@ import { useEffect, useState } from "react";
 import type { FileData, FileTag } from "@/types.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
-import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
+import {
+  FilterDropdown,
+  type SelectableItem,
+} from "@/components/complex/filterDropdown.tsx";
 import { NewTagPopup } from "@/components/complex/popups/files/newTagPopup.tsx";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label.tsx";
@@ -50,7 +53,13 @@ export function EditFilePopup({
   const [open, setOpen] = useState<boolean>(false);
   const { data: availableTags = [] } = useQuery({
     queryKey: ["fileTags"],
-    queryFn: async () => await getAvailableTags(),
+    queryFn: async () => {
+      try {
+        await getAvailableTags();
+      } catch (err: any) {
+        toast.error("Failed to fetch tags: " + err.message);
+      }
+    },
     enabled: open,
   });
   // const [availableTags, setAvailableTags] = useState<FileTag[]>([]);
@@ -158,12 +167,12 @@ export function EditFilePopup({
                 emptyMessage={"choose file tags"}
                 label={"Available tags:"}
                 reset={false}
-                items={availableTags.map((tag) => {
+                items={availableTags.map((tag: FileTag) => {
                   return { name: tag.name, value: tag.id };
                 })}
-                onSelectionChange={(selectedTags) => {
+                onSelectionChange={(selectedTags: SelectableItem[]) => {
                   const selectedIds = selectedTags.map((tag) => tag.value);
-                  const updatedTags = availableTags.filter((tag) =>
+                  const updatedTags = availableTags.filter((tag: FileTag) =>
                     selectedIds.includes(tag.id),
                   );
                   setNewTags(updatedTags);
