@@ -32,6 +32,8 @@ const PRICE_OPTIONS: { label: string; from?: number; to?: number }[] = [
 
 // 1) Typ i stan filtrów
 type Filters = {
+  pageSize: number;
+  pageNumber: number;
   categories?: string[];
   levels?: string[];
   languages?: string[];
@@ -54,7 +56,7 @@ function MainPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [activeFilters, setActiveFilters] = useState<Filters>({});
+  const [activeFilters, setActiveFilters] = useState<Filters>();
 
   // Dropdown data
   const [categories, setCategories] = useState<string[]>([]);
@@ -75,7 +77,11 @@ function MainPage() {
   const [filteredCourses, setFilteredCourses] = useState<CourseWidget[]>([]);
 
   useEffect(() => {
-    fetchCourses({ query: searchQuery });
+    fetchCourses({
+      pageSize: DEFAULT_PAGE_SIZE,
+      pageNumber: currentPage,
+      query: searchQuery,
+    });
   }, [searchQuery]);
 
   // Fetch courses (bez filtrów przy starcie)
@@ -93,8 +99,6 @@ function MainPage() {
     fetchCourses(activeFilters);
   }, [activeFilters]);
 
-  //TODO: same calle przenieść do innego pliku i wykorzystać api.ts
-  //odp: przeniesione wszystkie calle do pliku apiTeacher.ts
   useEffect(() => {
     const loadFilters = async () => {
       try {
@@ -108,20 +112,19 @@ function MainPage() {
         setLevels([...new Set(levels)]);
         setLanguages([...new Set(languages)]);
       } catch (err) {
-        console.error("Error fetching filter data:", err);
         toast.error("Could not load filter data.");
       }
     };
     loadFilters();
   }, [currentPage, activeFilters, DEFAULT_PAGE_SIZE]);
 
-  const fetchCourses = async (filters?: Parameters<typeof getCourses>[0]) => {
+  const fetchCourses = async (filters?: Filters) => {
     setLoading(true);
     try {
       const data = await getCourses({
         ...filters,
         pageNumber: currentPage,
-        DEFAULT_PAGE_SIZE,
+        pageSize: DEFAULT_PAGE_SIZE,
       });
       setPagedCourses(data);
       setFilteredCourses(data.items);

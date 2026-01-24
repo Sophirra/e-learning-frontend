@@ -43,7 +43,7 @@ export function AddAvailabilityPopup() {
       toast.success("Availability added successfully");
       setOpen(false);
     } catch (e: any) {
-      toast.error(e.message);
+      toast.error("Error updating availability:", e.message);
     }
   }
 
@@ -102,14 +102,11 @@ export function AddAvailabilityPopup() {
             daysCount={7}
             displayMode={"add"}
             updateDaySlots={(newAv: ApiDayAvailability) => {
-              // console.log("update:", av);
               setUpdateAvailability((prev) => {
                 const exists = prev.some((oldAv) => oldAv.day === newAv.day);
                 if (exists) {
-                  // console.log("exists in update:", prev);
                   return prev.map((oldAv) => {
                     if (oldAv.day === newAv.day) {
-                      // console.log("setting newAv: ", newAv, oldAv);
                     }
                     return oldAv.day === newAv.day ? newAv : oldAv;
                   });
@@ -117,7 +114,6 @@ export function AddAvailabilityPopup() {
                 const existing = existingAvailability.find(
                   (ex) => ex.day === newAv.day,
                 );
-                // console.log("exists in existing:", existing);
                 return [...prev, existing ? existing : newAv];
               });
             }}

@@ -39,10 +39,9 @@ export function DeleteFilePopup({ file }: { file: FileData }) {
             onClick={async () => {
               try {
                 await deleteFile(file.id);
-
-                toast.success("Plik usunięty");
-              } catch (err) {
-                toast.error("Nie udało się usunąć pliku");
+                toast.success("File deleted successfully.");
+              } catch (err: any) {
+                toast.error("Failed to delete file: " + err.message);
               }
             }}
           >

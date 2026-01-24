@@ -53,9 +53,7 @@ export default function WeekSchedulePopup({
       try {
         const availability = await getApiDayAvailability(courseId);
         setApiDayAvailability(availability ?? []);
-        console.log("Fetched availability:", availability);
       } catch (err) {
-        console.error("Error fetching teacher availability:", err);
         toast.error("Could not load teacher availability.");
       }
     };

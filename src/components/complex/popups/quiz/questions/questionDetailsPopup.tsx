@@ -170,8 +170,12 @@ export function QuestionDetailsPopup({
     }
   }
   async function getCategories() {
-    const categoriesData = await getUserCategories();
-    setAvailableCategories(categoriesData);
+    try {
+      const categoriesData = await getUserCategories();
+      setAvailableCategories(categoriesData);
+    } catch (err: any) {
+      toast.error("Error while fetching categories: ", err.message);
+    }
   }
 
   useEffect(() => {

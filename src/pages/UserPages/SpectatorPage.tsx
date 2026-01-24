@@ -29,7 +29,6 @@ export function SpectatorPage() {
         const data = await getSpectatedApi();
         // @ts-ignore
         setStudents(data);
-        console.log("students on download:", data);
       } catch (e: any) {
         toast.error("Failed to fetch spectated students: " + e.message);
       }
@@ -70,6 +69,7 @@ export function SpectatorPage() {
     }
 
     async function fetchQuizzes() {
+      if (!selectedStudentId) return;
       try {
         const data = await getQuizzes(selectedStudentId);
         setQuizzes(data);

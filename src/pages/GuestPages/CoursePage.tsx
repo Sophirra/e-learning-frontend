@@ -61,9 +61,7 @@ export function CoursePage() {
       try {
         const data = await getTeacherById(teacherId);
         setTeacher(data);
-        console.log("Fetched teacher:", data);
       } catch (err) {
-        console.error("Error fetching teacher:", err);
         toast.error("Could not load teacher data.");
       }
     };
@@ -78,9 +76,7 @@ export function CoursePage() {
       try {
         const data = await getTeacherReviews(teacherId);
         setTeacherReviews(data);
-        console.log("Fetched teacher reviews:", data);
       } catch (err) {
-        console.error("Error fetching teacher reviews:", err);
         toast.error("Could not load teacher reviews.");
       }
     };
@@ -95,9 +91,7 @@ export function CoursePage() {
       try {
         const data = await getCourseById(courseId);
         setCourse(data);
-        console.log("Fetched course:", data);
       } catch (err) {
-        console.error("Error fetching course:", err);
         toast.error("Could not load course data.");
       }
     };
@@ -112,9 +106,7 @@ export function CoursePage() {
       try {
         const data = await getTeacherAvailabilityByCourseId(courseId);
         setTeacherAvailability(data);
-        console.log("Fetched availability (by course):", data);
       } catch (err) {
-        console.error("Error fetching teacher availability:", err);
         toast.error("Could not load teacher availability.");
       }
     };

@@ -46,9 +46,6 @@ export function DaySchedule({
   const [toAdd, setToAdd] = useState<TimeSlot[]>([]);
 
   function setDaySlots() {
-    // console.log("setting day slots");
-    // console.log("toAdd: ", toAdd);
-    // console.log("toDelete: ", toDelete);
     if (!updateDaySlots) {
       console.log("lost in update day slots: no passed function found");
       return;
@@ -70,10 +67,6 @@ export function DaySchedule({
     let series = false;
     let start: number = 0;
     let end: number;
-    // if (hours.includes(0)) {
-    //   daySlots.timeslots = [];
-    // } else {
-    //   console.log("hours: ", hours);
     for (let i: number = 0; i < hours.length; i++) {
       if (hours[i] === 0) {
         if (series) {
@@ -90,8 +83,6 @@ export function DaySchedule({
         start = i;
       }
     }
-    // }
-    // console.log("updated day", daySlots);
     updateDaySlots(daySlots);
   }
 
@@ -104,7 +95,6 @@ export function DaySchedule({
           ? prev.filter((s) => s.start !== slot.start)
           : [...prev, slot];
       });
-      // setSlots((prev) => prev.filter((s) => s.start !== slot.start));
     } else {
       setToDelete([...toDelete, slot]);
     }

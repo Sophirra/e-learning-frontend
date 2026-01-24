@@ -46,7 +46,6 @@ export function SpectatorSendInvitePopup({
       onInvited?.();
       setOpen(false);
     } catch (error: any) {
-      console.error("Failed to send spectator invite:", error);
       const message =
         error.response?.data ||
         "An unexpected error occurred. Please try again later.";

@@ -29,8 +29,12 @@ export function SetupNewClassPopup() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const data = await getStudentCourses(getUserId());
-      setCourses(data);
+      try {
+        const data = await getStudentCourses(getUserId());
+        setCourses(data);
+      } catch (e: any) {
+        toast.error("Failed to fetch courses: " + e.message);
+      }
     };
     fetchCourses();
   }, []);
@@ -41,6 +45,7 @@ export function SetupNewClassPopup() {
       classDate.setHours(timeslot.start, 0, 0, 0);
       await setupNextClass(classDate.toISOString(), selectedCourse[0].value);
       setOpen(false);
+      toast.success("Class setup successfully.");
     } catch (e: any) {
       toast.error("Failed to setup class: " + e.message);
     }

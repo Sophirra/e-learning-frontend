@@ -28,9 +28,9 @@ export function CreateQuestionCategoryPopup({
   async function apiAddCategory(name: string) {
     try {
       await createQuestionCategory(name);
-      toast.success("Category created successfully");
       onCreate();
       setOpen(false);
+      toast.success("Category created successfully");
     } catch (error: any) {
       toast.error("Failed to create category: ", error.message);
     }

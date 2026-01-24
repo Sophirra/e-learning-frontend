@@ -13,7 +13,7 @@ export function NavigationBar() {
         <nav className="flex gap-6">
           {[
             { to: "/home", icon: icons.Home, label: "Home" },
-            //students tab only visible to teachers
+            //students' tab only visible to teachers
             user?.activeRole === "teacher"
               ? { to: "/students", icon: icons.Users, label: "Students" }
               : null,
@@ -30,7 +30,7 @@ export function NavigationBar() {
               ? null
               : { to: "/spectate", icon: icons.Spectate, label: "Spectate" },
           ]
-            //filter to remove null from list
+            //filter to remove null from the list
             .filter(Boolean)
             //ignore warnings - null is filtered out
             // @ts-ignore
@@ -55,7 +55,6 @@ export function NavigationBar() {
             })}
         </nav>
       </div>
-      {/*)}*/}
       <Divider />
     </header>
   );

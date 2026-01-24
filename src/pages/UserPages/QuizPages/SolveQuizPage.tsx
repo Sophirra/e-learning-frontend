@@ -86,9 +86,8 @@ export function SolveQuizPage() {
       const result = await submitQuiz(solution);
       toast.success(`Scored ${Math.floor(result)}%`);
       navigate("/quizzes");
-    } catch (e) {
-      toast.error("Something went wrong");
-      console.log(e);
+    } catch (e: any) {
+      toast.error("Error submitting quiz", e.message);
     }
   }
 
@@ -121,22 +120,28 @@ export function SolveQuizPage() {
       console.log("set loading", loading);
     }
     async function getQuiz(id: string) {
-      const data = await getQuizApi(id);
-      setQuiz(data);
-      console.log("set quiz", quiz);
+      try {
+        const data = await getQuizApi(id);
+        setQuiz(data);
+      } catch (err: any) {
+        toast.error("Error fetching quiz", err.message);
+      }
     }
     async function getQuestions(id: string) {
-      const data = await getQuizQuestions(id);
-      setQuestions(data);
-      setCurrentQuestionIndex(0);
-      setSolution({
-        quizId: id,
-        answers: data.map((q) => ({
-          questionId: q.id,
-          selectedAnswerIds: [],
-        })),
-      });
-      console.log("set questions", questions);
+      try {
+        const data = await getQuizQuestions(id);
+        setQuestions(data);
+        setCurrentQuestionIndex(0);
+        setSolution({
+          quizId: id,
+          answers: data.map((q) => ({
+            questionId: q.id,
+            selectedAnswerIds: [],
+          })),
+        });
+      } catch (err: any) {
+        toast.error("Error fetching quiz questions", err.message);
+      }
     }
   }, [quizId]);
 

@@ -44,16 +44,13 @@ export function HomePage() {
         // jeśli w międzyczasie rola się zmieniła, ignorujemy tę odpowiedź
         if (currentReqId !== requestIdRef.current) return;
         setClasses(data);
-      } catch {
+      } catch (err: any) {
         if (currentReqId !== requestIdRef.current) return;
-        // brak toasta przy 204 jest obsłużony w getCourseBriefs -> zwróci []
-        // pokaż błąd tylko dla faktycznych błędów
-        toast.error("Failed to load courses. Please try again later.");
+        toast.error("Failed to load courses: ", err.message);
       }
     };
 
     fetchClasses();
-    // brak cleanupu potrzebnego   unieważnianie robi requestIdRef
   }, [activeRole]);
 
   useEffect(() => {
@@ -106,9 +103,8 @@ export function HomePage() {
         } else {
           setExercises([]);
         }
-      } catch (e) {
-        console.error("Failed to fetch exercises", e);
-        toast.error("Error getting exercises");
+      } catch (e: any) {
+        toast.error("Error getting exercises: ", e.message);
         setExercises([]);
       }
     };

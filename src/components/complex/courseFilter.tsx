@@ -15,6 +15,7 @@ import {
   getStudentCoursesWithSpecificTeacher,
   getStudentParticipations,
 } from "@/api/api calls/apiStudents.ts";
+import { toast } from "sonner";
 
 type CourseFilterProps = {
   student: boolean;
@@ -66,8 +67,8 @@ export default function CourseFilter({
             setCourses(await getTeacherCourses(userId));
           }
         }
-      } catch (err) {
-        console.error("Could not load initial data:", err);
+      } catch (err: any) {
+        toast.error("Could not filter data:", err.message);
       }
     };
 
@@ -109,7 +110,7 @@ export default function CourseFilter({
         }
       } catch (err: any) {
         if (err?.name !== "AbortError") {
-          console.error("Could not load courses for selected student:", err);
+          toast.error("Could not load courses for selected student:", err);
         }
       }
     })();
@@ -122,7 +123,7 @@ export default function CourseFilter({
   //
   // 1) User selects Student A:
   //    - The effect runs, gen = 1, and request A is sent.
-  // 2) After ~100 ms, user changes selection to Student B:
+  // 2) After ~100 ms, the user changes selection to Student B:
   //    - The effect's cleanup aborts request A,
   //    - The effect runs again, gen = 2, and request B is sent.
   // 3) Response from request A still arrives (despite the abort):
@@ -130,7 +131,7 @@ export default function CourseFilter({
   //    - This response is considered stale and is ignored (no state update).
   // 4) Response from request B arrives:
   //    - We check: if (gen !== fetchGen.current) -> 2 === 2,
-  //    - This is the latest response, so we update the courses list from it.
+  //    - This is the latest response, so we update the course list from it.
 
   // A COURSE WAS SELECTED -> LOAD ONLY ITS STUDENTS
   useEffect(() => {
@@ -161,7 +162,10 @@ export default function CourseFilter({
         }
       } catch (err: any) {
         if (err?.name !== "AbortError") {
-          console.error("Could not load students for selected course:", err);
+          toast.error(
+            "Could not load students for selected course:",
+            err.message,
+          );
         }
       }
     })();
@@ -248,9 +252,7 @@ export default function CourseFilter({
           <icons.Reset />
         </Button>
       </div>
-      {setupClassButton ? (
-        <SetupNewClassPopup />
-      ) : null}
+      {setupClassButton ? <SetupNewClassPopup /> : null}
     </div>
   );
 }

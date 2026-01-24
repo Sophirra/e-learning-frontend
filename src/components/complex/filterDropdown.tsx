@@ -29,18 +29,20 @@ interface FilterDropdownProps {
   emptyMessage: string;
   /** Array of items to be displayed in the dropdown */
   items: SelectableItem[];
-  /** Callback when selection changes (always returns array, even if single select) */
+  /** Callback when selection changes (always returns an array, even if single select) */
   onSelectionChange?: (selected: SelectableItem[]) => void;
   /** Enable selecting multiple values */
   multiselect?: boolean;
-  /** Show search bar */
+  /** Show the search bar */
   searchable?: boolean;
-  /** Show reset button */
+  /** Show the reset button */
   reset?: boolean;
   disabled?: boolean;
+  /** an optional icon displayed*/
   icon?: React.ComponentType<any>;
   /** key of the default items */
   defaultValues?: string[];
+  /** additional css parameters*/
   className?: string;
 }
 

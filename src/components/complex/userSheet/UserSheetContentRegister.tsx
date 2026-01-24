@@ -57,7 +57,7 @@ export function UserSheetContentRegister({
       name: "",
       surname: "",
       phone: "",
-      aboutMe: ""
+      aboutMe: "",
     },
   });
 
@@ -70,7 +70,6 @@ export function UserSheetContentRegister({
         message: e.message || "Registration failed. Please try again.",
       });
     }
-    console.log(data);
   }
 
   return (

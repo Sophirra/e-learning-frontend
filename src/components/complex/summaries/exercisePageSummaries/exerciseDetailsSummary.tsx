@@ -57,10 +57,8 @@ export function ExerciseDetailsSummary({
                     setOpen(false);
                   } catch (error) {
                     toast.error("Error submitting exercise.");
-                    console.error("Submit error:", error);
                   }
                 }
-                console.log("Submitting exercise:", exercise?.id);
               }}
             >
               Submit

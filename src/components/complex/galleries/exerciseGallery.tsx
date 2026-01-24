@@ -9,6 +9,7 @@ import { getUserId } from "@/api/api.ts";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { getExercises } from "@/api/api calls/apiExercises.ts";
+import { toast } from "sonner";
 
 export function ExerciseGallery({
   selected,
@@ -37,13 +38,12 @@ export function ExerciseGallery({
       const data = await getExercises(
         userId,
         user?.activeRole,
-          selectedCourseId ? selectedCourseId : undefined,
+        selectedCourseId ? selectedCourseId : undefined,
         selectedStudentId ? selectedStudentId : undefined,
       );
       setExercises(data);
-      console.log("set quizzes: ", data);
-    } catch (e) {
-      console.error("Error fetching quizzes:", e);
+    } catch (err: any) {
+      toast.error("Error getting exercises: ", err.message);
     }
   }
   function getExerciseDetails(exercise: Exercise) {
