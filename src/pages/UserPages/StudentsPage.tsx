@@ -27,7 +27,7 @@ import { getStudentWithTeacherExercises } from "@/api/api calls/apiExercises.ts"
 import {
   getStudentCoursesWithSpecificTeacher,
   getStudentData,
-  getStudentWithTeacherQuizzes,
+  getTeacherQuizzesByStudent,
 } from "@/api/api calls/apiStudents.ts";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
@@ -83,7 +83,7 @@ export function StudentsPage() {
     if (!selectedStudentId) return;
 
     const fetchQuizzes = async () => {
-      const data = await getStudentWithTeacherQuizzes(
+      const data = await getTeacherQuizzesByStudent(
         teacherId,
         selectedStudentId,
         selectedCourseId ?? undefined,

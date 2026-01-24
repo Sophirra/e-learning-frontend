@@ -1,10 +1,10 @@
 import type { Answer, Question, QuestionCategory } from "@/types.ts";
 import Api from "@/api/api.ts";
-import type {ErrorResponse} from "react-router-dom";
 
 /**
- * get teacher question categories for filtering and editing questions.
- * Get ALL created categories, even if unused
+ * Fetches the list of question categories associated with the user.
+ *
+ * @return {Promise<QuestionCategory[]>} A promise that resolves to an array of question categories.
  */
 export async function getUserCategories(): Promise<QuestionCategory[]> {
   const res = await Api.get(`/api/quizzes/user/categories`);
@@ -12,8 +12,10 @@ export async function getUserCategories(): Promise<QuestionCategory[]> {
 }
 
 /**
- * get teacher's questions to display in the gallery. Do not include answers
- * @param categoryIds
+ * Fetches user questions filtered by the provided category IDs, if any.
+ *
+ * @param {string[]} [categoryIds] An optional array of category IDs to filter the questions.
+ * @return {Promise<Question[]>} A promise that resolves to an array of Question objects.
  */
 export async function getUserQuestions(
   categoryIds?: string[],
@@ -22,66 +24,67 @@ export async function getUserQuestions(
   categoryIds?.forEach((categoryId: string) =>
     params.append("categories", categoryId),
   );
-  const res = await Api.get(
+  const { data } = await Api.get(
     `/api/quizzes/user/questions${params.toString() ? `?${params.toString()}` : ""}`,
   );
-  return res.data;
+  return data;
 }
 
 /**
- * get full question with answers. Will be displayed to teacher - include
- * correctness of answers.
- * @param questionId
+ * Retrieves the full details of a specific question by its ID.
+ *
+ * @param {string} questionId - The unique identifier of the question.
+ * @return {Promise<Question>} A promise that resolves to the full question details.
  */
 export async function getFullQuestion(questionId: string): Promise<Question> {
-  const res = await Api.get(`/api/quizzes/question/${questionId}/full`);
-  return res.data;
+  const { data } = await Api.get(`/api/quizzes/question/${questionId}/full`);
+  return data;
 }
 
 /**
- * create a new category (while editing/creating a question)
- * @param categoryName
+ * Creates a new question category with the specified name.
+ *
+ * @param {string} categoryName - The name of the question category.
+ * @return {Promise<QuestionCategory>} A promise that resolves to the created QuestionCategory object.
  */
 export async function createQuestionCategory(
   categoryName: string,
 ): Promise<QuestionCategory> {
-  const res = await Api.post("/api/quizzes/question/category", {
+  const { data } = await Api.post("/api/quizzes/question/category", {
     name: categoryName,
   });
-  if (res.status === 200) {
-    return res.data;
-  } else throw res.data as ErrorResponse;
+  return data;
 }
 
 /**
- * Create new question.
- * @param content
- * @param answers
- * @param categoryIds
+ * Creates a new question.
+ *
+ * @param {string} content - The text content of the question.
+ * @param {Answer[]} answers - An array of answers.
+ * @param {string[]} categoryIds - An array of categories.
+ * @return {Promise<Question>} A promise that resolves to the created question object.
  */
 export async function createQuestion(
   content: string,
   answers: Answer[],
   categoryIds: string[],
 ): Promise<Question> {
-  const res = await Api.post("/api/quizzes/question", {
+  const { data } = await Api.post("/api/quizzes/question", {
     content,
     answers,
     categoryIds,
   });
-  if (res.status === 200) {
-    return res.data;
-  }
-  throw res.data as ErrorResponse;
+  return data;
 }
 
 /**
- * update already created question - all data is replaced - not checked was
- * modified (but can be)
- * @param questionId
- * @param content
- * @param answers
- * @param categoryIds
+ * Updates the details of a question.
+ *
+ * @param {string} questionId - The unique identifier of the question.
+ * @param {string} content - The updated text content.
+ * @param {Answer[]} answers - An array of updated answers.
+ * @param {string[]} categoryIds - An array of updated categories.
+ * @return {Promise<Question>} A promise that resolves to the updated question object.
  */
 export async function updateQuestion(
   questionId: string,
@@ -89,13 +92,10 @@ export async function updateQuestion(
   answers: Answer[],
   categoryIds: string[],
 ): Promise<Question> {
-  const res = await Api.put(`/api/quizzes/question/${questionId}`, {
+  const { data } = await Api.put(`/api/quizzes/question/${questionId}`, {
     content,
     answers,
     categoryIds,
   });
-  if (res.status === 200) {
-    return res.data;
-  }
-  throw res.data as ErrorResponse;
+  return data;
 }

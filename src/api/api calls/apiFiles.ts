@@ -7,42 +7,30 @@ import type {
   PagedResult,
 } from "@/types.ts";
 import Api, { getUserId } from "@/api/api.ts";
-import type { ErrorResponse } from "react-router-dom";
 
 /**
- * Uploads a file for the currently authenticated user.
+ * Uploads a file for a logged-in user.
  *
- * The API endpoint `/api/user/files` accepts a multipart/form-data POST request
- * containing the file to be uploaded. The backend associates the file with the
- * authenticated user (based on their JWT identity) and stores it under `/uploads/users/{userId}/files/`.
- *
- * Request body (multipart/form-data):
- * - `file`   the file to upload.
-
-
- * @param {File} file - The file object selected by the user (from an `<input type="file">`).
- * @returns {Promise<any>} Resolves with the uploaded file metadata returned by the backend.
+ * @param {File} file - The file object selected by the user.
+ * @returns {Promise<any>} Resolves with the uploaded file metadata.
  */
 export const uploadUserFile = async (file: File): Promise<FileBrief> => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await Api.post("/api/user/files", formData, {
+  const { data } = await Api.post("/api/user/files", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  if (response.status === 201 || response.status === 200)
-    return response.data as FileBrief;
-  else throw response.data as ErrorResponse;
+  return data as FileBrief;
 };
+
 /**
- * Fetches a filtered list of files from the backend.
+ * Fetches a filtered list of files.
  *
- * Supports multiple optional filters. Each provided filter
- * will be converted into a query parameter and appended to the request URL.
- * ```
+ * Supports multiple optional filters.
  *
- * @param filters - Optional filtering parameters.
- * @returns Promise resolving to an array of Course objects.
+ * @param filter - Optional filtering parameters.
+ * @returns Promise resolving to an array of FileData objects in a paged result.
  */
 export const getFiles = async (
   filter?: FileFilter,
@@ -67,16 +55,15 @@ export const getFiles = async (
 
 /**
  * Updates the file data in the database.
- * @param fileId id of the file to update
- * @param data new file name and tags
+ * @param fileId id of the file.
+ * @param content new file name and tags.
  */
 export async function updateFileData(
   fileId: string,
-  data: { fileName: string; tags: FileTag[] },
+  content: { fileName: string; tags: FileTag[] },
 ) {
-  const res = await Api.put(`/api/user/files/${fileId}`, data);
-  if (res.status === 200 || res.status === 201) return res.data;
-  else return res.data as ErrorResponse;
+  const { data } = await Api.put(`/api/user/files/${fileId}`, content);
+  return data;
 }
 
 /**
@@ -89,35 +76,68 @@ export async function getAvailableTags(): Promise<FileTag[]> {
   return data;
 }
 
-export async function createNewTag(name: string) {
-  const res = await Api.post("/api/tags", { name });
-  if (res.status === 201 || res.status === 200 || res.status === 204)
-    return res.data;
-  else return res.data as ErrorResponse;
+/**
+ * Creates a new tag with the specified name by making a POST request to the API.
+ *
+ * @param {string} name - The name of the tag to be created.
+ * @return {Promise<object>} A promise that resolves to the created tag data.
+ */
+export async function createNewTag(name: string): Promise<object> {
+  const { data } = await Api.post("/api/tags", { name });
+  return data;
 }
 
-export async function deleteFile(fileId: string) {
+/**
+ * Deletes a file.
+ *
+ * @param {string} fileId - The unique identifier of the file.
+ * @return {Promise<void>} A promise that resolves when the file is successfully deleted.
+ */
+export async function deleteFile(fileId: string): Promise<void> {
   await Api.delete(`/api/user/files?fileId=${fileId}`);
 }
 
+/**
+ * Fetches and returns the list of file tags associated with the user.
+ *
+ * @return {Promise<FileTag[]>} A promise that resolves to an array of file tag objects.
+ */
 export async function getUserFileTags(): Promise<FileTag[]> {
   const { data } = await Api.get<FileTag[]>("/api/user/files/tags");
   return data ?? [];
 }
 
+/**
+ * Fetches and returns a list of file extensions associated with the user.
+ *
+ * @return {Promise<string[]>} A promise that resolves to an array of strings with extensions.
+ */
 export async function getUserFileExtensions(): Promise<string[]> {
   const { data } = await Api.get<string[]>("/api/user/files/extensions");
   return data ?? [];
 }
 
+/**
+ * Retrieves the list of file owners associated with the user.
+ *
+ * @return {Promise<FileOwner[]>} A promise that resolves to an array of file owner objects.
+ */
 export async function getUserFileOwners(): Promise<FileOwner[]> {
   const { data } = await Api.get<FileOwner[]>("/api/user/files/owners");
   return data ?? [];
 }
 
-export async function addFileToClass(fileId: string, classId: string) {
-  const res = await Api.post(`/api/classes/${classId}/files/`, fileId);
-  if (res.status === 201 || res.status === 200 || res.status === 204)
-    return res.data;
-  else return res.data as ErrorResponse;
+/**
+ * Adds a file to a specific class by its ID.
+ *
+ * @param {string} fileId - The unique identifier of the file.
+ * @param {string} classId - The unique identifier of the class .
+ * @return {Promise<object[]>} A promise that resolves to an array of objects representing the updated list of files for the class.
+ */
+export async function addFileToClass(
+  fileId: string,
+  classId: string,
+): Promise<object[]> {
+  const { data } = await Api.post(`/api/classes/${classId}/files/`, fileId);
+  return data ?? [];
 }

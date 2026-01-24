@@ -5,10 +5,11 @@ import type {
   AuthResponse,
   aboutUser,
 } from "../types.ts";
-import {clearPersistedRole} from "@/lib/user/RolePersistence.ts";
+import { clearPersistedRole } from "@/lib/user/RolePersistence.ts";
 
-
-export const registerUser = async (userData: RegisterUserDto): Promise<void> => {
+export const registerUser = async (
+  userData: RegisterUserDto,
+): Promise<void> => {
   await api.post<void>("/api/security/register", userData);
 };
 
@@ -35,7 +36,7 @@ export const refreshToken = async (): Promise<AuthResponse> => {
   return res.data;
 };
 
-//get info about user
+//get information about the user
 export const aboutMe = async (): Promise<aboutUser> => {
   const res = await api.get<aboutUser>("/api/users/aboutMe");
   return res.data;

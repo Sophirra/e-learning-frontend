@@ -11,11 +11,9 @@ export const getCourseById = async (courseId: string): Promise<Course> => {
   const { data } = await Api.get<Course>(`/api/courses/${courseId}`);
   return data;
 };
+
 /**
  * Fetches all available course categories.
- *
- * This endpoint retrieves a list of all course categories
- * that can be used for filtering or displaying courses.
  *
  * @returns Promise resolving to an array of category names (strings).
  */
@@ -23,10 +21,11 @@ export const getCourseCategories = async (): Promise<string[]> => {
   const { data } = await Api.get<{ name: string }[]>(`/api/courses/categories`);
   return data.map((c) => c.name);
 };
+
 /**
  * Fetches all available course levels (e.g., Beginner, Intermediate, Advanced).
  *
- * Useful for populating level filters or form selectors.
+ * Used in level filters for courses.
  *
  * @returns Promise resolving to an array of level names (strings).
  */
@@ -34,10 +33,11 @@ export const getCourseLevels = async (): Promise<string[]> => {
   const { data } = await Api.get<{ name: string }[]>(`/api/courses/levels`);
   return data.map((l) => l.name);
 };
+
 /**
  * Fetches all available languages used across courses.
  *
- * Used to populate language filters in course listings or search.
+ * Used in language filters for courses.
  *
  * @returns Promise resolving to an array of language names (strings).
  */
@@ -45,14 +45,11 @@ export const getCourseLanguages = async (): Promise<string[]> => {
   const { data } = await Api.get<{ name: string }[]>(`/api/courses/languages`);
   return data.map((l) => l.name);
 };
+
 /**
  * Fetches a paginated and optionally filtered list of courses from the backend.
  *
- * Supports multiple optional filters such as category, level, language,
- * price range, teacher, and search query. Pagination parameters (`pageNumber`, `pageSize`)
- * can also be provided to control which subset of results is returned.
- *
- * Each provided filter will be serialized into query parameters and appended to the request URL.
+ * Supports multiple optional filters
  *
  * Example usage:
  * ```ts
@@ -66,11 +63,10 @@ export const getCourseLanguages = async (): Promise<string[]> => {
  *   pageNumber: 1,
  *   pageSize: 5,
  * });
- *
+ * ```
  * @param filters - Optional filtering and pagination parameters.
  * @returns A promise resolving to a {@link PagedResult} containing a list of {@link CourseWidget} items.
  */
-
 export const getCourses = async (filters?: {
   pageSize: number;
   pageNumber: number;

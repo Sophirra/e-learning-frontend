@@ -2,6 +2,13 @@ import type { Exercise, ExerciseBrief, FileBrief } from "@/types.ts";
 import Api, { getUserId } from "@/api/api.ts";
 import type { ErrorResponse } from "react-router-dom";
 
+/**
+ * Uploads a solution file for a specific exercise.
+ *
+ * @param {string} exerciseId - The unique identifier of the exercise.
+ * @param {File} file - The solution file to upload.
+ * @returns {Promise<FileBrief>} A promise that resolves to a brief description of the uploaded file.
+ */
 export const uploadExerciseSolution = async (
   exerciseId: string,
   file: File,
@@ -9,7 +16,7 @@ export const uploadExerciseSolution = async (
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await Api.post(
+  const { data } = await Api.post(
     `/api/exercises/${exerciseId}/solution`,
     formData,
     {
@@ -17,39 +24,43 @@ export const uploadExerciseSolution = async (
     },
   );
 
-  if (response.status === 200 || response.status === 201)
-    return response.data as FileBrief;
-
-  throw response.data as ErrorResponse;
+  return data as FileBrief;
 };
 
 /**
- * Adds a grade to an assignment.
- * @param assignmentId
- * @param grade
- * @param comments
+ * Submits a grade for an exercise along with optional comments.
+ *
+ * @param {string} assignmentId - The unique identifier for the exercise assignment.
+ * @param {number} grade - The grade to be assigned.
+ * @param {string} [comments] - Optional comments.
+ * @return {Promise<void>} A promise that resolves when the grade has been successfully submitted.
  */
 export async function addExerciseGrade(
   assignmentId: string,
   grade: number,
   comments?: string,
 ): Promise<void> {
-  const res = await Api.post("/api/exercises/grade", {
+  await Api.post("/api/exercises/grade", {
     assignmentId,
     grade,
     comments,
   });
-  if (res.status === 201 || res.status === 200) return;
-  else throw res.data as ErrorResponse;
 }
 
+/**
+ * Retrieves a list of unsolved exercises for a specific student, optionally filtered by courses.
+ *
+ * @param {string[]} [courseIds] - An optional array of course IDs.
+ * @param {string} [studentId] - An optional student ID.
+ * @return {Promise<ExerciseBrief[]>} A promise that resolves to an array of unsolved exercises for the student.
+ */
 export async function getStudentUnsolvedExercises(
   courseIds?: string[],
   studentId?: string,
 ): Promise<ExerciseBrief[]> {
   if (!studentId) {
     studentId = getUserId() || undefined;
-    if(!studentId) throw ("No student id found")
+    if (!studentId) throw "No student id found";
   }
   const { data } = await Api.get(
     `/api/exercises/unsolved-by-user/${studentId}`,
@@ -63,6 +74,13 @@ export async function getStudentUnsolvedExercises(
   return data;
 }
 
+/**
+ * Fetches a list of exercises that are ready to be graded based on the provided student and course filters.
+ *
+ * @param {string[]} [studentIds] - An optional array of student IDs.
+ * @param {string[]} [courseIds] - An optional array of course IDs.
+ * @return {Promise<ExerciseBrief[]>} A promise that resolves to an array of ExerciseBrief objects representing the exercises ready to be graded.
+ */
 export async function getExercisesReadyToGrade(
   studentIds?: string[],
   courseIds?: string[],
@@ -77,6 +95,14 @@ export async function getExercisesReadyToGrade(
   return data;
 }
 
+/**
+ * Retrieves exercises assigned by a specific teacher to a specific student, optionally filtered by a course.
+ *
+ * @param {string} teacherId - The unique identifier of the teacher.
+ * @param {string} studentId - The unique identifier of the student.
+ * @param {string} [courseId] - Optional unique identifier of the course.
+ * @return {Promise<ExerciseBrief[]>} A promise that resolves to an array of exercise briefs assigned by the teacher to the student.
+ */
 export async function getStudentWithTeacherExercises(
   teacherId: string,
   studentId: string,
@@ -98,6 +124,15 @@ export async function getStudentWithTeacherExercises(
   return data;
 }
 
+/**
+ * Fetches a list of exercises based on the user's role and selected filters.
+ *
+ * @param {string} userId - The unique identifier of the user requesting exercises.
+ * @param {string} [activeRole] - The role of the user, such as "student" or "teacher".
+ * @param {string} [preferredCourseId] - An optional identifier for the preferred course.
+ * @param {string} [preferredStudentId] - An optional identifier for a specific student, used only for teacher endpoint.
+ * @return {Promise<Exercise[]>} A promise that resolves to an array of exercises.
+ */
 export async function getExercises(
   userId: string,
   activeRole?: string,
@@ -128,39 +163,67 @@ export async function getExercises(
   return data;
 }
 
-export async function copyExercise(exerciseId: string, classId: string) {
+/**
+ * Creates a copy of the specified exercise for a given class.
+ *
+ * @param {string} exerciseId - The unique identifier of the exercise.
+ * @param {string} classId - The unique identifier of the class.
+ * @return {Promise<void>} A promise that resolves when the copy operation is successful, or rejects with an error response if it fails.
+ */
+export async function copyExercise(
+  exerciseId: string,
+  classId: string,
+): Promise<void> {
   const res = await Api.post(`/api/exercises/${exerciseId}/copy`, { classId });
   if (res.status === 201 || res.status === 200) return;
   else throw res.data as ErrorResponse;
 }
 
+/**
+ * Creates a new exercise for the specified class with given instructions and optional file attachments.
+ *
+ * @param {string} classId - The identifier of the class.
+ * @param {string} instructions - The instructions for the exercise.
+ * @param {string[]} [fileIds] - Optional array of file identifiers to attach to the exercise.
+ * @return {Promise<void>} A promise that resolves once the exercise has been successfully created.
+ */
 export async function createExercise(
   classId: string,
   instructions: string,
   fileIds?: string[],
-) {
-  const res = await Api.post("/api/exercises", {
+): Promise<void> {
+  await Api.post("/api/exercises", {
     classId,
     instructions,
     fileIds,
   });
-  if (res.status === 201 || res.status === 200) return;
-  else throw res.data as ErrorResponse;
 }
 
+/**
+ * Updates the details of an exercise by its ID.
+ *
+ * @param {string} exerciseId - The unique identifier of the exercise to update.
+ * @param {string} instructions - The updated instructions for the exercise.
+ * @param {string[]} [fileIds] - Optional array of file IDs associated with the exercise.
+ * @return {Promise<void>} A promise that resolves when the exercise update is complete.
+ */
 export async function updateExercise(
   exerciseId: string,
   instructions: string,
   fileIds?: string[],
 ) {
-  const res = await Api.put(`/api/exercises/${exerciseId}`, {
+  await Api.put(`/api/exercises/${exerciseId}`, {
     instructions,
     fileIds,
   });
-  if (res.status === 200 || res.status === 201 || res.status === 204) return;
-  else throw res.data as ErrorResponse;
 }
 
+/**
+ * Fetches the list of exercises for a specific class.
+ *
+ * @param {string} classId - The unique identifier of the class.
+ * @return {Promise<Exercise[]>} A promise that resolves to an array of exercises associated with the class.
+ */
 export async function getClassExercises(classId: string): Promise<Exercise[]> {
   if (!classId) {
     return Promise.reject("No classId provided");
@@ -171,10 +234,14 @@ export async function getClassExercises(classId: string): Promise<Exercise[]> {
   return data;
 }
 
-export async function submitSolution(exerciseId: string) {
-  const res = await Api.post(`/api/exercises/${exerciseId}/submit`, {
+/**
+ * Submits the solution for a specified exercise.
+ *
+ * @param {string} exerciseId - The unique identifier of the exercise.
+ * @return {Promise<void>} A promise that resolves when the solution is successfully submitted.
+ */
+export async function submitSolution(exerciseId: string): Promise<void> {
+  await Api.post(`/api/exercises/${exerciseId}/submit`, {
     exerciseId,
   });
-  if (res.status === 200 || res.status === 204) return;
-  else throw res.data as ErrorResponse;
 }
