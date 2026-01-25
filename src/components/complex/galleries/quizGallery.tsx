@@ -7,6 +7,7 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { QuizDetailsPopup } from "@/components/complex/popups/quiz/quizDetailsPopup.tsx";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import { getQuizzes } from "@/api/api calls/apiQuizzes.ts";
+import { toast } from "sonner";
 
 export function QuizGallery({
   enableSelect,
@@ -24,7 +25,6 @@ export function QuizGallery({
   );
   const [quizzes, setQuizzes] = useState<QuizBrief[]>([]);
 
-
   useEffect(() => {
     fetchQuizzes();
   }, [selectedStudentId, selectedCourseId]);
@@ -32,13 +32,13 @@ export function QuizGallery({
   async function fetchQuizzes() {
     try {
       const data = await getQuizzes(
+        user?.activeRole || "student",
         selectedStudentId ? selectedStudentId : undefined,
         selectedCourseId ? selectedCourseId : undefined,
       );
       setQuizzes(data);
-      console.log("set quizzes: ", data);
-    } catch (e) {
-      console.error("Error fetching quizzes:", e);
+    } catch (err: any) {
+      toast.error("Error fetching quizzes:", err);
     }
   }
 

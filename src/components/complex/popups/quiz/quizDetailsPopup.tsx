@@ -13,13 +13,11 @@ import { Label } from "@/components/ui/label.tsx";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/user/UserContext.tsx";
 import type { Quiz, QuizBrief } from "@/types.ts";
-import { getTeacherById } from "@/api/api calls/apiTeacher.ts";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils.ts";
 import { CreateQuizPopup } from "@/components/complex/popups/quiz/createQuizPopup.tsx";
 import { getQuiz } from "@/api/api calls/apiQuizzes.ts";
-import { getStudentById } from "@/api/api calls/apiStudents.ts";
 
 export function QuizDetailsPopup({
   quizBrief,
@@ -45,27 +43,17 @@ export function QuizDetailsPopup({
     maxScore: 0,
   });
 
-  const [teacher, setTeacher] = useState<string>("");
-  const [student, setStudent] = useState<string>("");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    getPersonDetails();
-    async function getPersonDetails() {
-      console.log("load", load);
+    getQuizDetails();
+    async function getQuizDetails() {
       if (load) {
-        console.log("Loading quiz details...");
-        const quizData = await getQuiz(quizBrief.id);
-        setQuiz(quizData);
-        console.log("Set quiz:", quiz);
-        if (quiz) {
-          if (user?.activeRole === "teacher") {
-            const studentData = await getStudentById(quiz.studentId);
-            setStudent(studentData.name + " " + studentData.surname);
-          } else if (user?.activeRole === "student") {
-            const teacherData = await getTeacherById(quiz.teacherId);
-            setTeacher(teacherData.name + " " + teacherData.surname);
-          }
+        try {
+          const quizData = await getQuiz(quizBrief.id);
+          setQuiz(quizData);
+        } catch (err: any) {
+          toast.error("Error getting quiz details", err.message);
         }
       }
     }
@@ -113,12 +101,7 @@ export function QuizDetailsPopup({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{quiz.name}</DialogTitle>
-            <DialogDescription>
-              {quiz.courseName}
-              {user?.activeRole === "teacher"
-                ? " for " + student
-                : " by " + teacher}
-            </DialogDescription>
+            <DialogDescription>{quiz.courseName}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <Label>
@@ -127,7 +110,9 @@ export function QuizDetailsPopup({
             </Label>
             <Label>
               Score:{" "}
-              {quiz.score ? quiz.score + "/" + quiz.maxScore : "not solved yet"}
+              {quiz.score
+                ? `${Math.floor(quiz.score)}` + "/100%"
+                : "not solved yet"}
             </Label>
           </div>
           <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
@@ -144,6 +129,7 @@ export function QuizDetailsPopup({
                 onClick={() => {
                   navigate("/quizzes/" + quiz.id + "/solve");
                 }}
+                disabled={!!quiz.score}
               >
                 Solve
               </Button>

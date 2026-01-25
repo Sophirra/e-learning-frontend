@@ -48,6 +48,7 @@ export function UploadFilePopup({
       const result = await uploadUserFile(selectedFile);
       setChosenFile && setChosenFile(result);
       setOpen(false);
+      toast.success(`File "${selectedFile.name}" was uploaded successfully.`);
     } catch (e: any) {
       toast.error("Upload failed: " + e.message);
     } finally {

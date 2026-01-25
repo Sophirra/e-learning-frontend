@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label.tsx";
 import { AddExercisePopup } from "@/components/complex/popups/exercise/addExercisePopup.tsx";
 import type { Exercise } from "@/types.ts";
 import { CreateExercisePopup } from "@/components/complex/popups/exercise/createExercisePopup.tsx";
+import { Link } from "react-router-dom";
 
 export function ExerciseSummary({
   student,
@@ -15,9 +16,9 @@ export function ExerciseSummary({
   student: boolean;
   classId?: string;
 }) {
-  console.log(exercises);
   function composeTaskDetails(exercise: Exercise) {
     let statusLabel = "";
+    console.log(exercise.status);
     if (exercise.status == "Unsolved") {
       statusLabel = "To be solved";
     } else if (exercise.status == "SolutionAdded") {
@@ -79,7 +80,7 @@ export function ExerciseSummary({
               />
             ) : (
               <Button variant={"link"} className={"w-300px"}>
-                {exercise.name}:
+                <Link to={"/exercises"}>{exercise.name}:</Link>
               </Button>
             )}
             <Label>{composeTaskDetails(exercise)}</Label>

@@ -22,9 +22,14 @@ export function AddLinkPopup(classId?: string) {
   const [link, setLink] = useState<string>("");
   const [isMeeting, setIsMeeting] = useState<boolean>(false);
 
-  // function apiAddLink(link: string, isMeeting: boolean, classId: string) {
-  //   //TODO: add link via api
-  // }
+  async function apiAddLink(link: string, isMeeting: boolean, classId: string) {
+    try {
+      await addClassLink(classId, link, isMeeting);
+      console.log("Link added successfully.");
+    } catch (e: any) {
+      toast.error("Failed to add link: " + e.message);
+    }
+  }
 
   return (
     <Dialog>
@@ -66,7 +71,7 @@ export function AddLinkPopup(classId?: string) {
               variant={"outline"}
               onClick={() => {
                 if (classId != null) {
-                  addClassLink(classId, link, isMeeting);
+                  apiAddLink(link, isMeeting, classId);
                 } else {
                   toast.error("Class id is not defined");
                 }

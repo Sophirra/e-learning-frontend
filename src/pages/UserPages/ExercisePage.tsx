@@ -12,6 +12,7 @@ import { getUserId } from "@/api/api.ts";
 import { LoadingTile } from "@/components/complex/tiles/loadingTile.tsx";
 import type { Exercise } from "@/types.ts";
 import { getExercises } from "@/api/api calls/apiExercises.ts";
+import { toast } from "sonner";
 
 export function ExercisePage() {
   const { user } = useUser();
@@ -30,13 +31,17 @@ export function ExercisePage() {
     if (!userId) return;
 
     const fetchExercises = async () => {
-      const data = await getExercises(
-        userId,
-        activeRole,
-        selectedCourseId !== null ? selectedCourseId : undefined,
-        selectedStudentId !== null ? selectedStudentId : undefined,
-      );
-      setExercises(data);
+      try {
+        const data = await getExercises(
+          userId,
+          activeRole,
+          selectedCourseId !== null ? selectedCourseId : undefined,
+          selectedStudentId !== null ? selectedStudentId : undefined,
+        );
+        setExercises(data);
+      } catch (e: any) {
+        toast.error("Error fetching exercises: " + e.message);
+      }
     };
 
     fetchExercises().then();

@@ -3,12 +3,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { DaySchedule } from "./daySchedule.tsx";
 import { addMonths } from "date-fns";
-import type {
-  ApiDayAvailability,
-  ClassSchedule,
-  DayAvailability,
-  TimeSlot,
-} from "@/types.ts";
+import type { ApiDayAvailability, ClassSchedule, TimeSlot } from "@/types.ts";
 import { cn } from "@/lib/utils.ts";
 
 type ScheduleProps = {
@@ -19,7 +14,7 @@ type ScheduleProps = {
   classes?: ClassSchedule[];
   displayMode: "time" | "class" | "add";
   onSelect?: (slot: TimeSlot) => void;
-  updateDaySlots?: (dayState: DayAvailability) => void;
+  updateDaySlots?: (dayState: ApiDayAvailability) => void;
   selectedClassId?: string;
 };
 
@@ -150,7 +145,20 @@ export default function Schedule({
       }
     }
     slots.sort((a, b) => a.start - b.start);
-    return slots;
+
+    //slicing from multiple hour periods into a single ones
+    const sliced: TimeSlot[] = [];
+
+    for (const slot of slots) {
+      for (let h = slot.start; h < slot.end; h++) {
+        sliced.push({
+          ...slot,
+          start: h,
+          end: h + 1,
+        });
+      }
+    }
+    return sliced;
   };
 
   //to prevent user from going too far in the list

@@ -15,7 +15,7 @@ import type {
   TeacherReview,
 } from "@/types.ts";
 import { CourseDetailCard } from "@/components/complex/cards/courseDetailCard.tsx";
-import WeekSchedulePopup from "@/components/complex/schedules/weekSchedulePopup.tsx";
+import WeekSchedulePopup from "@/components/complex/calendar/schedules/weekSchedulePopup.tsx";
 import { useUser } from "@/lib/user/UserContext.tsx";
 import { toast } from "sonner";
 import OpinionTile from "@/components/complex/tiles/opinionTile.tsx";
@@ -41,7 +41,6 @@ export function CoursePage() {
 
   const { user } = useUser();
   const { courseId } = useParams();
-  /** To be downloaded from backend*/
   const [course, setCourse] = useState<Course | null>(null);
   const [teacher, setTeacher] = useState<Teacher | null>(null);
   const [teacherReviews, setTeacherReviews] = useState<TeacherReview[] | null>(
@@ -50,8 +49,9 @@ export function CoursePage() {
   const [teacherAvailability, setTeacherAvailability] = useState<
     TeacherAvailability[] | null
   >(null);
-  /** Using a string array because filter dropdown is universal*/
-  const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState<SelectableItem[]>(
+    [],
+  );
   const [selectedLevel, setSelectedLevel] = useState<SelectableItem[]>([]);
 
   useEffect(() => {
@@ -61,9 +61,7 @@ export function CoursePage() {
       try {
         const data = await getTeacherById(teacherId);
         setTeacher(data);
-        console.log("Fetched teacher:", data);
       } catch (err) {
-        console.error("Error fetching teacher:", err);
         toast.error("Could not load teacher data.");
       }
     };
@@ -78,9 +76,7 @@ export function CoursePage() {
       try {
         const data = await getTeacherReviews(teacherId);
         setTeacherReviews(data);
-        console.log("Fetched teacher reviews:", data);
       } catch (err) {
-        console.error("Error fetching teacher reviews:", err);
         toast.error("Could not load teacher reviews.");
       }
     };
@@ -95,9 +91,7 @@ export function CoursePage() {
       try {
         const data = await getCourseById(courseId);
         setCourse(data);
-        console.log("Fetched course:", data);
       } catch (err) {
-        console.error("Error fetching course:", err);
         toast.error("Could not load course data.");
       }
     };
@@ -112,9 +106,7 @@ export function CoursePage() {
       try {
         const data = await getTeacherAvailabilityByCourseId(courseId);
         setTeacherAvailability(data);
-        console.log("Fetched availability (by course):", data);
       } catch (err) {
-        console.error("Error fetching teacher availability:", err);
         toast.error("Could not load teacher availability.");
       }
     };
@@ -237,7 +229,7 @@ export function CoursePage() {
                     )
                       return;
                     const classDate = slot.date;
-                    classDate.setHours(slot.start);
+                    classDate.setHours(slot.start, 0, 0);
                     setupFirstClass(
                       courseId,
                       classDate.toISOString(),
@@ -254,6 +246,9 @@ export function CoursePage() {
                 />
               )}
             </div>
+            <p className={"text-xl font-semibold text-left"}>
+              Teacher reviews:
+            </p>
             <div className="grid grid-cols-2 gap-8 ">
               {teacherReviews?.map((review) => (
                 <OpinionTile

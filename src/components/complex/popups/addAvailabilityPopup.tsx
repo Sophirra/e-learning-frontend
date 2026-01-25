@@ -16,58 +16,34 @@ import {
   getTeacherAvailability,
 } from "@/api/api calls/apiTeacher.ts";
 import { useEffect, useState } from "react";
-import type {
-  ApiDayAvailability,
-  ClassSchedule,
-  DayAvailability,
-} from "@/types.ts";
-import Schedule from "@/components/complex/schedules/schedule.tsx";
+import type { ApiDayAvailability, ClassSchedule } from "@/types.ts";
+import Schedule from "@/components/complex/calendar/schedules/schedule.tsx";
 import { getTeacherUpcomingClasses } from "@/api/api calls/apiClasses.ts";
 
 export function AddAvailabilityPopup() {
   // const [slots, setSlots] = useState<selectedSlots[]>([]);
+  const [open, setOpen] = useState(false);
   const [classes, setClasses] = useState<ClassSchedule[]>([]);
   const [existingAvailability, setExistingAvailability] = useState<
     ApiDayAvailability[]
   >([]);
   const [updateAvailability, setUpdateAvailability] = useState<
-    DayAvailability[]
+    ApiDayAvailability[]
   >([]);
 
-  function setupAvailability() {
+  async function setupAvailability() {
     try {
-      // const mappedSlots = slots.map((slot): ApiDayAvailability => {
-      //   // const timeslots = slot.slots.map((slot) => {})
-      //   const sorted = slot.slots.sort();
-      //   const timeslots = sorted.reduce(
-      //     (acc, slot) => {
-      //       const prev = acc[acc.length - 1];
-      //
-      //       if (!prev) {
-      //         acc.push({ from: slot, to: slot + 1 });
-      //       }
-      //       if (slot === prev.to) {
-      //         prev.to = slot + 1;
-      //       } else {
-      //         acc.push({ from: slot, to: slot + 1 });
-      //       }
-      //       return acc;
-      //     },
-      //     [] as { from: number; to: number }[],
-      //   );
-      //   return {
-      //     day: slot.date.toISOString().slice(0, 10),
-      //     timeslots: timeslots.map((r) => ({
-      //       timeFrom: `${r.from}:00`,
-      //       timeUntil: `${r.to}:00`,
-      //     })),
-      //   };
-      // });
-      console.log(updateAvailability);
-      addAvailability(updateAvailability);
+      setUpdateAvailability(
+        updateAvailability.filter(
+          (update: ApiDayAvailability, i: number) =>
+            update !== existingAvailability[i],
+        ),
+      );
+      await addAvailability(updateAvailability);
       toast.success("Availability added successfully");
+      setOpen(false);
     } catch (e: any) {
-      toast.error(e.message);
+      toast.error("Error updating availability:", e.message);
     }
   }
 
@@ -100,7 +76,13 @@ export function AddAvailabilityPopup() {
   }, []);
 
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        setUpdateAvailability([]);
+        setOpen(!open);
+      }}
+    >
       <DialogTrigger asChild>
         <MenubarItem onSelect={(e) => e.preventDefault()}>
           Add availability
@@ -119,14 +101,20 @@ export function AddAvailabilityPopup() {
             startDate={new Date()}
             daysCount={7}
             displayMode={"add"}
-            updateDaySlots={(av: DayAvailability) => {
-              console.log("update:", av);
+            updateDaySlots={(newAv: ApiDayAvailability) => {
               setUpdateAvailability((prev) => {
-                const exists = prev.some((d) => d.day === av.day);
+                const exists = prev.some((oldAv) => oldAv.day === newAv.day);
                 if (exists) {
-                  return prev.map((d) => (d.day === av.day ? av : d));
+                  return prev.map((oldAv) => {
+                    if (oldAv.day === newAv.day) {
+                    }
+                    return oldAv.day === newAv.day ? newAv : oldAv;
+                  });
                 }
-                return [...prev, av];
+                const existing = existingAvailability.find(
+                  (ex) => ex.day === newAv.day,
+                );
+                return [...prev, existing ? existing : newAv];
               });
             }}
             classes={classes}

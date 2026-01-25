@@ -7,7 +7,13 @@ import Summary from "@/components/complex/summaries/summary.tsx";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { StudentDetailsCard } from "@/components/complex/cards/studentDetailsCard.tsx";
 import CourseFilter from "@/components/complex/courseFilter.tsx";
-import type {ClassBrief, CourseBrief, ExerciseBrief, Quiz, Student} from "@/types.ts";
+import type {
+  ClassBrief,
+  CourseBrief,
+  ExerciseBrief,
+  Quiz,
+  Student,
+} from "@/types.ts";
 import { CalendarSummary } from "@/components/complex/summaries/calendarSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { ChatSummary } from "@/components/complex/summaries/chatSummary.tsx";
@@ -21,7 +27,7 @@ import { getStudentWithTeacherExercises } from "@/api/api calls/apiExercises.ts"
 import {
   getStudentCoursesWithSpecificTeacher,
   getStudentData,
-  getStudentWithTeacherQuizzes,
+  getTeacherQuizzesByStudent,
 } from "@/api/api calls/apiStudents.ts";
 /**
  * CoursePage component displays detailed information about a specific course.tsx
@@ -77,7 +83,7 @@ export function StudentsPage() {
     if (!selectedStudentId) return;
 
     const fetchQuizzes = async () => {
-      const data = await getStudentWithTeacherQuizzes(
+      const data = await getTeacherQuizzesByStudent(
         teacherId,
         selectedStudentId,
         selectedCourseId ?? undefined,
@@ -135,7 +141,7 @@ export function StudentsPage() {
             setupClassButton={false}
           />
           {selectedStudentId ? (
-            <div className="flex flex-row gap-8">
+            <div className="flex flex-row">
               <div className="w-1/4 sticky top-0 align-self-flex-start h-fit">
                 {selectedStudentId && studentBrief && (
                   <StudentDetailsCard
@@ -151,12 +157,12 @@ export function StudentsPage() {
                 )}
               </div>
 
-              <div className="w-3/4 space-y-8">
+              <div className="w-3/4 space-y-8 pl-8">
                 <CalendarSummary
                   classes={upcomingClasses.filter(
                     (c) =>
                       c.studentId === selectedStudentId &&
-                      c.courseId === selectedCourseId,
+                      (!selectedCourseId || c.courseId === selectedCourseId),
                   )}
                 />
                 <ExerciseSummary student={false} exercises={assignments} />

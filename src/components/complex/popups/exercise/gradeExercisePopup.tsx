@@ -28,7 +28,12 @@ export function GradeExercisePopup({
   const [comments, setComments] = useState<string>("");
 
   function apiAddGrade(exerciseId: string, grade: number, comments: string) {
-    addExerciseGrade(exerciseId, grade, comments);
+    try {
+      addExerciseGrade(exerciseId, grade, comments);
+      toast.success("Grade added successfully.");
+    } catch (e: any) {
+      toast.error("Failed to add grade: " + e.message);
+    }
   }
 
   return (
@@ -75,7 +80,6 @@ export function GradeExercisePopup({
                 onClick={() => {
                   if (grade != null) {
                     apiAddGrade(exerciseId, grade, comments);
-                    toast.success("Grade added successfully.");
                   } else {
                     toast.error("Grade is not defined");
                   }

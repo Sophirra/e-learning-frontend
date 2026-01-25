@@ -1,16 +1,14 @@
-import Api, {getUserId} from "@/api/api.ts";
+import Api, { getUserId } from "@/api/api.ts";
 import type {
-    ApiDayAvailability,
-    ClassWithStudentsDTO,
-    CourseBrief,
-    DayAvailability,
-    StudentBrief,
-    Teacher,
-    TeacherAvailability,
-    TeacherReview,
+  ApiDayAvailability,
+  ClassWithStudentsDTO,
+  CourseBrief,
+  StudentBrief,
+  Teacher,
+  TeacherAvailability,
+  TeacherReview,
 } from "@/types.ts";
-import {mapApiCourseToCourseBrief,} from "@/mappers/courseMappers.ts";
-import type {ErrorResponse} from "react-router-dom";
+import { mapApiCourseToCourseBrief } from "@/mappers/courseMappers.ts";
 
 /**
  * Fetches teacher availability associated with a specific course.
@@ -44,7 +42,7 @@ export const getApiDayAvailability = async (
 };
 
 /**
- * Fetches detailed teacher data by their unique identifier.
+ * Fetches detailed teacher data.
  *
  * @param teacherId - The unique identifier of the teacher.
  * @returns Promise resolving to a Teacher object.
@@ -70,8 +68,7 @@ export const getTeacherReviews = async (
 };
 
 /**
- * Fetches the weekly or daily availability of a teacher
- * by their unique identifier.
+ * Fetches the weekly or daily availability of a teacher.
  *
  * @returns Promise resolving to an array of TeacherAvailability objects.
  */
@@ -86,15 +83,7 @@ export const getTeacherAvailability = async (): Promise<
 };
 
 /**
- * Fetches all classes taught by the currently authenticated teacher (taken from JWT),
- * along with students enrolled to those classes/courses.
- *
- * Server endpoint:
- *   GET /api/teacher/classes-with-students
- *
- * Auth:
- *   Requires a valid JWT with the "Teacher" role. The teacher ID is resolved
- *   from the token (ClaimTypes.NameIdentifier) on the backend.
+ * Fetches all classes taught by the current teacher
  *
  * @returns {Promise<ClassWithStudentsDTO[]>} List of classes with students.
  * @throws  Will rethrow any network or server error from Axios.
@@ -108,6 +97,12 @@ export async function getTeacherClassesWithStudents(): Promise<
   return data ?? [];
 }
 
+/**
+ * Retrieves the list of students associated with a specific teacher.
+ *
+ * @param {string} teacherId - The unique identifier of the teacher.
+ * @return {Promise<StudentBrief[]>} A promise that resolves to an array of student brief information.
+ */
 export async function getTeacherStudents(
   teacherId: string,
 ): Promise<StudentBrief[]> {
@@ -122,6 +117,12 @@ export async function getTeacherStudents(
   return data ?? [];
 }
 
+/**
+ * Fetches the list of courses associated with a specific teacher.
+ *
+ * @param {string} teacherId - The unique identifier of the teacher.
+ * @return {Promise<CourseBrief[]>} A promise that resolves to an array of course brief objects associated with the teacher.
+ */
 export async function getTeacherCourses(
   teacherId: string,
 ): Promise<CourseBrief[]> {
@@ -138,6 +139,14 @@ export async function getTeacherCourses(
     .filter((c: CourseBrief | null): c is CourseBrief => !!c);
 }
 
+/**
+ * Retrieves a list of students enrolled in a specific course taught by a given teacher.
+ *
+ * @param {string} teacherId - The unique identifier of the teacher.
+ * @param {string} courseId - The unique identifier of the course.
+ * @param {AbortSignal} [signal] - An optional AbortSignal object to allow cancellation of the request.
+ * @return {Promise<StudentBrief[]>} A promise that resolves to an array of student brief details.
+ */
 export async function getTeacherStudentsWithSpecificCourse(
   teacherId: string,
   courseId: string,
@@ -155,12 +164,13 @@ export async function getTeacherStudentsWithSpecificCourse(
   return data;
 }
 
-export async function addAvailability(availability: DayAvailability[]) {
+/**
+ * Adds availability data for the current user.
+ *
+ * @param {ApiDayAvailability[]} availability - An array of availability objects to be added.
+ * @return {Promise<void>} A promise that resolves when the availability is successfully posted.
+ */
+export async function addAvailability(availability: ApiDayAvailability[]) {
   const teacherId = getUserId();
-  const res = await Api.post(
-    `/api/teacher/${teacherId}/availability`,
-    availability,
-  );
-  if (res.status === 200 || res.status === 201 || res.status === 204) return;
-  else throw res.data as ErrorResponse;
+  await Api.post(`/api/teacher/${teacherId}/availability`, availability);
 }

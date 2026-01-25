@@ -16,7 +16,7 @@ import {
   FilterDropdown,
   type SelectableItem,
 } from "@/components/complex/filterDropdown.tsx";
-import WeekSchedulePopup from "@/components/complex/schedules/weekSchedulePopup.tsx";
+import WeekSchedulePopup from "@/components/complex/calendar/schedules/weekSchedulePopup.tsx";
 import { getUserId } from "@/api/api.ts";
 import { toast } from "sonner";
 import { setupNextClass } from "@/api/api calls/apiClasses.ts";
@@ -24,13 +24,17 @@ import { getStudentCourses } from "@/api/api calls/apiStudents.ts";
 
 export function SetupNewClassPopup() {
   const [courses, setCourses] = useState<CourseBrief[]>([]);
-
+  const [open, setOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<SelectableItem[]>([]);
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const data = await getStudentCourses(getUserId());
-      setCourses(data);
+      try {
+        const data = await getStudentCourses(getUserId());
+        setCourses(data);
+      } catch (e: any) {
+        toast.error("Failed to fetch courses: " + e.message);
+      }
     };
     fetchCourses();
   }, []);
@@ -38,15 +42,17 @@ export function SetupNewClassPopup() {
   async function setupClass(timeslot: TimeSlot) {
     try {
       const classDate = timeslot.date;
-      classDate.setHours(timeslot.start);
-      await setupNextClass(selectedCourse[0].value, classDate.toISOString());
+      classDate.setHours(timeslot.start, 0, 0, 0);
+      await setupNextClass(classDate.toISOString(), selectedCourse[0].value);
+      setOpen(false);
+      toast.success("Class setup successfully.");
     } catch (e: any) {
       toast.error("Failed to setup class: " + e.message);
     }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant={"outline"}>
           Setup new class

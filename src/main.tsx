@@ -18,6 +18,11 @@ import { HomePage } from "@/pages/UserPages/HomePage.tsx";
 import ErrorPage from "@/pages/ErrorPage.tsx";
 import SpectatorAcceptPage from "@/components/complex/popups/spectators/spectatorAcceptPage.tsx";
 import { SpectatorPage } from "@/pages/UserPages/SpectatorPage.tsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } },
+});
 
 function ProtectedRoute() {
   const { loading, user } = useUser();
@@ -29,33 +34,38 @@ function ProtectedRoute() {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <UserProvider>
-        <Toaster richColors={true} position={"top-center"} />
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/course/:courseId" element={<CoursePage />} />
-          <Route path="/accept" element={<SpectatorAcceptPage />} />
-          {/*protected by login*/}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/quizzes" element={<QuizPage />} />
-            <Route path="/quizzes/:quizId/solve" element={<SolveQuizPage />} />
-            <Route path="/students" element={<StudentsPage />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route
-              path="/calendar/course/:courseId"
-              element={<CalendarPage />}
-            />
-            <Route path="/exercise" element={<ExercisePage />} />
-            <Route path="/files" element={<FilesPage />} />
-            <Route path="/chats" element={<ChatsPage />} />
-            <Route path="/spectate" element={<SpectatorPage />} />
-          </Route>
-          <Route path="*" element={<ErrorPage />} />
-        </Routes>
-        ;
-      </UserProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <UserProvider>
+          <Toaster richColors={true} position={"top-center"} />
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/course/:courseId" element={<CoursePage />} />
+            <Route path="/accept" element={<SpectatorAcceptPage />} />
+            {/*protected by login*/}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/quizzes" element={<QuizPage />} />
+              <Route
+                path="/quizzes/:quizId/solve"
+                element={<SolveQuizPage />}
+              />
+              <Route path="/students" element={<StudentsPage />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route
+                path="/calendar/course/:courseId"
+                element={<CalendarPage />}
+              />
+              <Route path="/exercise" element={<ExercisePage />} />
+              <Route path="/files" element={<FilesPage />} />
+              <Route path="/chats" element={<ChatsPage />} />
+              <Route path="/spectate" element={<SpectatorPage />} />
+            </Route>
+            <Route path="*" element={<ErrorPage />} />
+          </Routes>
+          ;
+        </UserProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   </React.StrictMode>,
 );

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { useUser } from "@/lib/user/UserContext.tsx";
 import type { Exercise } from "@/types.ts";
-import {AddSolutionFilePopup} from "@/components/complex/popups/files/addSolutionFilePopup.tsx";
+import { AddSolutionFilePopup } from "@/components/complex/popups/files/addSolutionFilePopup.tsx";
 
 export function ExerciseSolutionSummary({
   exercise,
@@ -22,12 +22,8 @@ export function ExerciseSolutionSummary({
       labelIcon={icons.FileTextIcon}
       canHide={false}
       customButton={
-        user?.activeRole === "student"
-          ? () => (
-                <AddSolutionFilePopup
-                    exerciseId={exercise?.id ?? ""}
-                />
-            )
+        user?.activeRole === "student" && !(exercise?.status == "SolutionAdded")
+          ? () => <AddSolutionFilePopup exerciseId={exercise?.id ?? ""} />
           : undefined
       }
     >

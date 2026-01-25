@@ -16,7 +16,7 @@ import type {
 import { LinksSummary } from "@/components/complex/summaries/linksSummary.tsx";
 import { ExerciseSummary } from "@/components/complex/summaries/exerciseSummary.tsx";
 import { FilesSummary } from "@/components/complex/summaries/filesSummary.tsx";
-import Schedule from "@/components/complex/schedules/schedule.tsx";
+import Schedule from "@/components/complex/calendar/schedules/schedule.tsx";
 import {
   getClassFiles,
   getClassLinks,
@@ -24,6 +24,7 @@ import {
 } from "@/api/api calls/apiClasses.ts";
 import { getClassExercises } from "@/api/api calls/apiExercises.ts";
 import { getQuizzes } from "@/api/api calls/apiQuizzes.ts";
+import { toast } from "sonner";
 
 export function TeacherCalendar() {
   // Course filter
@@ -61,17 +62,25 @@ export function TeacherCalendar() {
 
     // Fetch availability
     const fetchAvailability = async () => {
-      const data = await getTeacherAvailability();
-      setAvailability(data);
+      try {
+        const data = await getTeacherAvailability();
+        setAvailability(data);
+      } catch (err: any) {
+        toast.error("Error fetching availability: " + err.message);
+      }
     };
 
     fetchAvailability().then();
 
     // Fetch upcoming classes
     const fetchClasses = async () => {
-      const data = await getTeacherUpcomingClasses(startParam, endParam);
-      setAllScheduledClasses(data);
-      setScheduledClasses(data);
+      try {
+        const data = await getTeacherUpcomingClasses(startParam, endParam);
+        setAllScheduledClasses(data);
+        setScheduledClasses(data);
+      } catch (err: any) {
+        toast.error("Error fetching upcoming classes: " + err.message);
+      }
     };
 
     fetchClasses().then();
@@ -94,8 +103,8 @@ export function TeacherCalendar() {
       try {
         const data = await getClassExercises(selectedClassId);
         setExercises(data ?? []);
-      } catch (err) {
-        console.error("fetchExercises:", err);
+      } catch (err: any) {
+        toast.error("Error fetching assignments: " + err.message);
       }
     }
 
@@ -103,14 +112,15 @@ export function TeacherCalendar() {
       if (!selectedClassId) return;
       try {
         const data = await getQuizzes(
+          "teacher",
           undefined,
           undefined,
           undefined,
           selectedClassId,
         );
         setQuizzes(data ?? []);
-      } catch (err) {
-        console.error("fetchQuizzes:", err);
+      } catch (err: any) {
+        toast.error("Error fetching quizzes: " + err.message);
       }
     }
 
@@ -119,8 +129,8 @@ export function TeacherCalendar() {
       try {
         const data = await getClassFiles(selectedClassId);
         setFiles(data ?? []);
-      } catch (err) {
-        console.error("fetchFiles:", err);
+      } catch (err: any) {
+        toast.error("Error fetching files: " + err.message);
       }
     }
 
@@ -129,8 +139,8 @@ export function TeacherCalendar() {
       try {
         const data = await getClassLinks(selectedClassId);
         setLinks(data ?? []);
-      } catch (err) {
-        console.error("fetchLinks:", err);
+      } catch (err: any) {
+        toast.error("Error fetching links: " + err.message);
       }
     }
 

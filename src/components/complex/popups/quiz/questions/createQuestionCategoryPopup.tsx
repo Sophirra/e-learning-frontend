@@ -18,9 +18,9 @@ import { toast } from "sonner";
 import { createQuestionCategory } from "@/api/api calls/apiQuestions.ts";
 
 export function CreateQuestionCategoryPopup({
-  resetLoading,
+  onCreate,
 }: {
-  resetLoading: () => void;
+  onCreate: () => void;
 }) {
   const [name, setName] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
@@ -28,9 +28,9 @@ export function CreateQuestionCategoryPopup({
   async function apiAddCategory(name: string) {
     try {
       await createQuestionCategory(name);
-      toast.success("Category created successfully");
-      resetLoading();
+      onCreate();
       setOpen(false);
+      toast.success("Category created successfully");
     } catch (error: any) {
       toast.error("Failed to create category: ", error.message);
     }

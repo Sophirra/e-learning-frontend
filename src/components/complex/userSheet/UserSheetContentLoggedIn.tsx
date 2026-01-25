@@ -23,6 +23,7 @@ export function UserSheetContentLoggedIn({
         {user.activeRole ? user.activeRole : "unknown??"}
         {user.roles.length > 1 && (
           <Button
+            className={"ml-8"}
             variant="outline"
             size="sm"
             onClick={() => {

@@ -31,7 +31,6 @@ export function SpectatorConfirmDeletePopup({
       toast.success(`Removed spectator ${spectatorEmail} successfully.`);
       if (onRemoved) onRemoved();
     } catch (err) {
-      console.error("Failed to remove spectator:", err);
       toast.error("Failed to remove spectator. Please try again.");
     }
   };

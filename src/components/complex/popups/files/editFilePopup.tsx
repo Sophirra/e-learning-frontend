@@ -13,76 +13,111 @@ import { useEffect, useState } from "react";
 import type { FileData, FileTag } from "@/types.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
-import { FilterDropdown } from "@/components/complex/filterDropdown.tsx";
+import {
+  FilterDropdown,
+  type SelectableItem,
+} from "@/components/complex/filterDropdown.tsx";
 import { NewTagPopup } from "@/components/complex/popups/files/newTagPopup.tsx";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label.tsx";
 import { getAvailableTags, updateFileData } from "@/api/api calls/apiFiles.ts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function EditFilePopup({
   file,
-  onFileUpdated,
+  // onFileUpdated,
 }: {
   file: FileData;
-  onFileUpdated?: () => void;
+  // onFileUpdated?: () => void;
 }) {
-  const [load, setLoad] = useState<boolean>(false);
+  const clientQuery = useQueryClient();
+
+  const updateFileMutation = useMutation({
+    mutationFn: (data: { fileName: string; tags: FileTag[] }) =>
+      updateFileData(file.id, data),
+    onSuccess: () => {
+      toast.success("File updated successfully");
+      setOpen(false);
+      clientQuery.invalidateQueries({ queryKey: ["files"] });
+      // onFileUpdated?.();
+    },
+    onError: (error: any) =>
+      toast.error("Failed to update file: " + error.message),
+  });
+
+  // const [load, setLoad] = useState<boolean>(false);
   const initialTags = file.tags ? file.tags : [];
   const [nameError, setNameError] = useState<boolean>(false);
   const [newFileName, setNewFileName] = useState<string>(file.fileName);
   const [newTags, setNewTags] = useState<FileTag[]>(initialTags);
   const [open, setOpen] = useState<boolean>(false);
+  const { data: availableTags = [] } = useQuery({
+    queryKey: ["fileTags"],
+    queryFn: async () => {
+      try {
+        await getAvailableTags();
+      } catch (err: any) {
+        toast.error("Failed to fetch tags: " + err.message);
+      }
+    },
+    enabled: open,
+  });
+  // const [availableTags, setAvailableTags] = useState<FileTag[]>([]);
 
-  const [availableTags, setAvailableTags] = useState<FileTag[]>([]);
+  // async function updateFile() {
+  //   try {
+  //     await updateFileData(file.id, {
+  //       fileName: newFileName,
+  //       tags: newTags,
+  //     });
+  //     toast.success("File updated successfully");
+  //     setOpen(false);
+  //     onFileUpdated?.();
+  //   } catch (error: any) {
+  //     toast.error("Failed to update file");
+  //   }
+  // }
 
-  async function updateFile() {
-    try {
-      await updateFileData(file.id, {
-        fileName: newFileName,
-        tags: newTags,
-      });
-      toast.success("File updated successfully");
-      setOpen(false);
-      onFileUpdated?.();
-    } catch (error: any) {
-      toast.error("Failed to update file");
-    }
-  }
+  // useEffect(() => {
+  //   async function fetchAvailableTags() {
+  //     if (load || open) {
+  //       const res = await getAvailableTags();
+  //       setAvailableTags(res);
+  //       setLoad(false);
+  //       if (open && file.tags) {
+  //         const fileTagIds = file.tags.map((t) => t.id);
+  //         const syncedTags = res.filter((tag) => fileTagIds.includes(tag.id));
+  //         setNewTags(syncedTags);
+  //       }
+  //     }
+  //   }
+  //   fetchAvailableTags();
+  // }, [load, open, file.tags]);
+  //
+  // function resetChanges() {
+  //   setNewFileName(file.fileName);
+  //   setNewTags(initialTags);
+  // }
 
   useEffect(() => {
-    async function fetchAvailableTags() {
-      if (load || open) {
-        const res = await getAvailableTags();
-        setAvailableTags(res);
-        setLoad(false);
-        if (open && file.tags) {
-          const fileTagIds = file.tags.map((t) => t.id);
-          const syncedTags = res.filter((tag) => fileTagIds.includes(tag.id));
-          setNewTags(syncedTags);
-        }
-      }
-    }
-    fetchAvailableTags();
-  }, [load, open, file.tags]);
-
-  function resetChanges() {
+    if (!open) return;
     setNewFileName(file.fileName);
-    setNewTags(initialTags);
-  }
+    setNewTags(file.tags ?? []);
+  }, [open, file]);
 
   return (
     <Dialog
       open={open}
       onOpenChange={(open) => {
         setOpen(open);
-        if (open) {
-          setLoad(true);
-          resetChanges();
-        }
+        // if (open) {
+        //   setLoad(true);
+        //   resetChanges();
+        // }
       }}
     >
       <DialogTrigger asChild>
-        <Button variant={"ghost"} onClick={() => setLoad(true)}>
+        <Button variant={"ghost"}>
           <icons.Edit />
           Edit
         </Button>
@@ -132,12 +167,12 @@ export function EditFilePopup({
                 emptyMessage={"choose file tags"}
                 label={"Available tags:"}
                 reset={false}
-                items={availableTags.map((tag) => {
+                items={availableTags.map((tag: FileTag) => {
                   return { name: tag.name, value: tag.id };
                 })}
-                onSelectionChange={(selectedTags) => {
+                onSelectionChange={(selectedTags: SelectableItem[]) => {
                   const selectedIds = selectedTags.map((tag) => tag.value);
-                  const updatedTags = availableTags.filter((tag) =>
+                  const updatedTags = availableTags.filter((tag: FileTag) =>
                     selectedIds.includes(tag.id),
                   );
                   setNewTags(updatedTags);
@@ -147,7 +182,7 @@ export function EditFilePopup({
               ></FilterDropdown>
             )}
             <div className={"w-1/1 text-right"}>
-              <NewTagPopup resetLoading={() => setLoad(true)} />
+              <NewTagPopup />
             </div>
           </div>
         </div>
@@ -159,7 +194,11 @@ export function EditFilePopup({
             variant={"outline"}
             disabled={nameError}
             onClick={() => {
-              updateFile();
+              // updateFile();
+              updateFileMutation.mutate({
+                fileName: newFileName,
+                tags: newTags,
+              });
             }}
           >
             Confirm

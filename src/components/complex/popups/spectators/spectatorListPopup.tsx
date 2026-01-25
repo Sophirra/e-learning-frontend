@@ -43,7 +43,6 @@ export function SpectatorListPopup() {
         setSpectators([]);
         return;
       }
-      console.error(" Error fetching spectators:", err);
       toast.error("Failed to load spectators. Please try again later.");
     } finally {
       setLoading(false);

@@ -15,6 +15,7 @@ import {
   getUserCategories,
   getUserQuestions,
 } from "@/api/api calls/apiQuestions.ts";
+import { toast } from "sonner";
 
 export function QuestionGallery({
   enableSelect,
@@ -42,9 +43,8 @@ export function QuestionGallery({
           selectedCategory.map((c) => c.value),
         );
         setQuestions(data);
-        console.log("set questions: ", data);
-      } catch (e) {
-        console.error("Error fetching questions:", e);
+      } catch (e: any) {
+        toast.error("Error fetching questions: ", e.message);
       }
     }
     fetchQuestions();
@@ -52,12 +52,16 @@ export function QuestionGallery({
 
   useEffect(() => {
     async function fetchCategories() {
-      const categoriesData = await getUserCategories();
-      setQuestionCategories(
-        categoriesData.map((c) => {
-          return { value: c.id, name: c.name };
-        }),
-      );
+      try {
+        const categoriesData = await getUserCategories();
+        setQuestionCategories(
+          categoriesData.map((c) => {
+            return { value: c.id, name: c.name };
+          }),
+        );
+      } catch (err: any) {
+        toast.error("Error fetching categories: ", err.message);
+      }
     }
     fetchCategories();
   }, []);

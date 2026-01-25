@@ -5,25 +5,11 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import type { ApiDayAvailability, DayAvailability, TimeSlot } from "@/types.ts";
+import type { ApiDayAvailability, TimeSlot } from "@/types.ts";
 import { iconLibrary as icons } from "@/components/iconLibrary.tsx";
 import { cn } from "@/lib/utils.ts";
 import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog.tsx";
-import {
-  FilterDropdown,
-  type SelectableItem,
-} from "@/components/complex/filterDropdown.tsx";
-import { toast } from "sonner";
+import { AddSlotPopup } from "@/components/complex/popups/addSlotPopup.tsx";
 
 type DayScheduleProps = {
   key: number;
@@ -32,7 +18,7 @@ type DayScheduleProps = {
   isActive: boolean;
   isSelected: (slot: TimeSlot) => boolean | null;
   onSelect?: (slot: TimeSlot) => void;
-  updateDaySlots?: (dayState: DayAvailability) => void;
+  updateDaySlots?: (dayState: ApiDayAvailability) => void;
   /**
     sets the mode of the tile:
     class: can only select set up class tiles - meant for teacher calendar
@@ -59,12 +45,7 @@ export function DaySchedule({
   const [toDelete, setToDelete] = useState<TimeSlot[]>([]);
   const [toAdd, setToAdd] = useState<TimeSlot[]>([]);
 
-  useEffect(() => {
-    setSlots([...timeSlots]);
-  }, [timeSlots]);
-
   function setDaySlots() {
-    console.log("setting day slots");
     if (!updateDaySlots) {
       console.log("lost in update day slots: no passed function found");
       return;
@@ -77,12 +58,12 @@ export function DaySchedule({
     slots.forEach((slot) => {
       hours[slot.start] = 1;
     });
-    // toDelete.forEach((slot) => {
-    //   hours[slot.start] = 0;
-    // });
-    // toAdd.forEach((slot) => {
-    //   hours[slot.start] = 1;
-    // });
+    toDelete.forEach((slot) => {
+      hours[slot.start] = 0;
+    });
+    toAdd.forEach((slot) => {
+      hours[slot.start] = 1;
+    });
     let series = false;
     let start: number = 0;
     let end: number;
@@ -91,8 +72,8 @@ export function DaySchedule({
         if (series) {
           end = i;
           daySlots.timeslots.push({
-            timeFrom: start.toString(),
-            timeUntil: end.toString(),
+            timeFrom: start.toString() + ":00:00",
+            timeUntil: end.toString() + ":00:00",
           });
           console.log("ended series at: ", end, ", started: ", start);
           series = false;
@@ -102,59 +83,46 @@ export function DaySchedule({
         start = i;
       }
     }
-    console.log("updated day", daySlots);
     updateDaySlots(daySlots);
   }
 
   function handleDelete(slot: TimeSlot) {
     if (displayMode !== "add") return;
-    console.log("toDelete");
-    if (toDelete.includes(slot)) {
+    if (toDelete.some((s) => s.start === slot.start)) {
       setToDelete((prev) => {
         const exists = prev.some((s) => s.start === slot.start);
         return exists
           ? prev.filter((s) => s.start !== slot.start)
           : [...prev, slot];
       });
-      setSlots((prev) => prev.filter((s) => s.start !== slot.start));
-    } else setToDelete([...toDelete, slot]);
-    // setDaySlots();
+    } else {
+      setToDelete([...toDelete, slot]);
+    }
   }
 
   function handleAdd(slot: TimeSlot) {
     if (displayMode !== "add") return;
-    console.log("toAdd");
-    setToAdd((prev) => {
-      const exists = prev.some((s) => s.start === slot.start);
-      return exists
-        ? prev.filter((s) => s.start !== slot.start)
-        : [...prev, slot];
-    });
-    setSlots((prev) => {
-      const exists = prev.some((s) => s.start === slot.start);
-      return exists
-        ? prev.filter((s) => s.start !== slot.start)
-        : [...prev, slot].sort((a, b) => a.start - b.start);
-    });
-    // if (toAdd.includes(slot)) {
-    //   setToAdd(toAdd.filter((s) => s !== slot));
-    //   timeSlots.splice(timeSlots.indexOf(slot), 1);
-    //   setAvailableSlots((prev) =>
-    //     prev.map((s) =>
-    //       s.time === slot.start ? { ...s, available: true } : s,
-    //     ),
-    //   );
-    // } else {
-    //   setToAdd([...toAdd, slot]);
-    //   timeSlots.push(slot);
-    //   setAvailableSlots((prev) =>
-    //     prev.map((s) =>
-    //       s.time === slot.start ? { ...s, available: false } : s,
-    //     ),
-    //   );
-    //   timeSlots.sort((a, b) => a.start - b.start);
-    // }
-    setDaySlots();
+    console.log("slots: ", slots);
+    //if already exists then remove from the toAdd
+    if (toAdd.some((s) => s.start === slot.start)) {
+      console.log("removing slot: ", slot);
+      //remove from the technical toAdd list
+      setToAdd((prev) => {
+        const exists = prev.some((s) => s.start === slot.start);
+        return exists
+          ? prev.filter((s) => s.start !== slot.start)
+          : [...prev, slot];
+      });
+      //remove from visible slots
+      setSlots((prev) => prev.filter((s) => s.start !== slot.start));
+    } else {
+      console.log("adding slot: ", slot);
+      setToAdd([...toAdd, slot]);
+      setSlots((prev) => [...prev, slot].sort((a, b) => a.start - b.start));
+      // setSlots(slots.sort((a, b) => a.start - b.start));
+    }
+    console.log("toAdd: ", toAdd);
+    console.log("slots: ", slots);
   }
 
   const [availableSlots, setAvailableSlots] = useState<
@@ -211,11 +179,31 @@ export function DaySchedule({
         // setDaySlots();
       } else {
         handleDelete(slot);
-        setDaySlots();
+        // setDaySlots();
       }
     }
   }
 
+  //to update changed day
+  useEffect(() => {
+    if (!timeSlots || (toDelete.length == 0 && toAdd.length == 0)) return;
+    setDaySlots();
+  }, [toAdd, toDelete]);
+
+  //to download actual slots
+  useEffect(() => {
+    if (timeSlots.length != 0 && slots.length != 0) return;
+    // console.log(slots);
+    setSlots([...timeSlots]);
+  }, [timeSlots]);
+
+  useEffect(() => {
+    setSlots(timeSlots);
+    setToDelete([]);
+    setToAdd([]);
+  }, [date]);
+
+  //to update available slots for adding new
   useEffect(() => {
     if (timeSlots.length == 0) return;
     setAvailableSlots((prev) =>
@@ -225,15 +213,17 @@ export function DaySchedule({
           : s,
       ),
     );
-  }, [timeSlots]);
+  }, [slots]);
 
   function createSlotToAdd(startTime: number) {
+    // console.log("day index: ", key);
     handleAdd({
       start: startTime,
       end: startTime + 1,
       date: date,
       dayIndex: key,
     });
+    // setDaySlots();
   }
 
   return (
@@ -252,11 +242,11 @@ export function DaySchedule({
 
       <CardContent className="space-y-1 w-fit">
         {!isActive ? (
-          <div className="text-xs text-center text-muted-foreground py-4">
+          <div className="text-xs text-center text-muted-foreground py-4 w-32">
             Cannot book classes more than a month forward
           </div>
         ) : !hasSlots && !(displayMode == "add") ? (
-          <div className="text-xs text-center text-muted-foreground py-4">
+          <div className="text-xs text-center text-muted-foreground py-4 w-32">
             No time slots available
           </div>
         ) : (
@@ -266,7 +256,7 @@ export function DaySchedule({
                 key={slotIndex}
                 variant={getVariant(slot)}
                 size="sm"
-                className="text-xs h-fit min-h-8 w-full max-w-50 p-1"
+                className="text-xs h-fit min-h-8 w-full max-w-50 min-w-32 p-1"
                 onClick={() => handleSelect(slot)}
                 disabled={
                   displayMode == "class"
@@ -302,76 +292,5 @@ export function DaySchedule({
         )}
       </CardContent>
     </Card>
-  );
-}
-function AddSlotPopup({
-  onConfirm,
-  availableSlots,
-}: {
-  onConfirm: (start: number) => void;
-  availableSlots: { time: number; available: boolean }[];
-}) {
-  const [selectedTime, setSelectedTime] = useState<number | null>(null);
-  const [open, setOpen] = useState(false);
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o);
-        setSelectedTime(null);
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button className={"w-1/1 min-w-30"} variant={"outline"}>
-          <icons.Plus />
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add class slot</DialogTitle>
-          <DialogDescription>Choose time for the slot:</DialogDescription>
-        </DialogHeader>
-        <div className={"flex flex-col gap-4 pt-2"}>
-          <FilterDropdown
-            searchable={false}
-            multiselect={false}
-            reset={false}
-            placeholder={"Select time slot"}
-            emptyMessage={"No time selected"}
-            items={availableSlots
-              .filter((s) => s.available)
-              .map((s): SelectableItem => {
-                return {
-                  value: String(s.time),
-                  name: `${String(s.time).padStart(2, "0")}:00 - ${String(s.time + 1).padStart(2, "0")}:00`,
-                };
-              })}
-            onSelectionChange={(selected) => {
-              console.log("selected ", Number(selected[0].value));
-              setSelectedTime(Number(selected[0].value));
-            }}
-          ></FilterDropdown>
-          <DialogFooter className={"flex flex-row gap-4 sm:justify-center"}>
-            <DialogClose>
-              <Button>Cancel</Button>
-            </DialogClose>
-            <Button
-              variant={"outline"}
-              onClick={() => {
-                if (selectedTime == null) {
-                  toast.error("Please select time slot");
-                  return;
-                }
-                onConfirm(selectedTime);
-                setOpen(false);
-              }}
-              disabled={selectedTime == null}
-            >
-              Confirm
-            </Button>
-          </DialogFooter>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }

@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
-
 import {
   Table,
   TableBody,
@@ -28,6 +27,7 @@ import {
   getUserFileOwners,
   getUserFileTags,
 } from "@/api/api calls/apiFiles.ts";
+import { toast } from "sonner";
 
 type SortField = "title" | "dateCreated" | "sharedBy" | "course";
 type SortOrder = "none" | "asc" | "desc";
@@ -123,8 +123,6 @@ export function FileGallery({
   ) {
     setLoading(true);
     try {
-      console.log("function fetchFiles (props studentId):", studentId);
-
       const nextPage = overridePage ?? page;
 
       const mergedFilters: FileFilter = {
@@ -147,13 +145,8 @@ export function FileGallery({
         ...prev,
         ...overrideFilters,
       }));
-
-      console.log(
-        "function after setActiveFilters (props studentId):",
-        studentId,
-      );
-    } catch (e) {
-      console.error("Error fetching files:", e);
+    } catch (err: any) {
+      toast.error("Error fetching files: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -310,8 +303,8 @@ export function FileGallery({
               <TableCell>
                 {selectedFile?.id === file.id ? (
                   <div className={"flex flex-row align-right"}>
-                    <EditFilePopup 
-                      file={selectedFile} 
+                    <EditFilePopup
+                      file={selectedFile}
                       onFileUpdated={() => fetchFiles()}
                     />
                     <DeleteFilePopup file={selectedFile} />

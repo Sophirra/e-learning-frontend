@@ -3,39 +3,18 @@ import type {
   ClassBriefDto,
   ClassSchedule,
   FileProps,
-  LinkProps, Role,
+  LinkProps,
+  Role,
 } from "@/types.ts";
 import Api, { getUserId } from "@/api/api.ts";
-import type { ErrorResponse } from "react-router-dom";
 
 /**
- * Fetches all upcoming classes (within the next 14 days) for the currently
- * authenticated user.
+ * Fetches a list of brief class details based on the active role of the user.
  *
- * The user's active role is automatically read from cookies (`activeRole`) to determine
- * which API endpoint should be called:
- *
- * - `/api/classes/upcoming-as-teacher`   when the stored role is **teacher**.
- * - `/api/classes/upcoming-as-student`   when the stored role is **student**.
- *
- * Each returned object includes:
- * - `courseId`   unique identifier of the course.
- * - `courseName`   name of the course.
- * - `startTime`   class start date and time (converted from an ISO string to a native `Date`).
- * - `teacherId`   identifier of the teacher assigned to the course.
- *
- * @returns {Promise<ClassBrief[]>} A promise resolving to a list of upcoming classes.
- * @param {Role | undefined} activeRole - The current user's role, determining
- * which endpoint to query.
- * @returns {Promise<CourseBrief[]>} A promise resolving to a list of upcoming
- * classes.
- *
- * @remarks
- * - The active role is persisted in cookies using the `activeRole` key.
- * - The API response is type-checked to handle both AxiosResponse and plain arrays.
- * - The `startTime` field is converted into a `Date` object for easier frontend handling.
+ * @param {Role | undefined} activeRole - The active role of the user, either "teacher" or "student".
+ * @returns {Promise<ClassBrief[]>} A promise that resolves to an array of `ClassBrief` objects
+ *                                  with the `startTime` property converted to JavaScript Date objects.
  */
-
 export const getClassBriefs = async (
   activeRole: Role | undefined,
 ): Promise<ClassBrief[]> => {
@@ -46,24 +25,26 @@ export const getClassBriefs = async (
       ? `/api/classes/upcoming-as-teacher`
       : `/api/classes/upcoming-as-student`;
 
-  const resp = await Api.get<ClassBrief[]>(url);
+  const { data, status } = await Api.get<ClassBrief[]>(url);
 
-  const status = (resp as any)?.status;
-  const arr: unknown = (resp as any)?.data ?? resp;
-
-  if (status === 204 || !arr) return [];
-
-  if (!Array.isArray(arr)) {
-    console.warn("getClassBriefs: unexpected response shape", resp);
+  if (status === 200) return [];
+  if (!Array.isArray(data)) {
     return [];
   }
 
-  return arr.map((c) => ({
+  return data.map((c) => ({
     ...c,
     startTime: new Date(c.startTime),
   }));
 };
 
+/**
+ * Fetches the upcoming classes for the currently authenticated teacher within the specified date range.
+ *
+ * @param {string} startParam - The start date and time for the range.
+ * @param {string} endParam - The end date and time for the range.
+ * @return {Promise<ClassSchedule[]>} A promise that resolves to an array of class schedules for the teacher.
+ */
 export async function getTeacherUpcomingClasses(
   startParam: string,
   endParam: string,
@@ -83,9 +64,16 @@ export async function getTeacherUpcomingClasses(
     },
   );
 
-  return data;
+  return data ?? [];
 }
 
+/**
+ * Retrieves the timeline of classes for a given student within a specified time range.
+ *
+ * @param {string} studentId - The unique identifier of the student.
+ * @param {string | null} preferredCourseId - The optional course ID to filter the timeline by a specific course.
+ * @return {Promise<ClassBriefDto[]>} A promise that resolves to an array of class brief details.
+ */
 export async function getStudentTimeline(
   studentId: string,
   preferredCourseId: string | null,
@@ -113,22 +101,34 @@ export async function getStudentTimeline(
     { params },
   );
 
-  return data;
+  return data ?? [];
 }
 
+/**
+ * Adds a link to a specific class.
+ *
+ * @param {string} classId - The ID of the class to which the link will be added.
+ * @param {string} link - The URL of the link to add.
+ * @param {boolean} isMeeting - Indicates whether the link is a meeting link or not.
+ * @return {Promise<void>} A promise that resolves when the link is successfully added.
+ */
 export async function addClassLink(
   classId: string,
   link: string,
   isMeeting: boolean,
-) {
-  const res = await Api.post(`/api/classes/${classId}/links`, {
+): Promise<void> {
+  await Api.post(`/api/classes/${classId}/links`, {
     link,
     isMeeting,
   });
-  if (res.status === 200 || res.status === 201) return;
-  else throw res.data as ErrorResponse;
 }
 
+/**
+ * Retrieves a list of links associated with a specific class.
+ *
+ * @param {string} classId - The unique identifier of the class.
+ * @return {Promise<LinkProps[]>} A promise that resolves with an array of link properties.
+ */
 export async function getClassLinks(classId: string): Promise<LinkProps[]> {
   if (!classId) {
     return Promise.reject("No classId provided");
@@ -139,6 +139,12 @@ export async function getClassLinks(classId: string): Promise<LinkProps[]> {
   return data;
 }
 
+/**
+ * Fetches the files associated with a specific class.
+ *
+ * @param {string} classId - The unique identifier of the class.
+ * @return {Promise<FileProps[]>} A promise that resolves to an array of file properties.
+ */
 export async function getClassFiles(classId: string): Promise<FileProps[]> {
   if (!classId) {
     return Promise.reject("No classId provided");
@@ -149,33 +155,52 @@ export async function getClassFiles(classId: string): Promise<FileProps[]> {
   return data;
 }
 
+/**
+ * Removes a class link by its unique identifier.
+ *
+ * @param {string} linkId - The unique identifier of the class link.
+ * @return {Promise<void>} A promise that resolves when the class link has been successfully removed.
+ */
 export async function removeClassLink(linkId: string) {
-  const res = await Api.delete(`/api/classes/links/${linkId}`);
-  if (res.status === 200 || res.status === 204) return;
-  else throw res.data as ErrorResponse;
+  await Api.delete(`/api/classes/links/${linkId}`);
 }
 
+/**
+ * Sets up the first class of a course for a student of a set variant (language and level)
+ *
+ * @param {string} courseId - The ID of the course to associate the class with.
+ * @param {string} startTime - The start time of the class in ISO 8601 format.
+ * @param {string} languageId - The ID of the language associated with the class.
+ * @param {string} levelId - The ID of the level associated with the class.
+ * @return {Promise<void>} A promise that resolves when the class setup is complete.
+ */
 export async function setupFirstClass(
-  startTime: string,
   courseId: string,
+  startTime: string,
   languageId: string,
   levelId: string,
-) {
-  const res = await Api.post(`/api/classes`, {
+): Promise<void> {
+  await Api.post(`/api/classes`, {
     courseId,
     startTime,
     languageId,
     levelId,
   });
-  if (res.status === 201 || res.status === 200) return;
-  else throw res.data as ErrorResponse;
 }
 
-export async function setupNextClass(startTime: string, courseId: string) {
-  const res = await Api.post(`/api/classes/`, {
+/**
+ * Sets up the next class of an already attended class.
+ *
+ * @param {string} startTime - The start time of the class to be scheduled.
+ * @param {string} courseId - The identifier of the course for which the class is being set up.
+ * @return {Promise<void>} A promise that resolves when the class is successfully set up.
+ */
+export async function setupNextClass(
+  startTime: string,
+  courseId: string,
+): Promise<void> {
+  await Api.post(`/api/classes/`, {
     courseId,
     startTime,
   });
-  if (res.status === 201 || res.status === 200) return;
-  else throw res.data as ErrorResponse;
 }
