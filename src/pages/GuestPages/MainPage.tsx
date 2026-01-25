@@ -43,7 +43,7 @@ type Filters = {
   query?: string;
 };
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 10;
 
 function MainPage() {
   const navigate = useNavigate();

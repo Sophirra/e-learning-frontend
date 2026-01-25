@@ -5,10 +5,10 @@ import type { Role } from "@/features/user/user.ts";
 // W trybie dev używaj pustego baseURL - ścieżki w apiCalls.ts już mają /api/
 // Nginx przekieruje /api/* do backendu
 const apiBaseURL = import.meta.env.DEV
-    ? ""
+    ? "http://localhost:5249"
     : (import.meta.env.VITE_API_URL || "");
 
-// console.log("API Base URL:", apiBaseURL, "VITE_API_URL:", import.meta.env.VITE_API_URL);
+console.log("API Base URL:", apiBaseURL, "VITE_API_URL:", import.meta.env.VITE_API_URL);
 
 let api = axios.create({
     baseURL: apiBaseURL,
