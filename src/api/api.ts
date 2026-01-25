@@ -1,21 +1,21 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import { jwtDecode } from "jwt-decode";
+import type { Role } from "@/features/user/user.ts";
 
-import type { Role } from "@/types.ts";
+// W trybie dev używaj pustego baseURL - ścieżki w apiCalls.ts już mają /api/
+// Nginx przekieruje /api/* do backendu
+const apiBaseURL = import.meta.env.DEV
+    ? ""
+    : (import.meta.env.VITE_API_URL || "");
 
-/**
- * Configured Axios instance for making HTTP requests.
- *
- * This instance is pre-configured with a base URL, headers, and options suitable for the application.
- * The base URL is dynamically set using the environment variable `VITE_API_URL`, which can be changed for development purposes.
- * Cookies are also included since that is where the refresh token is stored.
- */
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
+// console.log("API Base URL:", apiBaseURL, "VITE_API_URL:", import.meta.env.VITE_API_URL);
+
+let api = axios.create({
+    baseURL: apiBaseURL,
+    headers: {
+        "Content-Type": "application/json",
+    },
+    withCredentials: true,
 });
 
 //storing access token in RAM
@@ -109,8 +109,8 @@ function rejectQueuedRequests(err: any): void {
  * Separate client for refresh (no interceptors) to avoid refresh loops.
  */
 const refreshClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true,
+    baseURL: apiBaseURL,
+    withCredentials: true,
 });
 
 /**
@@ -128,7 +128,7 @@ async function doRefresh(): Promise<void> {
 
 // --- Interceptors ---
 
-//adding access token to all requests going through
+//adding access token to all request going through
 api.interceptors.request.use((config) => {
   if (accessToken) {
     config.headers = config.headers ?? {};
@@ -184,12 +184,12 @@ api.interceptors.response.use(
  * - `iat`: The "Issued At" timestamp, in seconds since Unix epoch, indicating when the token was created.
  */
 interface JwtPayload {
-  unique_name: string;
-  nameid: string;
-  roles: string[];
-  nbf: number;
-  exp: number;
-  iat: number;
+    unique_name: string;
+    nameid: string;
+    roles: string[];
+    nbf: number;
+    exp: number;
+    iat: number;
 }
 
 /**
@@ -213,18 +213,18 @@ export function getRoles(): Role[] {
  * @return {string | null} The user ID as a string
  */
 export function getUserId(): string | null {
-  try {
-    if (!accessToken) return null;
+    try {
+        if (!accessToken) return null;
 
-    const decoded = jwtDecode<JwtPayload>(accessToken);
-    if (decoded?.nameid && /^[0-9a-fA-F-]{36}$/.test(decoded.nameid)) {
-      return decoded.nameid;
+        const decoded = jwtDecode<JwtPayload>(accessToken);
+        if (decoded?.nameid && /^[0-9a-fA-F-]{36}$/.test(decoded.nameid)) {
+            return decoded.nameid;
+        }
+        return null;
+    } catch (err) {
+        console.error("Failed to decode user ID from token:", err);
+        return null;
     }
-    return null;
-  } catch (err) {
-    console.error("Failed to decode user ID from token:", err);
-    return null;
-  }
 }
 
 export default api;

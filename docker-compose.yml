@@ -1,0 +1,40 @@
+
+services:
+  # Frontend aplikacja w trybie dev
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elearning-frontend-dev
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - elearning-network
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=/api
+
+  # Nginx jako reverse proxy przed Vite dev server
+  nginx-dev:
+    image: nginx:alpine
+    container_name: elearning-nginx-dev
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certificates:/etc/nginx/certificates:ro
+    ports:
+      - "443:443"
+    networks:
+      - elearning-network
+    depends_on:
+      - frontend-dev
+    command: nginx -g "daemon off;"
+
+networks:
+  elearning-network:
+    driver: bridge
+
